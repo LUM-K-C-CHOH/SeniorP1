@@ -1,0 +1,27 @@
+{
+  "save": "Salvar",
+  "dismiss": "Descartar",
+  "medication_management": "Gerenciamento de Medicamentos",
+  "reminder": "Lembrete",
+  "activity": "Atividade",
+  "status": "Status",
+  "medication_manage": {
+    "item": "ITEM",
+    "description": "DESCRIÇÃO",
+    "refill_reminder": "LEMBRETE DE RECARGA",
+    "tablets": "tablets",
+    "not_set": "Não definido",
+    "add_medication": "Adicionar Medicamento"
+  },
+  "refill_reminder_preference": {
+    "refill_reminder_perference": "Preferência de Lembrete de Recarga",
+    "alert_when_amount_low": "Avise-me quando o estoque de %s estiver acabando.",
+    "alert_threshold": "O limite deve ser um valor no intervalo %s.",
+    "threshold": "Limite",
+    "push_notification": "Notificação Push",
+    "email_alert": "E-mail Alerta",
+    "refill_reminder_updated": "Lembrete de recarga atualizado!",
+    "click": "Clique",
+    "to_continue": "para continuar."
+  }
+}
