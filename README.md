@@ -4,7 +4,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 1. Install Android Studio and Android SDK, Emulator. 
-2. Install dependencies
+2. Pull the code from [main] branch.
+3. Install dependencies inside the project
 
    ```bash
    npm install
@@ -14,6 +15,10 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
    ```bash
     npx expo start
+   ```
+   Or
+   ```bash
+    npm run start
    ```
 
 In the output, you'll find options to open the app in a
