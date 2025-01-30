@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Image,
   ListRenderItemInfo,
+  RefreshControl,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity
@@ -22,6 +23,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
 
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (initialRef.current) return;
@@ -57,6 +59,25 @@ export default function HomeScreen() {
 
   const handleOpenedRow = (): void => {
 
+  }
+
+  const handleLoadData = async (): Promise<void> => {
+    setIsLoading(true);
+    getMedicationList()
+      .then((res: TResponse) => {
+        setIsLoading(false);
+
+        if (res.success) {
+          setMedicationList(res.data?? []);
+        } else {
+
+        }
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.log(error);
+      });
+    
   }
 
   const renderItem = (data: ListRenderItemInfo<IMedication>) => (
@@ -136,12 +157,15 @@ export default function HomeScreen() {
         data={medicationList}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}
-        leftOpenValue={0}
+        disableRightSwipe={true}
         rightOpenValue={-150}
         previewRowKey={'0'}
         previewOpenValue={0}
         previewOpenDelay={3000}
         onRowDidOpen={handleOpenedRow}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={handleLoadData} />
+        }
       />
     </SafeAreaView>
   );
