@@ -6,7 +6,8 @@ import {
   RefreshControl,
   SafeAreaView,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Text
 } from 'react-native';
 
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
@@ -16,6 +17,7 @@ import { BellIcon, DeleteIcon, EditIcon, FlyIcon, PillIcon, SettingIcon, StockIc
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
+import CustomButton from '@/components/CustomButton';
 
 export default function HomeScreen() {
   const initialRef = useRef<boolean>();
@@ -167,6 +169,11 @@ export default function HomeScreen() {
           <RefreshControl refreshing={isLoading} onRefresh={handleLoadData} />
         }
       />
+      <ThemedView style={styles.actionWrapper}>
+        <CustomButton onPress={() => {}}>
+          <Text style={styles.addMedicationButtonText}>+{t('medication_manage.add_medication')}</Text>
+        </CustomButton>
+      </ThemedView>
     </SafeAreaView>
   );
 }
@@ -241,4 +248,14 @@ const styles = StyleSheet.create({
   backTextWhite: {
     color: '#fff',
   },
+  addMedicationButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 500
+  },
+  actionWrapper: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 20
+  }
 });
