@@ -14,7 +14,7 @@ mock.onPost('/auth/login').reply(200, {
 mock.onGet('/medication/list').reply(200, [
   {
     id: 1,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/imd-author-interviews-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/products/first_aid_dual_head_stethoscope_2_170x170_crop_top.png?v=1552665562',
     name: 'Aspirin',
     dosage: '100mg',
     stock: 32,
@@ -23,7 +23,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 2,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/coronavirus-covid-19-qa-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/products/drive_medical_clinical_care_geri_chair_recliner_2_170x170_crop_top.png?v=1552665466',
     name: 'Metoprolol',
     dosage: '5mg',
     stock: 16,
@@ -32,7 +32,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 3,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/ped-editors-summary-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/products/drive_medical_deluxe_folding_exercise_peddler_with_electronic_display_2_170x170_crop_top.png?v=1552665478',
     name: 'Lisinoprill',
     dosage: '50mg',
     stock: 4,
@@ -41,7 +41,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 4,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/psy-author-interviews-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/files/Gallery-5_370x370_crop_center.png?v=1613531679',
     name: 'Amoxicilin',
     dosage: '500mg',
     stock: 14,
@@ -50,7 +50,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 5,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/jama-editors-summary-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/files/Gallery-4_370x370_crop_center.png?v=1613531679',
     name: 'Clopidogrel',
     dosage: '75mg',
     stock: 206,
@@ -59,7 +59,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 6,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/imd-author-interviews-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/files/Gallery-6_370x370_crop_center.png?v=1613531679',
     name: 'Aspirin',
     dosage: '100mg',
     stock: 32,
@@ -68,7 +68,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 7,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/coronavirus-covid-19-qa-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/products/polar_ft4_heart_rate_monitor_1_170x170_crop_top.png?v=1552665646',
     name: 'Metoprolol',
     dosage: '5mg',
     stock: 16,
@@ -77,7 +77,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 8,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/ped-editors-summary-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/collections/gowise_usa_advanced_control_digital_blood_pressure_monitor_4_270x255_crop_top.png?v=1552667445',
     name: 'Lisinoprill',
     dosage: '50mg',
     stock: 4,
@@ -86,7 +86,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 9,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/psy-author-interviews-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/products/polar_h7_bluetooth_smart_heart_rate_sensor_1_170x170_crop_top.png?v=1552665655',
     name: 'Amoxicilin',
     dosage: '500mg',
     stock: 14,
@@ -95,7 +95,7 @@ mock.onGet('/medication/list').reply(200, [
   },
   {
     id: 10,
-    image: 'https://cdn.jamanetwork.com/ImageLibrary/JamaNetwork/audio/jama-editors-summary-background-800x266.jpg?versionId=83608',
+    image: 'https://theme635-medical.myshopify.com/cdn/shop/products/gowise_usa_advanced_control_digital_blood_pressure_monitor_2_170x170_crop_top.png?v=1552665575',
     name: 'Clopidogrel',
     dosage: '75mg',
     stock: 206,
