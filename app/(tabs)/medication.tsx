@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import CustomButton from '@/components/CustomButton';
+import Modal from 'react-native-modal';
 
 import {
   Image,
@@ -36,6 +37,7 @@ export default function HomeScreen() {
 
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
 
   useEffect(() => {
     if (initialRef.current) return;
@@ -70,7 +72,16 @@ export default function HomeScreen() {
   }
 
   const handleDeleteRow = (rowMap: RowMap<IMedication>, id: number): void => {
+    console.log('delete', id);
+    setDeleteConfirmPopupOptions({ opened: true, id });
+  }
 
+  const handleDeleteConfrim = (): void => {
+    const delteId: number = deleteConfirmPopupOptions.id as number;
+
+    if (delteId < 0) return;
+    
+    setDeleteConfirmPopupOptions({ opened: false, id: -1 });
   }
 
   const handleOpenedRow = (): void => {
@@ -154,6 +165,37 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.mainWrapper}>
+      <Modal
+        isVisible={deleteConfirmPopupOptions.opened as boolean}
+        onBackdropPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+        onBackButtonPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+        onSwipeComplete={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+        swipeDirection="left"
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        animationInTiming={300}
+        animationOutTiming={300}
+      >
+        <ThemedView style={pstyles.deleteConfirmModalContainer}>
+          <ThemedView style={pstyles.deleteConfirmModalBody}>
+            <ThemedText style={pstyles.deleteConfirmModalBodyText}>Are you sure to delete it?</ThemedText>
+          </ThemedView>
+          <ThemedView style={pstyles.deleteConfirmModalActions}>
+            <TouchableOpacity
+              style={pstyles.deleteConfirmModalNegativeButton}
+              onPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+            >
+              <Text style={pstyles.deleteConfirmModalNegativeButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={pstyles.deleteConfirmModalPositiveButton}
+              onPress={handleDeleteConfrim}
+            >
+              <Text style={pstyles.deleteConfirmModalPositiveButtonText}>Delete</Text>
+            </TouchableOpacity>
+          </ThemedView>
+        </ThemedView>
+      </Modal>
       <ThemedView style={styles.listHeader}>
         <ThemedText
           style={[styles.listHeaderText, { width: '20%' }]}
@@ -275,4 +317,47 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20
   }
+});
+
+const pstyles = StyleSheet.create({
+  deleteConfirmModalContainer: {
+    paddingHorizontal: 20,
+    borderRadius: 10
+  },
+  deleteConfirmModalBody: {
+    paddingVertical: 15
+  },
+  deleteConfirmModalBodyText: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: 400,
+  },
+  deleteConfirmModalActions: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    borderTopColor: '#e2e2e2',
+    borderTopWidth: 1,
+    justifyContent: 'center',
+    columnGap: 50
+  },
+  deleteConfirmModalNegativeButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    backgroundColor: '#e8e7e7'
+  },
+  deleteConfirmModalNegativeButtonText: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: 400
+  },
+  deleteConfirmModalPositiveButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    backgroundColor: '#fbc4c4'
+  },
+  deleteConfirmModalPositiveButtonText: {
+    color: '#fc2727',
+    fontSize: 14,
+    fontWeight: 400
+  },
 });
