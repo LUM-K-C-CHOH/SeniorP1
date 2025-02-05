@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import CustomButton from '@/components/CustomButton';
 
 import {
   Image,
@@ -13,14 +14,23 @@ import {
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
 import { getMedicationList } from '@/services/medication';
 import { IMedication, TResponse } from '@/@types';
-import { BellIcon, DeleteIcon, EditIcon, FlyIcon, PillIcon, SettingIcon, StockIcon } from '@/utils/assets';
+import {
+  BellIcon,
+  DeleteIcon,
+  EditIcon,
+  FlyIcon,
+  PillIcon,
+  SettingIcon,
+  StockIcon
+} from '@/utils/assets';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
-import CustomButton from '@/components/CustomButton';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
   const initialRef = useRef<boolean>();
+  const router = useRouter();
   
   const { t } = useTranslation();
 
@@ -52,7 +62,11 @@ export default function HomeScreen() {
   }
 
   const handleEditRow = (rowMap: RowMap<IMedication>, id: number): void => {
+    const find = medicationList.find(v => v.id === id);
+    
+    if (!find) return;
 
+    router.push({ pathname: '/medication/edit', params: { id } });
   }
 
   const handleDeleteRow = (rowMap: RowMap<IMedication>, id: number): void => {
@@ -79,7 +93,10 @@ export default function HomeScreen() {
         setIsLoading(false);
         console.log(error);
       });
-    
+  }
+
+  const handleAddMedication = (): void => {
+    router.push('/medication/add');
   }
 
   const renderItem = (data: ListRenderItemInfo<IMedication>) => (
@@ -170,7 +187,7 @@ export default function HomeScreen() {
         }
       />
       <ThemedView style={styles.actionWrapper}>
-        <CustomButton onPress={() => {}}>
+        <CustomButton onPress={handleAddMedication}>
           <Text style={styles.addMedicationButtonText}>+{t('medication_manage.add_medication')}</Text>
         </CustomButton>
       </ThemedView>

@@ -19,6 +19,8 @@ export interface IMedication {
   stock: number,
   frequency: string,
   notifications: number,
+  startDate: string,
+  endDate: string
 }
 
 export type TResponse = {

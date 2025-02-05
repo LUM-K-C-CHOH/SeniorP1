@@ -55,6 +55,10 @@ export default function Header() {
       return t('notification');
     } else if (path === '/emergency') {
       return t('emergency_alert');
+    } else if (path === '/medication/add') {
+      return t('medication_manage.add_medication')
+    } else if (path === '/medication/edit') {
+      return t('medication_manage.edit_medication')
     }
 
     return '';

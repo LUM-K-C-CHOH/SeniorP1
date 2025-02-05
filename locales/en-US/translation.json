@@ -19,7 +19,8 @@
     "refill_reminder": "REFILL REMINDER",
     "tablets": "tablets",
     "not_set": "Not Set",
-    "add_medication": "Add Medication"
+    "add_medication": "Add Medication",
+    "edit_medication": "Edit Medication"
   },
   "refill_reminder_preference": {
     "refill_reminder_perference": "Refill Reminder Preference",
