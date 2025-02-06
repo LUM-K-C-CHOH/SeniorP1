@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'expo-router';
 
-export default function Dashboard() {
+export default function DashboardScreen() {
   const { t } = useTranslation();
 
   return (

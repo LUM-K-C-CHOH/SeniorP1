@@ -161,6 +161,4 @@ const styles = StyleSheet.create({
   },
   normalText: {
     fontSize: 14,
-    fontWeight: 400,
-  }
-});
+
