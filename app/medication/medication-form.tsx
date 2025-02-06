@@ -22,11 +22,15 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   const [frequency, setFrequency] = useState<string>(medication ? medication.frequency : '');
   const [startDate, setStartDate] = useState<string>(medication ? medication.startDate : '');
   const [endDate, setEndDate] = useState<string>(medication ? medication.endDate : '');
+  const [stock, setStock] = useState<string>(medication ? `${medication.stock}` : '');
+  const [miniStock, setMiniStock] = useState<string>(medication ? `${medication.miniStock}` : '');
 
   useEffect(() => {
     setName(medication?.name?? '');
     setDosage(medication?.dosage?? '');
     setFrequency(medication?.frequency?? '');
+    setStock(medication?.stock ? `${medication.stock}` : '');
+    setStock(medication?.miniStock ? `${medication.miniStock}` : '');
     setStartDate(medication?.startDate?? '');
     setEndDate(medication?.endDate?? '');
   }, [medication]);
@@ -68,6 +72,30 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       return;
     }
 
+    if (type === 'stock') {
+      setStock(value);
+      if (value.length > 0) {
+        const { stock, ...rest } = errors;
+        setErrors(rest);
+      } else {
+        errors['stock'] = 'Invalid Stock.'
+      }
+
+      return;
+    }
+
+    if (type === 'miniStock') {
+      setMiniStock(value);
+      if (value.length > 0) {
+        const { miniStock, ...rest } = errors;
+        setErrors(rest);
+      } else {
+        errors['miniStock'] = 'Invalid minimum stock.'
+      }
+
+      return;
+    }
+
     if (type === 'startDate') {
       setStartDate(value);
       if (value.length > 0) {
@@ -93,7 +121,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
     }
   }
 
-  const  handleAddMedication = (): void => {
+  const handleAddMedication = (): void => {
     let errors: {[k: string]: string} = {};
     if (name.length === 0) {
       errors['name'] = 'Invalid name.'
@@ -105,6 +133,14 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 
     if (frequency.length === 0) {
       errors['frequency'] = 'Invalid frequency.';
+    }
+
+    if (miniStock.length === 0) {
+      errors['miniStock'] = 'Invalid minimum stock.';
+    }
+
+    if (stock.length === 0) {
+      errors['stock'] = 'Invalid stock.';
     }
 
     if (startDate.length === 0) {
@@ -171,6 +207,38 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         </ThemedView>
       </ThemedView>
       <ThemedView style={styles.formGroup}>
+        <ThemedText style={styles.controlLabel}>Stock:</ThemedText>
+        <ThemedView style={styles.formControlWrapper}>
+          <TextInput
+            style={[
+              styles.formControl,
+              errors.stock ? { borderColor: 'red' } : {}
+            ]}
+            value={stock}
+            onChangeText={(v) => changeFormValue('stock', v)}
+          />
+          {errors.stock&&
+            <ThemedText style={styles.error}>{errors.stock}</ThemedText>
+          }
+        </ThemedView>
+      </ThemedView>
+      <ThemedView style={styles.formGroup}>
+        <ThemedText style={styles.controlLabel}>Stock Limitation:</ThemedText>
+        <ThemedView style={styles.formControlWrapper}>
+          <TextInput
+            style={[
+              styles.formControl,
+              errors.miniStock ? { borderColor: 'red' } : {}
+            ]}
+            value={miniStock}
+            onChangeText={(v) => changeFormValue('miniStock', v)}
+          />
+          {errors.miniStock&&
+            <ThemedText style={styles.error}>{errors.miniStock}</ThemedText>
+          }
+        </ThemedView>
+      </ThemedView>
+      <ThemedView style={styles.formGroup}>
         <ThemedText style={styles.controlLabel}>Start Date:</ThemedText>
         <ThemedView style={styles.formControlWrapper}>
           <TextInput
@@ -214,7 +282,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 const styles = StyleSheet.create({
   form: {
     rowGap: 10,
-    marginTop: 20
+    marginTop: 20,
+    marginBottom: 60,
   },
   formGroup: {
     flexDirection: 'row',

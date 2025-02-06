@@ -17,6 +17,7 @@ export interface IMedication {
   name: string,
   dosage: string,
   stock: number,
+  miniStock: number,
   frequency: string,
   notifications: number,
   startDate: string,
