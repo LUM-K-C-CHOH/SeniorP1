@@ -9,6 +9,11 @@
   "logout": "Log out",
   "manage_password": "Manage Password",
   "emergency_alert": "Emergency Alert",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "message": {
+    "confirm_delete": "Are you sure to delete it?"
+  },
   "dashboard": {
     "dashboard": "Dashboard",
     "alert_emergency": "Alert Emergency"
@@ -23,7 +28,7 @@
     "edit_medication": "Edit Medication"
   },
   "refill_reminder_preference": {
-    "refill_reminder_perference": "Refill Reminder Preference",
+    "refill_reminder_preference": "Refill Reminder Preference",
     "alert_when_amount_low": "Alert me when the stock of %s is running low.",
     "alert_threshold": "Threshold must be value in range %s.",
     "threshold": "Threshold",

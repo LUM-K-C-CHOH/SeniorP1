@@ -9,7 +9,9 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
-  Text
+  Text,
+  TouchableHighlight,
+  Switch
 } from 'react-native';
 
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
@@ -28,6 +30,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 
 export default function HomeScreen() {
   const initialRef = useRef<boolean>();
@@ -38,6 +41,7 @@ export default function HomeScreen() {
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
+  const [reminderSettingPanelOptions, setReminderSettingPanelOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
 
   useEffect(() => {
     if (initialRef.current) return;
@@ -110,6 +114,10 @@ export default function HomeScreen() {
     router.push('/medication/add');
   }
 
+  const handleReminderSettingVisible = (id: number): void => {
+    setReminderSettingPanelOptions({ opened: true, id });
+  }
+
   const renderItem = (data: ListRenderItemInfo<IMedication>) => (
     <ThemedView style={styles.itemWrapper}>
       <Image source={{ uri: data.item.image }} width={60} height={60}/>
@@ -137,7 +145,7 @@ export default function HomeScreen() {
             <FlyIcon />
           </ThemedView>
           <ThemedView>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => handleReminderSettingVisible(data.item.id)}>
               <SettingIcon />
             </TouchableOpacity>
           </ThemedView>
@@ -164,7 +172,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.mainWrapper}>
+    <GestureHandlerRootView style={styles.mainWrapper}>
       <Modal
         isVisible={deleteConfirmPopupOptions.opened as boolean}
         onBackdropPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
@@ -178,21 +186,74 @@ export default function HomeScreen() {
       >
         <ThemedView style={pstyles.deleteConfirmModalContainer}>
           <ThemedView style={pstyles.deleteConfirmModalBody}>
-            <ThemedText style={pstyles.deleteConfirmModalBodyText}>Are you sure to delete it?</ThemedText>
+            <ThemedText style={pstyles.deleteConfirmModalBodyText}>{t('message.confirm_delete')}</ThemedText>
           </ThemedView>
           <ThemedView style={pstyles.deleteConfirmModalActions}>
             <TouchableOpacity
               style={pstyles.deleteConfirmModalNegativeButton}
               onPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
             >
-              <Text style={pstyles.deleteConfirmModalNegativeButtonText}>Cancel</Text>
+              <Text style={pstyles.deleteConfirmModalNegativeButtonText}>{t('cancel')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={pstyles.deleteConfirmModalPositiveButton}
               onPress={handleDeleteConfrim}
             >
-              <Text style={pstyles.deleteConfirmModalPositiveButtonText}>Delete</Text>
+              <Text style={pstyles.deleteConfirmModalPositiveButtonText}>{t('delete')}</Text>
             </TouchableOpacity>
+          </ThemedView>
+        </ThemedView>
+      </Modal>
+      <Modal
+        isVisible={reminderSettingPanelOptions.opened as boolean}
+        swipeDirection={['down']}
+        style={rstyles.reminderPanel}
+        onBackdropPress={() => setReminderSettingPanelOptions({ opened: false, id: -1 })}
+        onBackButtonPress={() => setReminderSettingPanelOptions({ opened: false, id: -1 })}
+        onSwipeComplete={() => setReminderSettingPanelOptions({ opened: false, id: -1 })}
+        animationInTiming={300}
+        animationOutTiming={300}
+      >
+        <ThemedView style={rstyles.container}>
+          <ThemedView style={rstyles.header}>
+            <ThemedText style={rstyles.titleText}>{t('refill_reminder_preference.refill_reminder_preference')}</ThemedText>
+            <ThemedText style={rstyles.descText}>{t('refill_reminder_preference.alert_when_amount_low')}</ThemedText>
+          </ThemedView>
+          <ThemedView style={[rstyles.row, rstyles.thretholdWrapper]}>
+            <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.threshold')}:</ThemedText>
+            <ThemedView style={{ flex: 1 }}>
+              <TextInput style={{ textAlign: 'right', height: 50 }} />
+            </ThemedView>
+          </ThemedView>
+          <ThemedView style={[rstyles.row]}>
+            <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.push_notification')}:</ThemedText>
+            <ThemedView>
+              <Switch />
+            </ThemedView>
+          </ThemedView>
+          <ThemedView style={[rstyles.row]}>
+            <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.email_alert')}:</ThemedText>
+            <ThemedView>
+              <Switch />
+            </ThemedView>
+          </ThemedView>
+          <ThemedView style={[rstyles.action]}>
+            <TouchableHighlight
+              onPress={() => {}}
+              style={rstyles.button}
+            >
+              <ThemedView style={[rstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
+                <Text style={rstyles.buttonText}>{t('save')}</Text>
+              </ThemedView>
+            </TouchableHighlight>
+            <TouchableHighlight
+              onPress={() => {}}
+              style={rstyles.button}
+            >
+              <ThemedView style={rstyles.buttonTextWrapper}>
+                <Text style={rstyles.buttonText}>{t('dismiss')}</Text>
+              </ThemedView>
+            </TouchableHighlight>
           </ThemedView>
         </ThemedView>
       </Modal>
@@ -233,7 +294,7 @@ export default function HomeScreen() {
           <Text style={styles.addMedicationButtonText}>+{t('medication_manage.add_medication')}</Text>
         </CustomButton>
       </ThemedView>
-    </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
@@ -360,4 +421,59 @@ const pstyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 400
   },
+});
+
+const rstyles = StyleSheet.create({
+  reminderPanel: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
+  container: {
+    paddingTop: 15
+  },
+  header: {
+    alignItems: 'center'
+  },
+  titleText: {
+    fontSize: 18,
+    fontWeight: 600,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 15
+  },
+  descText: {
+    fontSize: 14,
+    fontWeight: 400
+  },
+  thretholdWrapper: {
+    borderBottomColor: '#e2e2e2',
+    borderBottomWidth: 1
+  },
+  labelText: {
+    fontSize: 15,
+    fontWeight: 400
+  },
+  action: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopColor: '#e2e2e2',
+    borderTopWidth: 1
+  },
+  button: {
+    flex: 1,
+    height: 45
+  },
+  buttonTextWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 15,
+    fontWeight: 400,
+  }
 });

@@ -135,7 +135,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
           />
           {errors.name&&
             <ThemedText style={styles.error}>{errors.name}</ThemedText>
-          }              
+          }
         </ThemedView>
       </ThemedView>
       <ThemedView style={styles.formGroup}>
