@@ -19,7 +19,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
 import CustomButton from '@/components/CustomButton';
 
-export default function HomeScreen() {
+export default function MedicationScreen() {
   const initialRef = useRef<boolean>();
   
   const { t } = useTranslation();
