@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 
-export default function Notification() {
+export default function NotificationScreen() {
   const { t } = useTranslation();
 
   return (

@@ -21,7 +21,16 @@ export interface IMedication {
   frequency: string,
   notifications: number,
   startDate: string,
-  endDate: string
+  endDate: string,
+}
+
+export interface IAppointment {
+  id: number,
+  name: string,
+  scheuledTime: string,
+  place: string,
+  description: string,
+  createdAt: string,
 }
 
 export type TResponse = {

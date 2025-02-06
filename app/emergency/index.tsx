@@ -6,7 +6,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 
-export default function EmergencyScree() {
+export default function EmergencyScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Stack.Screen

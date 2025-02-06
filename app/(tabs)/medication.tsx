@@ -33,7 +33,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 
-export default function HomeScreen() {
+export default function MedicationScreen() {
   const initialRef = useRef<boolean>();
   const router = useRouter();
   
