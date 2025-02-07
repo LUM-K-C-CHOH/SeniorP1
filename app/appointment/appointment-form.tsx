@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import CustomButton from '@/components/CustomButton';
+import Modal from 'react-native-modal';
+import Calendar from '@/components/Calendar';
 
 import { IAppointment } from '@/@types';
 import {
@@ -7,7 +10,6 @@ import {
   Text,
   TextInput,
   TouchableHighlight,
-  TouchableOpacity
 } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ThemedView } from '@/components/ThemedView';
@@ -15,7 +17,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon } from '@/utils/assets';
-import CustomButton from '@/components/CustomButton';
 
 type TAppointmentFormProps = {
   appointment?: IAppointment
@@ -24,8 +25,22 @@ type TAppointmentFormProps = {
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
   const { t } = useTranslation();
 
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [calendarPopupVisible, setCalendarPopupVisible] = useState<boolean>(false);
+
+  const handleCalendarPopupVisible = (visible: boolean): void => {
+    setCalendarPopupVisible(visible);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
+      <Modal
+        isVisible={calendarPopupVisible}
+        onBackdropPress={() => handleCalendarPopupVisible(false)}
+        onBackButtonPress={() => handleCalendarPopupVisible(false)}
+      >
+        <Calendar date={selectedDate}></Calendar>
+      </Modal>
       <Animated.ScrollView>
         <ThemedView style={styles.providerWrapper}>
           <ThemedText style={styles.labelText}>{t('appointment_manage.provider')}{' : '}</ThemedText>
@@ -52,7 +67,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           <ThemedView style={styles.dateWrapper}>
             <TouchableHighlight
               style={{ borderRadius: 5, marginTop: 5 }}
-              onPress={() => {}}
+              onPress={() => handleCalendarPopupVisible(true)}
             >
               <ThemedView style={styles.dateControl}>
                 <ThemedText style={styles.dateText}>2025-03-23</ThemedText>

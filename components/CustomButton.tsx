@@ -1,3 +1,8 @@
+/**
+ * CustomButton.tsx
+ * Author Morgan Thornton
+ * Created By Thornton at 2025.01.27
+ */
 import React from 'react'
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native'
 
