@@ -188,12 +188,31 @@ export const DeleteIcon = (props: IconProps) => {
 }
 
 export const CircleCheckIcon = (props: IconProps) => {
-  const { color = '#248E31', width = 73, height = 73 } = props;
+  const { color = '#248e31', width = 73, height = 73 } = props;
   return (
     <Svg width={width} height={height} viewBox="0 0 73 73" fill="none">
       <Path fillRule="evenodd" clipRule="evenodd" d="M72.5 36.5C72.5 56.4065 56.4065 72.5001 36.5 72.5001C16.5935 72.5001 0.5 56.4065 0.5 36.5C0.5 16.5936 16.5935 0.5 36.5 0.5C56.4065 0.5 72.5 16.5936 72.5 36.5ZM70.1231 36.5C70.1231 17.9801 55.02 2.87689 36.5 2.87689C17.98 2.87689 2.87692 17.9801 2.87692 36.5C2.87692 55.02 17.98 70.1231 36.5 70.1231C55.02 70.1231 70.1231 55.02 70.1231 36.5ZM54.1287 23.6747C54.6239 24.1204 54.6239 24.8632 54.1287 25.3583L32.5385 46.9484C32.2909 47.196 31.9938 47.2951 31.6967 47.2951C31.3996 47.2951 31.1025 47.196 30.8549 46.9484L18.8713 34.965C18.3761 34.4698 18.3761 33.727 18.8713 33.2318C19.317 32.7861 20.0598 32.7861 20.555 33.2318L31.6967 44.423L52.445 23.6747C52.9402 23.1795 53.683 23.1795 54.1287 23.6747Z" fill={color}/>
     </Svg>
   );
 }
+
+export const ClockIcon = (props: IconProps) => {
+  const { color = '#1e1e1e', width = 16, height = 16 } = props;
+  return (
+    <Svg width={width} height={height} viewBox="0 0 16 16" fill="none">
+      <G clip-path="url(#clip0_3401_641)">
+        <Path d="M7.99998 4.00004V8.00004L10.6666 9.33337M14.6666 8.00004C14.6666 11.6819 11.6819 14.6667 7.99998 14.6667C4.31808 14.6667 1.33331 11.6819 1.33331 8.00004C1.33331 4.31814 4.31808 1.33337 7.99998 1.33337C11.6819 1.33337 14.6666 4.31814 14.6666 8.00004Z" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+      </G>
+      <Defs>
+        <ClipPath id="clip0_3401_641">
+          <Rect width="16" height="16" fill="white"/>
+        </ClipPath>
+      </Defs>
+    </Svg>
+  );
+}
+
+
+
 
 

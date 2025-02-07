@@ -6,7 +6,6 @@ import {
   Image,
   ListRenderItemInfo,
   RefreshControl,
-  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   Text,
@@ -389,7 +388,6 @@ const styles = StyleSheet.create({
   mainWrapper: {
     flex: 1,
     backgroundColor: 'white',
-    
   },
   listHeader: {
     flexDirection: 'row',

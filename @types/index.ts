@@ -27,8 +27,7 @@ export interface IMedication {
 export interface IAppointment {
   id: number,
   name: string,
-  scheuledTime: string,
-  place: string,
+  scheduledTime: string,
   description: string,
   createdAt: string,
 }
