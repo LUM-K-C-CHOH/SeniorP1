@@ -1,3 +1,10 @@
+/**
+ * notification.tsx
+ * RTHA
+ * 
+ * Created By Thornton at 01/28/2025
+ */
+import React from 'react';
 import Animated from 'react-native-reanimated';
 
 import { StyleSheet, SafeAreaView } from 'react-native';

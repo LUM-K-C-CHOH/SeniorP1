@@ -1,3 +1,9 @@
+/**
+ * Types Definition
+ * RTHA
+ * 
+ * Created By Thornton at 01/23/2025
+ */
 export interface IUser {
   id: number;
   name: string;

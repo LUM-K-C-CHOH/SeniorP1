@@ -1,3 +1,9 @@
+/**
+ * Auth Service
+ * RTHA
+ * 
+ * Created By Thornton at 01/23/2025
+ */
 import axiosInstance from './instance';
 
 export const login = (email: string, password: string) => {

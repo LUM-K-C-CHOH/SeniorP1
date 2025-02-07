@@ -1,3 +1,9 @@
+/**
+ * Sign Up Screen
+ * RTHA
+ * 
+ * Created By Thornton at 01/23/2025
+ */
 import React, { useState, useCallback } from 'react';
 import {
   Text,

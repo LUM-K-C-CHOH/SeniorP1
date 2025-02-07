@@ -1,3 +1,9 @@
+/**
+ * Main Layout for App
+ * RTHA
+ * 
+ * Created By Thornton at 01/23/2025
+ */
 import React, { useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as globalState from '@/config/global';

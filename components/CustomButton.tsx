@@ -1,7 +1,8 @@
 /**
- * CustomButton.tsx
- * Author Morgan Thornton
- * Created By Thornton at 2025.01.27
+ * CustomButton Component
+ * RTHA
+ * 
+ * Created By Thornton at 01/28/2025
  */
 import React from 'react'
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native'

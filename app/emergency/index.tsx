@@ -1,3 +1,9 @@
+/**
+ * Emergency Alert Screen
+ * RTHA
+ * 
+ * Created By Thornton at 01/28/2025
+ */
 import React from 'react';
 import Header from '@/app/layout/header';
 import { Stack } from 'expo-router';

@@ -1,3 +1,9 @@
+/**
+ * Edit Appointment Screen
+ * RTHA
+ * 
+ * Created By Thornton at 02/07/2025
+ */
 import React, { useEffect, useState, useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import Header from '@/app/layout/header';

@@ -1,3 +1,9 @@
+/**
+ * appointment.tsx
+ * RTHA
+ * 
+ * Created By Thornton at 01/28/2025
+ */
 import React, { useEffect, useState, useRef } from 'react';
 import Modal from 'react-native-modal';
 import CustomButton from '@/components/CustomButton';

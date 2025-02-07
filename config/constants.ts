@@ -1,3 +1,9 @@
+/**
+ * Constants Definition
+ * RTHA
+ * 
+ * Created By Thornton at 01/20/2025
+ */
 import { IAppState } from '@/@types';
 
 const tintColorLight = '#114dbd';

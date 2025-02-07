@@ -1,6 +1,13 @@
+/**
+ * index.tsx
+ * RTHA
+ * 
+ * Created By Thornton at 01/23/2025
+ */
 import Animated from 'react-native-reanimated';
 
 import { StyleSheet, SafeAreaView, View } from 'react-native';
+
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';

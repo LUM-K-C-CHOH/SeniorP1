@@ -1,11 +1,15 @@
+/**
+ * Add Appointment Screen
+ * RTHA
+ * 
+ * Created By Thornton at 02/07/2025
+ */
 import React from 'react';
-import Animated from 'react-native-reanimated';
 import Header from '@/app/layout/header';
 import AppointmentForm from '@/app/appointment/appointment-form';
 
 import { Stack } from 'expo-router';
 import {
-  StyleSheet,
   SafeAreaView,
 } from 'react-native';
 

@@ -1,7 +1,8 @@
 /**
- * Calendar.tsx
- * Author Morgan Thornton
- * Created By Thornton at 2025.02.07
+ * Calendar Component
+ * RTHA
+ * 
+ * Created By Thornton at 02/07/2025
  */
 import React from 'react';
 

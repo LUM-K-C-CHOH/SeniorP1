@@ -1,3 +1,9 @@
+/**
+ * Appointment Form
+ * RTHA
+ * 
+ * Created By Thornton at 01/28/2025
+ */
 import React, { useState } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Modal from 'react-native-modal';

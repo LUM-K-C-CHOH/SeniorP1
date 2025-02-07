@@ -1,3 +1,9 @@
+/**
+ * Appointment Service
+ * RTHA
+ * 
+ * Created By Thornton at 02/06/2025
+ */
 import axiosInstance from './instance';
 
 export const getAppointmentList = () => {

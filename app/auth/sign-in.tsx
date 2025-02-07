@@ -1,3 +1,9 @@
+/**
+ * Sign In Screen
+ * RTHA
+ * 
+ * Created By Thornton at 01/23/2025
+ */
 import React, { useState, useCallback, useContext } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';
 import { Stack, useRouter } from 'expo-router';

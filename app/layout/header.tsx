@@ -1,3 +1,9 @@
+/**
+ * Header Layout for Screens without Tab
+ * RTHA
+ * 
+ * Created By Thornton at 01/28/2025
+ */
 import React, { useState, useContext, useEffect } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';
 

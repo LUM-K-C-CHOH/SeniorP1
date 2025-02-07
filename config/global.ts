@@ -1,3 +1,9 @@
+/**
+ * Global State Manage
+ * RTHA
+ * 
+ * Created By Thornton at 01/23/2025
+ */
 import { IAppState } from '@/@types';
 import { InitialAppState, KEY_APP_STATE } from '@/config/constants';
 import { getStorageItem, setStorageItem } from '../utils/storage';

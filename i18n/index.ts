@@ -1,3 +1,9 @@
+/**
+ * Internationalization Configuration
+ * RTHA
+ * 
+ * Created By Thornton at 01/23/2025
+ */
 import i18n from 'i18next';
 import * as Localization from 'expo-localization';
 import AsyncStorage from "@react-native-async-storage/async-storage";
