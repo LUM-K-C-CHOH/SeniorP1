@@ -44,24 +44,19 @@ export default function Header() {
   }, [path]);
 
   const getTitle = (): string => {
-    console.log(path);
-    if (path === '/') {
-      return t('home');
-    } else if (path === '/medication') {
-      return t('medication_management');
-    } else if (path === '/appointment') {
-      return t('appointment');
-    } else if (path === '/notification') {
-      return t('notification');
-    } else if (path === '/emergency') {
-      return t('emergency_alert');
-    } else if (path === '/medication/add') {
-      return t('medication_manage.add_medication')
-    } else if (path === '/medication/edit') {
-      return t('medication_manage.edit_medication')
+    const titles: {[k: string]: string} = {
+      '/': t('home'),
+      '/medication': t('medication_management'),
+      '/appointment': t('appointment'),
+      '/notification': t('notification'),
+      '/emergency': t('emergency_alert'),
+      '/medication/add': t('medication_manage.add_medication'),
+      '/medication/edit': t('medication_manage.edit_medication'),
+      '/appointment/add': t('appointment_manage.add_appointment'),
+      '/appointment/edit': t('appointment_manage.edit_appointment')
     }
 
-    return '';
+    return titles[path]?? '';
   }
 
   const handlePopupMenuItemTap = (menuId: string) => {

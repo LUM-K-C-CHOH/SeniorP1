@@ -17,7 +17,7 @@ import { getAppointmentList } from '@/services/appointment';
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
 import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/assets';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
-import { getDateString } from '@/utils';
+import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
@@ -87,35 +87,13 @@ export default function AppointmentScreen() {
   }
 
   const handleAddAppointment = (): void => {
-    // router.push('/appointment/add');
-  }
-
-  const getMarkLabel = (name: string): string => {
-    const arr = name.split(' ');
-    const s = arr.reduce((acc, cur) => `${acc}${cur[0].toUpperCase()}`, '');
-    return s;
-  }
-
-  const getMarkColor = (name: string): {[k: string]: string} => {
-    const arr = name.split(' ');
-    const s = arr.reduce((acc, cur) => `${acc}${cur[0].toUpperCase()}`, '');
-    const hash = (s[0].charCodeAt(0) * 69892959 + s[1].charCodeAt(0)) % 16777215;
-
-    const bgcolor = `#${hash.toString(16).padStart(6, '0')}`;
-
-    const r = parseInt(bgcolor.substring(1, 3), 16);
-    const g = parseInt(bgcolor.substring(3, 5), 16);
-    const b = parseInt(bgcolor.substring(5, 7), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-    const textcolor = luminance > 0.5 ? "#333" : "#eee";
-    return { bgColor: bgcolor, textColor: textcolor };
+    router.push('/appointment/add');
   }
 
   const renderItem = (data: ListRenderItemInfo<IAppointment>) => (
       <ThemedView style={styles.itemWrapper}>
-        <ThemedView style={[styles.logoWrapper, { backgroundColor: getMarkColor(data.item.name).bgColor }]}>
-          <ThemedText style={[{ color: getMarkColor(data.item.name).textColor }]}>{getMarkLabel(data.item.name)}</ThemedText>
+        <ThemedView style={[styles.logoWrapper, { backgroundColor: getMarkColorFromName(data.item.name).bgColor }]}>
+          <ThemedText style={[{ color: getMarkColorFromName(data.item.name).textColor }]}>{getMarkLabelFromName(data.item.name)}</ThemedText>
         </ThemedView>
         <ThemedView style={styles.infoWrapper}>
           <ThemedView style={styles.row}>

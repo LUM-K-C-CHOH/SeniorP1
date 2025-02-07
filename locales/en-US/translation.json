@@ -40,6 +40,13 @@
     "to_continue": "to continue."
   },
   "appointment_manage": {
-    "add_appointment": "Add Appointment"
+    "add_appointment": "Add Appointment",
+    "edit_appointment": "Edit Appointment",
+    "provider": "Provider",
+    "calendar": "Calendar",
+    "choose_from_contact": "Choose From Contact",
+    "scheduled_time": "Scheduled Time",
+    "description": "Description",
+    "schedule": "Schedule"
   }
 }

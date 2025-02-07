@@ -212,7 +212,27 @@ export const ClockIcon = (props: IconProps) => {
   );
 }
 
+export const LocationIcon = (props: IconProps) => {
+  const { color = '#87b5f2', width = 24, height = 24 } = props;
+  return (
+    <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
+      <G clip-path="url(#clip0_3531_245)">
+        <Path d="M20.94 11C20.48 6.83 17.17 3.52 13 3.06V1H11V3.06C6.83 3.52 3.52 6.83 3.06 11H1V13H3.06C3.52 17.17 6.83 20.48 11 20.94V23H13V20.94C17.17 20.48 20.48 17.17 20.94 13H23V11H20.94ZM12 19C8.13 19 5 15.87 5 12C5 8.13 8.13 5 12 5C15.87 5 19 8.13 19 12C19 15.87 15.87 19 12 19Z" fill={color}/>
+      </G>
+      <Defs>
+        <ClipPath>
+          <Rect width="24" height="24" fill="white"/>
+        </ClipPath>
+      </Defs>
+    </Svg>
+  );
+}
 
-
-
-
+export const CalendarIcon = (props: IconProps) => {
+  const { color = '#494e50', width = 16, height = 17 } = props;
+  return (
+    <Svg width={width} height={height} viewBox="0 0 16 17">
+      <Path fillRule="evenodd" clipRule="evenodd" d="M12.6667 2.49996H13.3333C14.0667 2.49996 14.6667 3.09996 14.6667 3.83329V14.5C14.6667 15.2333 14.0667 15.8333 13.3333 15.8333H2.66668C1.93334 15.8333 1.33334 15.2333 1.33334 14.5V3.83329C1.33334 3.09996 1.93334 2.49996 2.66668 2.49996H3.33334V1.83329C3.33334 1.46663 3.63334 1.16663 4.00001 1.16663C4.36668 1.16663 4.66668 1.46663 4.66668 1.83329V2.49996H11.3333V1.83329C11.3333 1.46663 11.6333 1.16663 12 1.16663C12.3667 1.16663 12.6667 1.46663 12.6667 1.83329V2.49996ZM3.33334 14.5H12.6667C13.0333 14.5 13.3333 14.2 13.3333 13.8333V5.83329H2.66668V13.8333C2.66668 14.2 2.96668 14.5 3.33334 14.5Z" fill={color}/>
+    </Svg>
+  );
+}
