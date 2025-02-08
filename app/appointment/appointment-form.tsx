@@ -2,7 +2,7 @@
  * Appointment Form
  * RTHA
  * 
- * Created By Thornton at 01/28/2025
+ * Created By Thornton at 02/07/2025
  */
 import React, { useState } from 'react';
 import CustomButton from '@/components/CustomButton';
@@ -23,6 +23,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon } from '@/utils/assets';
+import dayjs from 'dayjs';
 
 type TAppointmentFormProps = {
   appointment?: IAppointment
@@ -31,11 +32,15 @@ type TAppointmentFormProps = {
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
   const { t } = useTranslation();
 
-  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const [calendarPopupVisible, setCalendarPopupVisible] = useState<boolean>(false);
 
   const handleCalendarPopupVisible = (visible: boolean): void => {
     setCalendarPopupVisible(visible);
+  }
+
+  const handleSelectedDate = (date: Date): void => {
+    setSelectedDate(date);
   }
 
   return (
@@ -45,7 +50,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         onBackdropPress={() => handleCalendarPopupVisible(false)}
         onBackButtonPress={() => handleCalendarPopupVisible(false)}
       >
-        <Calendar date={selectedDate}></Calendar>
+        <Calendar date={selectedDate} onSelectedDate={handleSelectedDate} />
       </Modal>
       <Animated.ScrollView>
         <ThemedView style={styles.providerWrapper}>
@@ -76,7 +81,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               onPress={() => handleCalendarPopupVisible(true)}
             >
               <ThemedView style={styles.dateControl}>
-                <ThemedText style={styles.dateText}>2025-03-23</ThemedText>
+                <ThemedText style={styles.dateText}>{selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}</ThemedText>
                 <CalendarIcon />
               </ThemedView>
             </TouchableHighlight>

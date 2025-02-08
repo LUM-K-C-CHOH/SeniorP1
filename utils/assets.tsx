@@ -242,3 +242,23 @@ export const CalendarIcon = (props: IconProps) => {
     </Svg>
   );
 }
+
+export const LeftArrowIcon = (props: IconProps) => {
+  const { color = '#000', width = 7, height = 12 } = props;
+  return (
+    <Svg width={width} height={height} viewBox="0 0 7 12" fill="none">
+      <Path d="M6.48812 1.98812L5.25 0.75L0 6L5.25 11.25L6.48812 10.0119L2.47625 6L6.48812 1.98812Z" fill={color}/>
+    </Svg>
+  );
+}
+
+export const RightArrowIcon = (props: IconProps) => {
+  const { color = '#000', width = 7, height = 12 } = props;
+  return (
+    <Svg width={width} height={height} viewBox="0 0 7 12" fill="none">
+      <Path d="M1.74997 0.75L0.511841 1.98812L4.52371 6L0.511839 10.0119L1.74996 11.25L6.99996 6L1.74997 0.75Z" fill={color}/>
+    </Svg>
+  );
+}
+
+
