@@ -201,7 +201,7 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
     if (m === month) {
       return;
     }
-    
+
     makeCalendar(year, m);
   }
 
@@ -273,12 +273,12 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
             )}
           </ThemedView>
           <ThemedView>
-            {state.days.map((week, index) =>
-              <ThemedView key={index} style={styles.weekWrapper}>
-                {week.map((day: TData, index: number) =>
+            {state.days.map((week, index1) =>
+              <ThemedView key={index1} style={styles.weekWrapper}>
+                {week.map((day: TData, index2: number) =>
                   (day as TDay).status
                     ? <TouchableHighlight
-                        key={index}
+                        key={index1 * 10 + index2}
                         style={{ flex: 1, height: 40, borderRadius: 5 }}
                         onPress={() => handleDaySelect(day as TDay)}
                       >
