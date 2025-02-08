@@ -64,7 +64,11 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
 
   const init = (): void => {
     if (!selectedDate || (!(selectedDate instanceof Date))) {
-      setSelectedDate(new Date());
+      const date = new Date();
+      let y = date.getFullYear(),
+        m= date.getMonth();
+      
+      makeCalendar(y, m);
       return;
     }
 
@@ -197,8 +201,7 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
     if (m === month) {
       return;
     }
-
-    setMonth(m);
+    
     makeCalendar(year, m);
   }
 
@@ -207,7 +210,6 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
       return;
     }
 
-    setYear(y);
     makeCalendar(y, month);
   }
 
