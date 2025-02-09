@@ -32,10 +32,17 @@ export interface IMedication {
 
 export interface IAppointment {
   id: number,
-  name: string,
+  contactId: number,
   scheduledTime: string,
   description: string,
   createdAt: string,
+}
+
+export interface IContact {
+  id: number,
+  name: string,
+  phone: string,
+  image: string,
 }
 
 export type TResponse = {

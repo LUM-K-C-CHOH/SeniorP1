@@ -4,13 +4,17 @@
  * 
  * Created By Thornton at 02/07/2025
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import CustomButton from '@/components/CustomButton';
-import Modal from 'react-native-modal';
+import { default as AnimatedModal } from 'react-native-modal';
 import Calendar from '@/components/Calendar';
+import dayjs from 'dayjs';
 
-import { IAppointment } from '@/@types';
+import { IAppointment, IContact, TResponse } from '@/@types';
 import {
+  FlatList,
+  Modal,
+  Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -20,20 +24,47 @@ import {
 import Animated from 'react-native-reanimated';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
+import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon } from '@/utils/assets';
-import dayjs from 'dayjs';
+import { getContactList } from '@/services/contact';
 
 type TAppointmentFormProps = {
   appointment?: IAppointment
 };
 
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
+  const initialRef = useRef<boolean>(false);
+
   const { t } = useTranslation();
 
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [calendarPopupVisible, setCalendarPopupVisible] = useState<boolean>(false);
+  const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
+  const [contactList, setContactList] = useState<IContact[]>([]);
+  const [selectedContactInfo, setSelectedContactInfo] = useState<IContact>();
+
+  useEffect(() => {
+    if (initialRef.current) return;
+
+    initialRef.current = true;
+
+    getContactList()
+      .then((res: TResponse) => {
+        if (res.success) {
+          setContactList(res.data?? []);          
+        } else {
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    if (appointment) {            
+      const contactId = appointment.contactId;
+      const find = contactList.find((v: IContact) => v.id === contactId);
+      setSelectedContactInfo(find);
+    }
+  }, [appointment]);
 
   const handleCalendarPopupVisible = (visible: boolean): void => {
     setCalendarPopupVisible(visible);
@@ -43,29 +74,77 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     setSelectedDate(date);
   }
 
+  const handleSelectedContact = (id: number): void => {
+    const find = contactList.find(v => v.id === id);
+    console.log(find)
+    if (!find) return;
+
+    setSelectedContactInfo(find);
+    setContactPopupVisible(false);
+  }
+
+  type ContactItemProps = {
+    id: number,
+    name: string,
+    onSelectedContact: (id: number) => void
+  };
+
+  const ContactItem = ({ id, name, onSelectedContact }: ContactItemProps): JSX.Element => {
+    return (
+      <TouchableHighlight onPress={() => onSelectedContact(id)}>
+        <Text style={cstyles.contactNameText}>{name}</Text>
+      </TouchableHighlight>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <Modal
+      <AnimatedModal
         isVisible={calendarPopupVisible}
         onBackdropPress={() => handleCalendarPopupVisible(false)}
         onBackButtonPress={() => handleCalendarPopupVisible(false)}
       >
         <Calendar date={selectedDate} onSelectedDate={handleSelectedDate} />
+      </AnimatedModal>
+      <Modal
+        visible={contactPopupVisible}
+        transparent={true}
+      >
+        <Pressable style={cstyles.contactPopupOverlay} onPress={() => setContactPopupVisible(false)} />
+        <ThemedView
+          style={[
+            cstyles.contactPopupContainer,
+            generateBoxShadowStyle(-2, 4, '#171717', 0.2, 3, 4, '#171717')
+          ]}
+        >
+          <FlatList
+            data={contactList}
+            renderItem={({item}) => <ContactItem id={item.id} name={item.name} onSelectedContact={handleSelectedContact}/>}
+            keyExtractor={item => `${item.id}`}
+          />
+        </ThemedView>
       </Modal>
       <Animated.ScrollView>
         <ThemedView style={styles.providerWrapper}>
           <ThemedText style={styles.labelText}>{t('appointment_manage.provider')}{' : '}</ThemedText>
           <ThemedView style={styles.providerInfoWrapper}>
-            <ThemedView style={[styles.logoWrapper, { backgroundColor: getMarkColorFromName(appointment?.name?? 'N A').bgColor }]}>
-              <ThemedText style={[{ color: getMarkColorFromName(appointment?.name?? 'N A').textColor }]}>
-                {getMarkLabelFromName(appointment?.name?? 'N/A')}
+            <ThemedView style={[styles.logoWrapper, { backgroundColor: getMarkColorFromName(selectedContactInfo?.name?? 'N A').bgColor }]}>
+              <ThemedText style={[{ color: getMarkColorFromName(selectedContactInfo?.name?? 'N A').textColor }]}>
+                {getMarkLabelFromName(selectedContactInfo?.name?? 'N/A')}
               </ThemedText>
             </ThemedView>
-            <ThemedText style={styles.nameText}>No Selected</ThemedText>
+            <ThemedView>
+              <ThemedText style={styles.nameText}>
+                {selectedContactInfo ? selectedContactInfo.name : t('no_selected')}
+              </ThemedText>
+              {selectedContactInfo&&
+              <ThemedText style={styles.nameText}>{selectedContactInfo.phone}</ThemedText>
+              }
+            </ThemedView>
           </ThemedView>
           <TouchableHighlight
             style={{ borderRadius: 5, marginTop: 5 }}
-            onPress={() => {}}
+            onPress={() => setContactPopupVisible(true)}
           >
             <ThemedView style={styles.providerPickButton}>
               <LocationIcon />
@@ -269,4 +348,29 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 500
   }, 
+});
+
+const cstyles = StyleSheet.create({
+  contactPopupOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    right: 0,
+  },
+  contactPopupContainer: {
+    position: 'absolute',
+    top: 220,
+    left: 15,
+    right: 15,
+    backgroundColor: '#fff',
+    minHeight: 200,
+    maxHeight: 250
+  },
+  contactNameText: {
+    width: '100%',
+    paddingLeft: 10,
+    backgroundColor: '#fff',
+    paddingVertical: 5,
+  }
 });

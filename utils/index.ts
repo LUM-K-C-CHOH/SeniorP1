@@ -43,12 +43,18 @@ export const getDateString = (date: string): string => {
 }
 
 export const getMarkLabelFromName = (name: string): string => {
+  if (name.trim().length === 0) {
+    return '';
+  }
   const arr = name.split(' ');
   const s = arr.reduce((acc, cur) => `${acc}${cur[0].toUpperCase()}`, '');
   return s;
 }
 
 export const getMarkColorFromName = (name: string): {[k: string]: string} => {
+  if (name.trim().length === 0) {
+    return { bgColor: '#eee', textColor: '#000' };
+  }
   const arr = name.split(' ');
   const s = arr.reduce((acc, cur) => `${acc}${cur[0].toUpperCase()}`, '');
   const hash = (s[0].charCodeAt(0) * 69892959 + s[1].charCodeAt(0)) % 16777215;

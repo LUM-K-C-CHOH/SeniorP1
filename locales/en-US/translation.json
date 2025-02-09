@@ -11,6 +11,7 @@
   "emergency_alert": "Emergency Alert",
   "cancel": "Cancel",
   "delete": "Delete",
+  "no_selected": "No Selected",
   "message": {
     "confirm_delete": "Are you sure to delete it?",
     "alert_threshold": "Threshold must be value in range ${range}."
