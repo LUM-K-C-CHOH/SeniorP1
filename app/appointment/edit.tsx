@@ -46,9 +46,7 @@ export default function AppointmentEditScreen() {
         options={{ headerShown: false }}
       />
       <Header />
-      <Animated.ScrollView style={styles.container}>
-        <AppointmentForm appointment={appointment}/>
-      </Animated.ScrollView>
+      <AppointmentForm appointment={appointment}/>      
     </SafeAreaView>
   );
 }
