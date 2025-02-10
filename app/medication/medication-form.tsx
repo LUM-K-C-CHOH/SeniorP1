@@ -176,7 +176,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             onChangeText={(v) => changeFormValue('name', v)}
           />
           {errors.name&&
-            <ThemedText style={styles.error}>{errors.name}</ThemedText>
+            <ThemedText style={styles.errorText}>{errors.name}</ThemedText>
           }
         </ThemedView>
       </ThemedView>
@@ -192,7 +192,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             onChangeText={(v) => changeFormValue('dosage', v)}
           />
           {errors.dosage&&
-            <ThemedText style={styles.error}>{errors.dosage}</ThemedText>
+            <ThemedText style={styles.errorText}>{errors.dosage}</ThemedText>
           }
         </ThemedView>
       </ThemedView>
@@ -208,7 +208,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             onChangeText={(v) => changeFormValue('frequency', v)}
           />
           {errors.frequency&&
-            <ThemedText style={styles.error}>{errors.frequency}</ThemedText>
+            <ThemedText style={styles.errorText}>{errors.frequency}</ThemedText>
           }
         </ThemedView>
       </ThemedView>
@@ -224,7 +224,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             onChangeText={(v) => changeFormValue('stock', v)}
           />
           {errors.stock&&
-            <ThemedText style={styles.error}>{errors.stock}</ThemedText>
+            <ThemedText style={styles.errorText}>{errors.stock}</ThemedText>
           }
         </ThemedView>
       </ThemedView>
@@ -240,7 +240,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             onChangeText={(v) => changeFormValue('miniStock', v)}
           />
           {errors.miniStock&&
-            <ThemedText style={styles.error}>{errors.miniStock}</ThemedText>
+            <ThemedText style={styles.errorText}>{errors.miniStock}</ThemedText>
           }
         </ThemedView>
       </ThemedView>
@@ -256,7 +256,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             onChangeText={(v) => changeFormValue('startDate', v)}
           />
           {errors.startDate&&
-            <ThemedText style={styles.error}>{errors.startDate}</ThemedText>
+            <ThemedText style={styles.errorText}>{errors.startDate}</ThemedText>
           }
         </ThemedView>
       </ThemedView>
@@ -272,7 +272,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             onChangeText={(v) => changeFormValue('endDate', v)}
           />
           {errors.endDate&&
-            <ThemedText style={styles.error}>{errors.endDate}</ThemedText>
+            <ThemedText style={styles.errorText}>{errors.endDate}</ThemedText>
           }
         </ThemedView>
       </ThemedView>
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 500
   },
-  error: {
+  errorText: {
     color: 'red',
     fontSize: 12,
     fontWeight: 400
