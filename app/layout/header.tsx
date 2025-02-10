@@ -19,7 +19,7 @@ import {
   LogoutIcon,
   KeyIcon,
   BackIcon
-} from '@/utils/assets';
+} from '@/utils/svgs';
 
 export default function Header() {
   const router = useRouter();

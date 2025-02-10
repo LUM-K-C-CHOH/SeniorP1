@@ -22,7 +22,7 @@ import {
   ReminderIcon,
   AppointmentIcon,
   MedicationIcon,
-} from '@/utils/assets';
+} from '@/utils/svgs';
 
 import Header from '@/app/layout/header';
 

@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { IAppointment, IContact, TResponse } from '@/@types';
 import { getAppointmentList } from '@/services/appointment';
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
-import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/assets';
+import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { getContactList } from '@/services/contact';
@@ -256,6 +256,7 @@ const styles = StyleSheet.create({
   normalText: {
     fontSize: 14,
     fontWeight: 400,
+    color: '#000'
   },
   rowBack: {
     alignItems: 'center',

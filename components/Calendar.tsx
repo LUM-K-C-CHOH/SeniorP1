@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 import { ThemedView } from './ThemedView';
-import { LeftArrowIcon, RightArrowIcon } from '@/utils/assets';
+import { LeftArrowIcon, RightArrowIcon } from '@/utils/svgs';
 import { ThemedText } from './ThemedText';
 
 type TCalendarProps = {
@@ -429,6 +429,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontWeight: 400,
+    color: '#222'
   },
   inactiveDayText: {
     color: '#999'

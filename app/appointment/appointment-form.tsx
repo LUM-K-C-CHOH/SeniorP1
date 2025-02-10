@@ -26,7 +26,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { useTranslation } from 'react-i18next';
-import { CalendarIcon, LocationIcon } from '@/utils/assets';
+import { CalendarIcon, LocationIcon } from '@/utils/svgs';
 import { getContactList } from '@/services/contact';
 
 type TAppointmentFormProps = {

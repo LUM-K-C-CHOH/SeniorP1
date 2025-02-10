@@ -31,7 +31,7 @@ import {
   PillIcon,
   SettingIcon,
   StockIcon
-} from '@/utils/assets';
+} from '@/utils/svgs';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
@@ -274,11 +274,11 @@ export default function MedicationScreen() {
                 justifyContent: 'center'
               }}
             >
-              <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.click')}</ThemedText>
+              <ThemedText style={rstyles.labelText}>{t('click')}</ThemedText>
               <TouchableOpacity onPress={() => handleReminderSettingVisible(false)}>
-                <ThemedText style={[rstyles.labelText, { fontWeight: 600 }]}>{t('refill_reminder_preference.here')}</ThemedText>
+                <ThemedText style={[rstyles.labelText, { fontWeight: 600 }]}>{t('here')}</ThemedText>
               </TouchableOpacity>
-              <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.to_continue')}</ThemedText>
+              <ThemedText style={rstyles.labelText}>{t('to_continue')}</ThemedText>
             </ThemedView>
           </ThemedView>
         }
@@ -431,6 +431,7 @@ const styles = StyleSheet.create({
   normalText: {
     fontSize: 14,
     fontWeight: 400,
+    color: '#000'
   },
   rowBack: {
     alignItems: 'center',
@@ -528,6 +529,7 @@ const rstyles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: 600,
+    color: '#000'
   },
   row: {
     flexDirection: 'row',
@@ -542,7 +544,8 @@ const rstyles = StyleSheet.create({
   },
   descText: {
     fontSize: 14,
-    fontWeight: 400
+    fontWeight: 400,
+    color: '#000'
   },
   thretholdWrapper: {
     borderBottomColor: '#e2e2e2',
@@ -550,7 +553,8 @@ const rstyles = StyleSheet.create({
   },
   labelText: {
     fontSize: 15,
-    fontWeight: 400
+    fontWeight: 400,
+    color: '#000'
   },
   action: {
     flexDirection: 'row',
@@ -571,5 +575,6 @@ const rstyles = StyleSheet.create({
   buttonText: {
     fontSize: 15,
     fontWeight: 400,
+    color: '#000'
   }
 });

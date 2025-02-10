@@ -12,6 +12,14 @@
   "cancel": "Cancel",
   "delete": "Delete",
   "no_selected": "No Selected",
+  "confirmation": "Confirmation",
+  "yes": "Yes",
+  "no": "No",
+  "click": "Click",
+  "here": "here",
+  "to_continue": "to continue.",
+  "to_back": "to back",
+  
   "message": {
     "confirm_delete": "Are you sure to delete it?",
     "alert_threshold": "Threshold must be value in range ${range}.",
@@ -39,10 +47,7 @@
     "threshold": "Threshold",
     "push_notification": "Push Notification",
     "email_alert": "Email Alert",
-    "refill_reminder_updated": "Refill Reminder Updated!",
-    "click": "Click",
-    "here": "here",
-    "to_continue": "to continue."
+    "refill_reminder_updated": "Refill Reminder Updated!"
   },
   "appointment_manage": {
     "add_appointment": "Add Appointment",
@@ -53,5 +58,18 @@
     "scheduled_time": "Scheduled Time",
     "description": "Description",
     "schedule": "Schedule"
+  },
+  "emergency_control": {
+    "share_my_location": "Share my location",
+    "call_for_help": "Call for Help",
+    "text_1": "Press the above button to alert your emergency contacts.",
+    "text_2": "Make sure your device is connected to the network.",
+    "emergency_contact": "Emergency Contacts",
+    "call_confirm_text": "All emergency contacts will receive the urgent notification from you. Are you sure to call for help?",
+    "emergency_alert_released": "Emergency Alert Released",
+    "text_3": "Your emergency contacts have been alerted from you.",
+    "need_help": "Need help",
+    "check": "Check",
+    "support": "Support"
   }
 }
