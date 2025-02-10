@@ -16,6 +16,7 @@ import {
   Text
 } from 'react-native';
 import { IMedication } from '@/@types';
+import Animated from 'react-native-reanimated';
 
 type TMedicationFormProps = {
   medication?: IMedication
@@ -163,120 +164,122 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   }
 
   return (
-    <SafeAreaView style={styles.form}>
-      <ThemedView style={styles.formGroup}>
-        <ThemedText style={styles.controlLabel}>Name:</ThemedText>
-        <ThemedView style={styles.formControlWrapper}>
-          <TextInput
-            style={[
-              styles.formControl,
-              errors.name ? { borderColor: 'red' } : {}
-            ]}
-            value={name}
-            onChangeText={(v) => changeFormValue('name', v)}
-          />
-          {errors.name&&
-            <ThemedText style={styles.errorText}>{errors.name}</ThemedText>
-          }
+    <SafeAreaView style={styles.container}>
+      <Animated.ScrollView>
+        <ThemedView style={styles.formGroup}>
+          <ThemedText style={styles.controlLabel}>Name:</ThemedText>
+          <ThemedView style={styles.formControlWrapper}>
+            <TextInput
+              style={[
+                styles.formControl,
+                errors.name ? { borderColor: 'red' } : {}
+              ]}
+              value={name}
+              onChangeText={(v) => changeFormValue('name', v)}
+            />
+            {errors.name&&
+              <ThemedText style={styles.errorText}>{errors.name}</ThemedText>
+            }
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
-      <ThemedView style={styles.formGroup}>
-        <ThemedText style={styles.controlLabel}>Dosage:</ThemedText>
-        <ThemedView style={styles.formControlWrapper}>
-          <TextInput
-            style={[
-              styles.formControl,
-              errors.dosage ? { borderColor: 'red' } : {}
-            ]}
-            value={dosage}
-            onChangeText={(v) => changeFormValue('dosage', v)}
-          />
-          {errors.dosage&&
-            <ThemedText style={styles.errorText}>{errors.dosage}</ThemedText>
-          }
+        <ThemedView style={styles.formGroup}>
+          <ThemedText style={styles.controlLabel}>Dosage:</ThemedText>
+          <ThemedView style={styles.formControlWrapper}>
+            <TextInput
+              style={[
+                styles.formControl,
+                errors.dosage ? { borderColor: 'red' } : {}
+              ]}
+              value={dosage}
+              onChangeText={(v) => changeFormValue('dosage', v)}
+            />
+            {errors.dosage&&
+              <ThemedText style={styles.errorText}>{errors.dosage}</ThemedText>
+            }
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
-      <ThemedView style={styles.formGroup}>
-        <ThemedText style={styles.controlLabel}>Frequency:</ThemedText>
-        <ThemedView style={styles.formControlWrapper}>
-          <TextInput
-            style={[
-              styles.formControl,
-              errors.frequency ? { borderColor: 'red' } : {}
-            ]}
-            value={frequency}
-            onChangeText={(v) => changeFormValue('frequency', v)}
-          />
-          {errors.frequency&&
-            <ThemedText style={styles.errorText}>{errors.frequency}</ThemedText>
-          }
+        <ThemedView style={styles.formGroup}>
+          <ThemedText style={styles.controlLabel}>Frequency:</ThemedText>
+          <ThemedView style={styles.formControlWrapper}>
+            <TextInput
+              style={[
+                styles.formControl,
+                errors.frequency ? { borderColor: 'red' } : {}
+              ]}
+              value={frequency}
+              onChangeText={(v) => changeFormValue('frequency', v)}
+            />
+            {errors.frequency&&
+              <ThemedText style={styles.errorText}>{errors.frequency}</ThemedText>
+            }
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
-      <ThemedView style={styles.formGroup}>
-        <ThemedText style={styles.controlLabel}>Stock:</ThemedText>
-        <ThemedView style={styles.formControlWrapper}>
-          <TextInput
-            style={[
-              styles.formControl,
-              errors.stock ? { borderColor: 'red' } : {}
-            ]}
-            value={stock}
-            onChangeText={(v) => changeFormValue('stock', v)}
-          />
-          {errors.stock&&
-            <ThemedText style={styles.errorText}>{errors.stock}</ThemedText>
-          }
+        <ThemedView style={styles.formGroup}>
+          <ThemedText style={styles.controlLabel}>Stock:</ThemedText>
+          <ThemedView style={styles.formControlWrapper}>
+            <TextInput
+              style={[
+                styles.formControl,
+                errors.stock ? { borderColor: 'red' } : {}
+              ]}
+              value={stock}
+              onChangeText={(v) => changeFormValue('stock', v)}
+            />
+            {errors.stock&&
+              <ThemedText style={styles.errorText}>{errors.stock}</ThemedText>
+            }
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
-      <ThemedView style={styles.formGroup}>
-        <ThemedText style={styles.controlLabel}>Stock Limitation:</ThemedText>
-        <ThemedView style={styles.formControlWrapper}>
-          <TextInput
-            style={[
-              styles.formControl,
-              errors.miniStock ? { borderColor: 'red' } : {}
-            ]}
-            value={miniStock}
-            onChangeText={(v) => changeFormValue('miniStock', v)}
-          />
-          {errors.miniStock&&
-            <ThemedText style={styles.errorText}>{errors.miniStock}</ThemedText>
-          }
+        <ThemedView style={styles.formGroup}>
+          <ThemedText style={styles.controlLabel}>Stock Limitation:</ThemedText>
+          <ThemedView style={styles.formControlWrapper}>
+            <TextInput
+              style={[
+                styles.formControl,
+                errors.miniStock ? { borderColor: 'red' } : {}
+              ]}
+              value={miniStock}
+              onChangeText={(v) => changeFormValue('miniStock', v)}
+            />
+            {errors.miniStock&&
+              <ThemedText style={styles.errorText}>{errors.miniStock}</ThemedText>
+            }
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
-      <ThemedView style={styles.formGroup}>
-        <ThemedText style={styles.controlLabel}>Start Date:</ThemedText>
-        <ThemedView style={styles.formControlWrapper}>
-          <TextInput
-            style={[
-              styles.formControl,
-              errors.startDate ? { borderColor: 'red' } : {}
-            ]}
-            value={startDate}
-            onChangeText={(v) => changeFormValue('startDate', v)}
-          />
-          {errors.startDate&&
-            <ThemedText style={styles.errorText}>{errors.startDate}</ThemedText>
-          }
+        <ThemedView style={styles.formGroup}>
+          <ThemedText style={styles.controlLabel}>Start Date:</ThemedText>
+          <ThemedView style={styles.formControlWrapper}>
+            <TextInput
+              style={[
+                styles.formControl,
+                errors.startDate ? { borderColor: 'red' } : {}
+              ]}
+              value={startDate}
+              onChangeText={(v) => changeFormValue('startDate', v)}
+            />
+            {errors.startDate&&
+              <ThemedText style={styles.errorText}>{errors.startDate}</ThemedText>
+            }
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
-      <ThemedView style={styles.formGroup}>
-        <ThemedText style={styles.controlLabel}>End Date:</ThemedText>
-        <ThemedView style={styles.formControlWrapper}>
-          <TextInput
-            style={[
-              styles.formControl,
-              errors.endDate ? { borderColor: 'red' } : {}
-            ]}
-            value={endDate}
-            onChangeText={(v) => changeFormValue('endDate', v)}
-          />
-          {errors.endDate&&
-            <ThemedText style={styles.errorText}>{errors.endDate}</ThemedText>
-          }
+        <ThemedView style={styles.formGroup}>
+          <ThemedText style={styles.controlLabel}>End Date:</ThemedText>
+          <ThemedView style={styles.formControlWrapper}>
+            <TextInput
+              style={[
+                styles.formControl,
+                errors.endDate ? { borderColor: 'red' } : {}
+              ]}
+              value={endDate}
+              onChangeText={(v) => changeFormValue('endDate', v)}
+            />
+            {errors.endDate&&
+              <ThemedText style={styles.errorText}>{errors.endDate}</ThemedText>
+            }
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
-      <ThemedView style={styles.action}>
+      </Animated.ScrollView>
+      <ThemedView style={styles.actionWrapper}>
         <CustomButton onPress={handleAddMedication}>
           <Text style={styles.addMedicationButtonText}>Save</Text>
         </CustomButton>
@@ -286,14 +289,16 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 }
 
 const styles = StyleSheet.create({
-  form: {
-    rowGap: 10,
-    marginTop: 20,
-    marginBottom: 60,
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
   },
   formGroup: {
     flexDirection: 'row',
-    columnGap: 15
+    columnGap: 15,
+    marginTop: 10
   },
   controlLabel: {
     width: 70,
@@ -313,8 +318,9 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     fontSize: 16,
   },
-  action: {
-    marginTop: 30
+  actionWrapper: {
+    paddingTop: 10,
+    paddingBottom: 10
   },
   addMedicationButtonText: {
     color: '#fff',

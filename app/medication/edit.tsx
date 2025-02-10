@@ -46,9 +46,7 @@ export default function MedicationEditScreen() {
         options={{ headerShown: false }}
       />
       <Header />
-      <Animated.ScrollView style={styles.container}>
-        <MedicationForm medication={medication}/>
-      </Animated.ScrollView>
+      <MedicationForm medication={medication}/>
     </SafeAreaView>
   );
 }

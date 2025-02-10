@@ -22,18 +22,7 @@ export default function MedicationAddScreen() {
         options={{ headerShown: false }}
       />
       <Header />
-      <Animated.ScrollView style={styles.container}>
-        <MedicationForm />
-      </Animated.ScrollView>
+      <MedicationForm />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-  }
-});
