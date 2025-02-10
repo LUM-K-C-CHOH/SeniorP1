@@ -270,6 +270,7 @@ const pstyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff'
   },
   buttonText: {
     fontSize: 15,
