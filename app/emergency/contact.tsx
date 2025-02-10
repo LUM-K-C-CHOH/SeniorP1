@@ -1,4 +1,10 @@
 
+/**
+ * Emergency Contact List Screen
+ * RTHA
+ * 
+ * Created By Thornton at 01/28/2025
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/app/layout/header';
 import CustomButton from '@/components/CustomButton';

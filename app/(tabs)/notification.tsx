@@ -1,5 +1,5 @@
 /**
- * notification.tsx
+ * Notification List Screen
  * RTHA
  * 
  * Created By Thornton at 01/28/2025
