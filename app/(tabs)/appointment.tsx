@@ -12,7 +12,8 @@ import {
   StyleSheet,
   ListRenderItemInfo,
   TouchableOpacity,
-  Text
+  Text,
+  View
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
@@ -115,7 +116,7 @@ export default function AppointmentScreen() {
 
   const renderItem = (data: ListRenderItemInfo<IAppointment>) => (
       <ThemedView style={styles.itemWrapper}>
-        <ThemedView
+        <View
           style={[
             styles.logoWrapper,
             { backgroundColor: getMarkColorFromName(getContactName(data.item.contactId)).bgColor }
@@ -126,21 +127,21 @@ export default function AppointmentScreen() {
           >
             {getMarkLabelFromName(getContactName(data.item.contactId))}
           </ThemedText>
-        </ThemedView>
-        <ThemedView style={styles.infoWrapper}>
-          <ThemedView style={styles.row}>
+        </View>
+        <View style={styles.infoWrapper}>
+          <View style={styles.rowWrapper}>
             <ThemedText style={styles.normalText}>
               {getContactName(data.item.contactId)}
             </ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.row}>
+          </View>
+          <View style={styles.rowWrapper}>
             <ClockIcon />
             <ThemedText style={styles.normalText}>{getDateString(data.item.scheduledTime)}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.row}>
+          </View>
+          <View style={styles.rowWrapper}>
             <ThemedText style={[styles.normalText, { color: '#999' }]}>{data.item.description}</ThemedText>
-          </ThemedView>          
-        </ThemedView>
+          </View>          
+        </View>
       </ThemedView>
     );
   
@@ -175,10 +176,10 @@ export default function AppointmentScreen() {
         animationOutTiming={300}
       >
         <ThemedView style={pstyles.deleteConfirmModalContainer}>
-          <ThemedView style={pstyles.deleteConfirmModalBody}>
+          <View style={pstyles.deleteConfirmModalBody}>
             <ThemedText style={pstyles.deleteConfirmModalBodyText}>{t('message.confirm_delete')}</ThemedText>
-          </ThemedView>
-          <ThemedView style={pstyles.deleteConfirmModalActions}>
+          </View>
+          <View style={pstyles.deleteConfirmModalActions}>
             <TouchableOpacity
               style={pstyles.deleteConfirmModalNegativeButton}
               onPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
@@ -191,7 +192,7 @@ export default function AppointmentScreen() {
             >
               <Text style={pstyles.deleteConfirmModalPositiveButtonText}>{t('delete')}</Text>
             </TouchableOpacity>
-          </ThemedView>
+          </View>
         </ThemedView>
       </Modal>
       <SwipeListView
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
   infoWrapper: {
     flex: 1,
   },
-  row: {
+  rowWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     columnGap: 5

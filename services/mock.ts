@@ -226,4 +226,57 @@ mock.onGet('/contact/list').reply(200, [
   },
 ]);
 
+mock.onGet('/emergency/contact/list').reply(200, [
+  {
+    id: 1,
+    name: 'Gabi Emilson',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 2,
+    name: 'Malcom Stewart',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 3,
+    name: 'Jhon Smith',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 4,
+    name: 'Robert Wilson',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 5,
+    name: 'David Anderson',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 6,
+    name: 'Joseph Martin',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 7,
+    name: 'William Thomas',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 8,
+    name: 'Jacob Harris',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 9,
+    name: 'Liam Lopez',
+    phone: '+1(123) 456 7890'
+  },
+  {
+    id: 10,
+    name: 'Daniel Allen',
+    phone: '+1(123) 456 7890'
+  },
+]);
+
 export default mock;

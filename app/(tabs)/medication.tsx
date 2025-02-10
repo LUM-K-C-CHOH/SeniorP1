@@ -16,7 +16,8 @@ import {
   TouchableOpacity,
   Text,
   TouchableHighlight,
-  Switch
+  Switch,
+  View
 } from 'react-native';
 
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
@@ -152,36 +153,36 @@ export default function MedicationScreen() {
   const renderItem = (data: ListRenderItemInfo<IMedication>) => (
     <ThemedView style={styles.itemWrapper}>
       <Image source={{ uri: data.item.image }} width={60} height={60}/>
-      <ThemedView style={styles.infoWrapper}>
-        <ThemedView style={{ flexGrow: 1 }}>
+      <View style={styles.infoWrapper}>
+        <View style={{ flexGrow: 1 }}>
           <ThemedText style={styles.itemTitle}>{data.item.name}</ThemedText>
-          <ThemedView style={styles.itemTextWrapper}>
+          <View style={styles.itemTextWrapper}>
             <PillIcon />
             <ThemedText style={styles.normalText}>{data.item.dosage}</ThemedText>
             <ThemedText>{'•'}</ThemedText>
             <ThemedText style={styles.normalText}>{data.item.frequency}</ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.itemTextWrapper}>
+          </View>
+          <View style={styles.itemTextWrapper}>
             <StockIcon color={getColorByLevel(data.item.stock)} />
             <ThemedText
               style={[styles.normalText, { color: getColorByLevel(data.item.stock) }]}
             >
               {`${data.item.stock} Tablets`}
             </ThemedText>
-          </ThemedView>
-        </ThemedView>
-        <ThemedView style={{ rowGap: 5 }}>
-          <ThemedView style={{ flexDirection: 'row', columnGap: 5 }}>
+          </View>
+        </View>
+        <View style={{ rowGap: 5 }}>
+          <View style={{ flexDirection: 'row', columnGap: 5 }}>
             <BellIcon />
             <FlyIcon />
-          </ThemedView>
-          <ThemedView>
+          </View>
+          <View>
             <TouchableOpacity onPress={() => handleReminderSettingVisible(true, data.item.id)}>
               <SettingIcon />
             </TouchableOpacity>
-          </ThemedView>
-        </ThemedView>
-      </ThemedView>
+          </View>
+        </View>
+      </View>
     </ThemedView>
   );
 
@@ -216,10 +217,10 @@ export default function MedicationScreen() {
         animationOutTiming={300}
       >
         <ThemedView style={pstyles.deleteConfirmModalContainer}>
-          <ThemedView style={pstyles.deleteConfirmModalBody}>
+          <View style={pstyles.deleteConfirmModalBody}>
             <ThemedText style={pstyles.deleteConfirmModalBodyText}>{t('message.confirm_delete')}</ThemedText>
-          </ThemedView>
-          <ThemedView style={pstyles.deleteConfirmModalActions}>
+          </View>
+          <View style={pstyles.deleteConfirmModalActions}>
             <TouchableOpacity
               style={pstyles.deleteConfirmModalNegativeButton}
               onPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
@@ -232,7 +233,7 @@ export default function MedicationScreen() {
             >
               <Text style={pstyles.deleteConfirmModalPositiveButtonText}>{t('delete')}</Text>
             </TouchableOpacity>
-          </ThemedView>
+          </View>
         </ThemedView>
       </Modal>
       <Modal
@@ -266,8 +267,8 @@ export default function MedicationScreen() {
             >
               {t('refill_reminder_preference.refill_reminder_updated')}
             </ThemedText>
-            <ThemedView style={{ alignItems: 'center' }}><CircleCheckIcon /></ThemedView>
-            <ThemedView
+            <View style={{ alignItems: 'center' }}><CircleCheckIcon /></View>
+            <View
               style={{
                 flexDirection: 'row',
                 columnGap: 5,
@@ -279,34 +280,34 @@ export default function MedicationScreen() {
                 <ThemedText style={[rstyles.labelText, { fontWeight: 600 }]}>{t('here')}</ThemedText>
               </TouchableOpacity>
               <ThemedText style={rstyles.labelText}>{t('to_continue')}</ThemedText>
-            </ThemedView>
+            </View>
           </ThemedView>
         }
         {!reminderSettingPanelOptions.saved&&
           <ThemedView style={rstyles.container}>
-            <ThemedView style={rstyles.header}>
+            <View style={rstyles.header}>
               <ThemedText style={rstyles.titleText}>{t('refill_reminder_preference.refill_reminder_preference')}</ThemedText>
               <ThemedText style={rstyles.descText}>{t('refill_reminder_preference.alert_when_amount_low').replace('${mini}', `${reminderSettingPanelOptions.miniStock?? 1}`)}</ThemedText>
-            </ThemedView>
-            <ThemedView style={[rstyles.row, rstyles.thretholdWrapper]}>
+            </View>
+            <View style={[rstyles.rowWrapper, rstyles.thretholdWrapper]}>
               <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.threshold')}:</ThemedText>
-              <ThemedView style={{ flex: 1 }}>
+              <View style={{ flex: 1 }}>
                 <TextInput
                   style={{ textAlign: 'right', height: 50 }}
                   placeholder="1-1000"
                   value={reminderSettingPanelOptions.threshold as string}
                   onChangeText={(v) => setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, threshold: v })}
                 />
-              </ThemedView>
-            </ThemedView>
+              </View>
+            </View>
             {reminderSettingErrors?.threshold&&
-              <ThemedView style={[rstyles.row]}>
-                <ThemedText style={rstyles.error}>{reminderSettingErrors.threshold}</ThemedText>
-              </ThemedView>
+              <View style={[rstyles.rowWrapper]}>
+                <ThemedText style={rstyles.errorText}>{reminderSettingErrors.threshold}</ThemedText>
+              </View>
             }
-            <ThemedView style={[rstyles.row]}>
+            <View style={[rstyles.rowWrapper]}>
               <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.push_notification')}:</ThemedText>
-              <ThemedView>
+              <View>
                 <Switch
                   trackColor={{ false: '#eee', true: '#0066ff' }}
                   ios_backgroundColor={'#0066ff'}
@@ -314,11 +315,11 @@ export default function MedicationScreen() {
                   value={reminderSettingPanelOptions.pushNotification as boolean}
                   onValueChange={(v) => setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, pushNotification: v })}
                 />
-              </ThemedView>
-            </ThemedView>
-            <ThemedView style={[rstyles.row]}>
+              </View>
+            </View>
+            <View style={[rstyles.rowWrapper]}>
               <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.email_alert')}:</ThemedText>
-              <ThemedView>
+              <View>
                 <Switch
                   trackColor={{ false: '#eee', true: '#0066ff' }}
                   ios_backgroundColor={'#0066ff'}
@@ -326,26 +327,26 @@ export default function MedicationScreen() {
                   value={reminderSettingPanelOptions.emailAlert as boolean}
                   onValueChange={(v) => setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, emailAlert: v })}
                 />
-              </ThemedView>
-            </ThemedView>
-            <ThemedView style={[rstyles.action]}>
+              </View>
+            </View>
+            <View style={[rstyles.action]}>
               <TouchableHighlight
                 onPress={handleReminderSettingSave}
                 style={rstyles.button}
               >
-                <ThemedView style={[rstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
+                <View style={[rstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
                   <Text style={rstyles.buttonText}>{t('save')}</Text>
-                </ThemedView>
+                </View>
               </TouchableHighlight>
               <TouchableHighlight
                 onPress={() => handleReminderSettingVisible(false)}
                 style={rstyles.button}
               >
-                <ThemedView style={rstyles.buttonTextWrapper}>
+                <View style={rstyles.buttonTextWrapper}>
                   <Text style={rstyles.buttonText}>{t('dismiss')}</Text>
-                </ThemedView>
+                </View>
               </TouchableHighlight>
-            </ThemedView>
+            </View>
           </ThemedView>
         }
       </Modal>
@@ -531,13 +532,13 @@ const rstyles = StyleSheet.create({
     fontWeight: 600,
     color: '#000'
   },
-  row: {
+  rowWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: 15
   },
-  error: {
+  errorText: {
     color: 'red',
     fontSize: 12,
     fontWeight: 400

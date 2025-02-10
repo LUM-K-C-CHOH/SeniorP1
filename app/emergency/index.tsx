@@ -15,6 +15,7 @@ import {
   Switch,
   TouchableOpacity,
   Text,
+  View,
   TouchableHighlight,
   Image
 } from 'react-native';
@@ -67,53 +68,53 @@ export default function EmergencyScreen() {
         animationOutTiming={300}
       >
         <ThemedView style={pstyles.container}>
-          <ThemedView style={pstyles.header}>
+          <View style={pstyles.header}>
             <ThemedText style={pstyles.titleText}>{t('confirmation')}</ThemedText>            
-          </ThemedView>
-          <ThemedView style={pstyles.body}>
+          </View>
+          <View style={pstyles.body}>
             <ThemedText style={pstyles.text}>{t('emergency_control.call_confirm_text')}</ThemedText>
-          </ThemedView>
-          <ThemedView style={pstyles.actions}>
+          </View>
+          <View style={pstyles.actions}>
               <TouchableHighlight
                 onPress={() => setCallConfirmVisible(false)}
                 style={pstyles.button}
               >
-                <ThemedView style={[pstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
+                <View style={[pstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
                   <Text style={pstyles.buttonText}>{t('no')}</Text>
-                </ThemedView>
+                </View>
               </TouchableHighlight>
               <TouchableHighlight
                 onPress={() => handleCallHelp()}
                 style={pstyles.button}
               >
-                <ThemedView style={pstyles.buttonTextWrapper}>
+                <View style={pstyles.buttonTextWrapper}>
                   <Text style={pstyles.buttonText}>{t('yes')}</Text>
-                </ThemedView>
+                </View>
               </TouchableHighlight>
-          </ThemedView>
+          </View>
         </ThemedView>
       </Modal>
       {callResultVisible&&
         <ThemedView style={rstyles.container}>
           <ThemedText style={rstyles.titleText}>{t('emergency_control.emergency_alert_released')}!</ThemedText>
-          <ThemedView style={rstyles.bgWrapper}>
+          <View style={rstyles.bgWrapper}>
             <Image source={Images.Emergency} />
-          </ThemedView>
+          </View>
           <ThemedText style={rstyles.resultText}>{t('emergency_control.text_3')}</ThemedText>
-          <ThemedView style={rstyles.backWrapper}>
+          <View style={rstyles.backWrapper}>
             <ThemedText style={rstyles.backText}>{t('click')}</ThemedText>
             <TouchableOpacity onPress={handleBack}>
               <ThemedText style={[rstyles.backText, { fontWeight: 600 }]}>{t('here')}</ThemedText>
             </TouchableOpacity>
             <ThemedText style={rstyles.backText}>{t('to_back')}</ThemedText>
-          </ThemedView>
-          <ThemedView style={rstyles.helpWrapper}>
+          </View>
+          <View style={rstyles.helpWrapper}>
             <ThemedText style={rstyles.helpText}>{t('emergency_control.need_help')}?</ThemedText>
             <ThemedText style={rstyles.helpText}>{t('emergency_control.check')}</ThemedText>
             <TouchableOpacity onPress={() => {}}>
               <ThemedText style={[rstyles.helpText, { fontWeight: 600 }]}>{t('emergency_control.support')}</ThemedText>
             </TouchableOpacity>
-          </ThemedView>
+          </View>
         </ThemedView>
       }
       {!callResultVisible&&
@@ -143,7 +144,7 @@ export default function EmergencyScreen() {
             <ThemedText style={styles.helpText}>{t('emergency_control.text_1')}</ThemedText>
             <ThemedText style={styles.helpText}>{t('emergency_control.text_2')}</ThemedText>
           </ThemedView>
-          <TouchableHighlight style={styles.contactButtonWrapper} onPress={() => {}}>
+          <TouchableHighlight style={styles.contactButtonWrapper} onPress={() => router.push('/emergency/contact')}>
             <ThemedView style={styles.contactButton}>
               <PhonebookIcon />
               <Text style={styles.contactButtonText}>{t('emergency_control.emergency_contact')}</Text>

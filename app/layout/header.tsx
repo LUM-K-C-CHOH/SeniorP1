@@ -10,7 +10,7 @@ import ApplicationContext from '@/context/ApplicationContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-import { Modal, Pressable, StyleSheet, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { Modal, Pressable, StyleSheet, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { generateBoxShadowStyle } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { useRouter, usePathname } from 'expo-router';
@@ -56,6 +56,7 @@ export default function Header() {
       '/appointment': t('appointment'),
       '/notification': t('notification'),
       '/emergency': t('emergency_alert'),
+      '/emergency/contact': t('emergency_control.emergency_contact'),
       '/medication/add': t('medication_manage.add_medication'),
       '/medication/edit': t('medication_manage.edit_medication'),
       '/appointment/add': t('appointment_manage.add_appointment'),
@@ -80,15 +81,15 @@ export default function Header() {
         styles.headerWrapper
       ]}
     >
-      <ThemedView style={{ marginLeft: 10, width: 36 }}>
+      <View style={{ marginLeft: 10, width: 36 }}>
         {isBackable&&
           <TouchableOpacity onPress={() => router.back()}>
             <BackIcon />
           </TouchableOpacity>
         }
-      </ThemedView>
+      </View>
       <ThemedText style={styles.headerTitle}>{getTitle()}</ThemedText>
-      <ThemedView style={{ marginRight: 10, position: 'relative' }}>
+      <View style={{ marginRight: 10, position: 'relative' }}>
         <TouchableOpacity onPress={() => setPopupMenuVisible(!popupMenuVisible)}>
           <ThreeDotIcon color="#666" />
         </TouchableOpacity>
@@ -102,7 +103,7 @@ export default function Header() {
             style={styles.popupMenuOverlay}
             onPress={() => setPopupMenuVisible(false)}
           />
-          <ThemedView
+          <View
             style={[
               styles.popupMenuContainer,
               generateBoxShadowStyle(-2, 4, '#171717', 0.2, 3, 4, '#171717')
@@ -116,9 +117,9 @@ export default function Header() {
                 </ThemedView>
               </TouchableHighlight>
             )}
-          </ThemedView>
+          </View>
         </Modal>
-      </ThemedView>
+      </View>
     </ThemedView>
   );
 }

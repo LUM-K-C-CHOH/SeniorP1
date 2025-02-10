@@ -1,3 +1,5 @@
+import { Icon } from "@expo/vector-icons/build/createIconSet";
+
 /**
  * Types Definition
  * RTHA
@@ -43,6 +45,10 @@ export interface IContact {
   name: string,
   phone: string,
   image: string,
+}
+
+export interface IEmergencyContact extends IContact {
+  type?: string
 }
 
 export type TResponse = {

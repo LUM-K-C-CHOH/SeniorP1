@@ -19,7 +19,7 @@
   "here": "here",
   "to_continue": "to continue.",
   "to_back": "to back",
-  
+  "select_all": "Select All",
   "message": {
     "confirm_delete": "Are you sure to delete it?",
     "alert_threshold": "Threshold must be value in range ${range}.",
@@ -70,6 +70,7 @@
     "text_3": "Your emergency contacts have been alerted from you.",
     "need_help": "Need help",
     "check": "Check",
-    "support": "Support"
+    "support": "Support",
+    "add_from_contact": "Add from Contact"
   }
 }

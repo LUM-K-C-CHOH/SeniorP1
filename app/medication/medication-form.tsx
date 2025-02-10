@@ -13,7 +13,8 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  Text
+  Text,
+  View
 } from 'react-native';
 import { IMedication } from '@/@types';
 import Animated from 'react-native-reanimated';
@@ -168,7 +169,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       <Animated.ScrollView>
         <ThemedView style={styles.formGroup}>
           <ThemedText style={styles.controlLabel}>Name:</ThemedText>
-          <ThemedView style={styles.formControlWrapper}>
+          <View style={styles.formControlWrapper}>
             <TextInput
               style={[
                 styles.formControl,
@@ -180,11 +181,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {errors.name&&
               <ThemedText style={styles.errorText}>{errors.name}</ThemedText>
             }
-          </ThemedView>
+          </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
           <ThemedText style={styles.controlLabel}>Dosage:</ThemedText>
-          <ThemedView style={styles.formControlWrapper}>
+          <View style={styles.formControlWrapper}>
             <TextInput
               style={[
                 styles.formControl,
@@ -196,11 +197,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {errors.dosage&&
               <ThemedText style={styles.errorText}>{errors.dosage}</ThemedText>
             }
-          </ThemedView>
+          </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
           <ThemedText style={styles.controlLabel}>Frequency:</ThemedText>
-          <ThemedView style={styles.formControlWrapper}>
+          <View style={styles.formControlWrapper}>
             <TextInput
               style={[
                 styles.formControl,
@@ -212,11 +213,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {errors.frequency&&
               <ThemedText style={styles.errorText}>{errors.frequency}</ThemedText>
             }
-          </ThemedView>
+          </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
           <ThemedText style={styles.controlLabel}>Stock:</ThemedText>
-          <ThemedView style={styles.formControlWrapper}>
+          <View style={styles.formControlWrapper}>
             <TextInput
               style={[
                 styles.formControl,
@@ -228,11 +229,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {errors.stock&&
               <ThemedText style={styles.errorText}>{errors.stock}</ThemedText>
             }
-          </ThemedView>
+          </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
           <ThemedText style={styles.controlLabel}>Stock Limitation:</ThemedText>
-          <ThemedView style={styles.formControlWrapper}>
+          <View style={styles.formControlWrapper}>
             <TextInput
               style={[
                 styles.formControl,
@@ -244,11 +245,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {errors.miniStock&&
               <ThemedText style={styles.errorText}>{errors.miniStock}</ThemedText>
             }
-          </ThemedView>
+          </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
           <ThemedText style={styles.controlLabel}>Start Date:</ThemedText>
-          <ThemedView style={styles.formControlWrapper}>
+          <View style={styles.formControlWrapper}>
             <TextInput
               style={[
                 styles.formControl,
@@ -260,11 +261,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {errors.startDate&&
               <ThemedText style={styles.errorText}>{errors.startDate}</ThemedText>
             }
-          </ThemedView>
+          </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
           <ThemedText style={styles.controlLabel}>End Date:</ThemedText>
-          <ThemedView style={styles.formControlWrapper}>
+          <View style={styles.formControlWrapper}>
             <TextInput
               style={[
                 styles.formControl,
@@ -276,7 +277,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {errors.endDate&&
               <ThemedText style={styles.errorText}>{errors.endDate}</ThemedText>
             }
-          </ThemedView>
+          </View>
         </ThemedView>
       </Animated.ScrollView>
       <ThemedView style={styles.actionWrapper}>
