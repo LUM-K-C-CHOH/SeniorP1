@@ -33,6 +33,11 @@ type TAppointmentFormProps = {
   appointment?: IAppointment
 };
 
+const TimeType = {
+  AM: 1,
+  PM: 2
+}
+
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
   const initialRef = useRef<boolean>(false);
 
@@ -43,6 +48,11 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
   const [contactList, setContactList] = useState<IContact[]>([]);
   const [selectedContactInfo, setSelectedContactInfo] = useState<IContact>();
+  const [timeType, setTimeType] = useState<number>(TimeType.AM);
+  const [hour,setHour] = useState<string>('');
+  const [minute, setMinute] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [errors, setErrors] = useState<{[k: string]: string}>({});
 
   useEffect(() => {
     if (initialRef.current) return;
@@ -70,17 +80,78 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     setCalendarPopupVisible(visible);
   }
 
-  const handleSelectedDate = (date: Date): void => {
+  const handleDateSelect = (date: Date): void => {
+    if (date) {
+      const { date, ...rest } = errors;
+      setErrors(rest);
+    }
     setSelectedDate(date);
   }
 
-  const handleSelectedContact = (id: number): void => {
+  const handleContactSelect = (id: number): void => {
     const find = contactList.find(v => v.id === id);
-    console.log(find)
+ 
     if (!find) return;
+
+    const { contact, ...rest } = errors;
+    setErrors(rest);
 
     setSelectedContactInfo(find);
     setContactPopupVisible(false);
+  }
+
+  const handleTimeChange = (type: string, value: string): void => {
+    if (type === 'hour') {
+      setHour(value);
+
+      if (value.length > 0 && minute.length > 0) {
+        const { time, ...rest } = errors;
+        setErrors(rest);
+      }
+    }
+
+    if (type === 'minute') {
+      setMinute(value);
+
+      if (value.length > 0 && hour.length > 0) {
+        const { time, ...rest } = errors;
+        setErrors(rest);
+      }
+    }
+  }
+
+  const handleDescriptionChange = (desc: string): void => {
+    setDescription(desc);
+
+    if (desc.length > 0) {
+      const { description, ...rest } = errors;
+      setErrors(rest);
+    }
+  }
+
+  const handleSchedule  = (): void => {
+    const errors: {[k: string]: string} = {};
+
+    if (!selectedContactInfo) {
+      errors['contact'] = t('message.alert_select_provider');
+    }
+
+    if (!selectedDate) {
+      errors['date'] = t('message.alert_select_schedule_date');
+    }
+
+    if (hour.length === 0 || minute.length === 0) {
+      errors['time'] = t('message.alert_input_schedule_time');
+    }
+
+    if (description.length === 0) {
+      errors['description'] = t('message.alert_input_description');
+    }
+
+    setErrors(errors);
+
+    if (Object.keys(errors).length > 0) return;
+
   }
 
   type ContactItemProps = {
@@ -104,7 +175,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         onBackdropPress={() => handleCalendarPopupVisible(false)}
         onBackButtonPress={() => handleCalendarPopupVisible(false)}
       >
-        <Calendar date={selectedDate} onSelectedDate={handleSelectedDate} />
+        <Calendar date={selectedDate} onSelectedDate={handleDateSelect} />
       </AnimatedModal>
       <Modal
         visible={contactPopupVisible}
@@ -119,7 +190,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         >
           <FlatList
             data={contactList}
-            renderItem={({item}) => <ContactItem id={item.id} name={item.name} onSelectedContact={handleSelectedContact}/>}
+            renderItem={({item}) => <ContactItem id={item.id} name={item.name} onSelectedContact={handleContactSelect}/>}
             keyExtractor={item => `${item.id}`}
           />
         </ThemedView>
@@ -151,6 +222,9 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               <Text style={styles.providerPickButtonText}>{t('appointment_manage.choose_from_contact')}</Text>
             </ThemedView>
           </TouchableHighlight>
+          {errors.contact&&
+            <ThemedText style={styles.errorText}>{errors.contact}</ThemedText>
+          }
         </ThemedView>
         <ThemedView style={styles.scheduledTimeWrapper}>
           <ThemedText style={styles.labelText}>{t('appointment_manage.scheduled_time')}{' : '}</ThemedText>
@@ -164,26 +238,48 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
                 <CalendarIcon />
               </ThemedView>
             </TouchableHighlight>
+            {errors.date&&
+              <ThemedText style={styles.errorText}>{errors.date}</ThemedText>
+            }
           </ThemedView>
           <ThemedView style={styles.timeWrapper}>
-            <TextInput style={styles.minuteInputControl} />
+            <TextInput
+              style={styles.minuteInputControl}
+              placeholder="00"
+              value={hour}
+              onChangeText={(v) => handleTimeChange('hour', v)}
+            />
+            <ThemedText>:</ThemedText>
+            <TextInput
+              style={styles.minuteInputControl}
+              placeholder="00"
+              value={minute}
+              onChangeText={(v) => handleTimeChange('minute', v)}
+            />
             <ThemedText>:</ThemedText>
             <ThemedView style={styles.secondPlaceholderWrapper}>
               <ThemedText style={styles.secondPlaceholderText}>00</ThemedText>
-            </ThemedView>          
+            </ThemedView>   
             <ThemedView style={styles.amWrapper}>
-              <ThemedText
-                style={[styles.amText, styles.amActive, { borderBottomLeftRadius: 5, borderTopLeftRadius: 5 }]}
-              >
-                AM
-              </ThemedText>
-              <ThemedText
-                style={[styles.amText, { borderBottomRightRadius: 5, borderTopRightRadius: 5 }]}
-              >
-                PM
-              </ThemedText>
+              <Pressable onPress={() => setTimeType(TimeType.AM)}>
+                <ThemedText
+                  style={[styles.amText, timeType === TimeType.AM&& styles.amActive, { borderBottomLeftRadius: 5, borderTopLeftRadius: 5 }]}
+                >
+                  AM
+                </ThemedText>
+              </Pressable>
+              <Pressable onPress={() => setTimeType(TimeType.PM)}>
+                <ThemedText
+                  style={[styles.amText, timeType === TimeType.PM&& styles.amActive, { borderBottomRightRadius: 5, borderTopRightRadius: 5 }]}
+                >
+                  PM
+                </ThemedText>
+              </Pressable>
             </ThemedView>
           </ThemedView>
+          {errors.time&&
+            <ThemedText style={styles.errorText}>{errors.time}</ThemedText>
+          }
         </ThemedView>
         <ThemedView style={styles.descriptionWrapper}>
           <ThemedText style={styles.labelText}>{t('appointment_manage.description')}{' : '}</ThemedText>
@@ -192,11 +288,16 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             multiline={true}
             autoCapitalize="none"
             placeholder=""
+            value={description}
+            onChangeText={(v) => handleDescriptionChange(v)}
           />
+          {errors.description&&
+            <ThemedText style={styles.errorText}>{errors.description}</ThemedText>
+          }
         </ThemedView>
       </Animated.ScrollView>
       <ThemedView style={styles.actionWrapper}>
-        <CustomButton onPress={() => {}}>
+        <CustomButton onPress={handleSchedule}>
           <Text style={styles.scheduleButtonText}>{t('appointment_manage.schedule')}</Text>
         </CustomButton>
       </ThemedView>
@@ -348,6 +449,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 500
   }, 
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    fontWeight: 400
+  }
 });
 
 const cstyles = StyleSheet.create({

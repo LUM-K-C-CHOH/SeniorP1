@@ -14,7 +14,11 @@
   "no_selected": "No Selected",
   "message": {
     "confirm_delete": "Are you sure to delete it?",
-    "alert_threshold": "Threshold must be value in range ${range}."
+    "alert_threshold": "Threshold must be value in range ${range}.",
+    "alert_select_schedule_date": "Please select a scheduled date.",
+    "alert_select_provider": "Please select a provider",
+    "alert_input_schedule_time": "Please enter a scheduled time.",
+    "alert_input_description": "Please enter a description."
   },
   "dashboard": {
     "dashboard": "Dashboard",
