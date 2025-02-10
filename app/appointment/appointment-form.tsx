@@ -9,6 +9,7 @@ import CustomButton from '@/components/CustomButton';
 import { default as AnimatedModal } from 'react-native-modal';
 import Calendar from '@/components/Calendar';
 import dayjs from 'dayjs';
+import Animated from 'react-native-reanimated';
 
 import { IAppointment, IContact, TResponse } from '@/@types';
 import {
@@ -21,12 +22,11 @@ import {
   TextInput,
   TouchableHighlight,
 } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { useTranslation } from 'react-i18next';
-import { CalendarIcon, LocationIcon } from '@/utils/svgs';
+import { CalendarIcon, LocationIcon, LocationPinIcon } from '@/utils/svgs';
 import { getContactList } from '@/services/contact';
 
 type TAppointmentFormProps = {
@@ -163,7 +163,10 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const ContactItem = ({ id, name, onSelectedContact }: ContactItemProps): JSX.Element => {
     return (
       <TouchableHighlight onPress={() => onSelectedContact(id)}>
-        <Text style={cstyles.contactNameText}>{name}</Text>
+        <ThemedView style={cstyles.contactNameWrapper}>
+          <LocationPinIcon />
+          <ThemedText style={cstyles.contactNameText}>{name}</ThemedText>
+        </ThemedView>
       </TouchableHighlight>
     );
   }
@@ -473,10 +476,18 @@ const cstyles = StyleSheet.create({
     minHeight: 200,
     maxHeight: 250
   },
-  contactNameText: {
+  contactNameWrapper: {
     width: '100%',
-    paddingLeft: 10,
     backgroundColor: '#fff',
     paddingVertical: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 10,
+    columnGap: 10
+  },
+  contactNameText: {
+    fontSize: 12,
+    fontWeight: 500,
+    color: '#666'
   }
 });
