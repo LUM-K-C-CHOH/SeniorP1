@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   actionWrapper: {
     alignItems: 'center',    
     paddingHorizontal: 15,
-    paddingVertical: 10
+    paddingVertical: 20
   },
   addContactButtonText: {
     color: '#fff',
