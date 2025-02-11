@@ -24,9 +24,11 @@ import { INotification, TResponse } from '@/@types';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon } from '@/utils/svgs';
 import { NotificationType } from '@/config/constants';
+import { useRouter } from 'expo-router';
 
 export default function NotificationScreen() {
   const initialRef = useRef<boolean>(false);
+  const router = useRouter();
 
   const { t } = useTranslation();
 
@@ -108,6 +110,14 @@ export default function NotificationScreen() {
     return ``;
   }
 
+  const handleRefillReminderSetting = (notification: INotification|null): void => {
+    setNotificationPopupOptions({ opened: false, notification: null });
+
+    if (!notification) return;
+
+    router.push({ pathname: '/medication', params: { medicationId: notification.targetId } })
+  }
+
   type ContactItemProps = {
     id: number,
     notification: INotification,
@@ -168,7 +178,7 @@ export default function NotificationScreen() {
           </View>
           <View style={pstyles.actionsWrapper}>
             <TouchableHighlight
-              onPress={() => setNotificationPopupOptions({ opened: false, notification: null })}
+              onPress={() => handleRefillReminderSetting(notificationPopupOptions.notification)}
               style={pstyles.button}
             >
               <View style={[pstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>

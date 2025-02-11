@@ -19,7 +19,7 @@ import { IAppointment, TResponse } from '@/@types';
 
 export default function AppointmentEditScreen() {
   const params = useLocalSearchParams();
-  const initialRef = useRef<boolean>();
+  const initialRef = useRef<boolean>(false);
 
   const [appointment, setAppointment] = useState<IAppointment>()
 

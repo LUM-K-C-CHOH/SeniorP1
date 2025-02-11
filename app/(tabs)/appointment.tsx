@@ -31,7 +31,7 @@ import ConfirmPanel from '@/components/ConfrimPanel';
 export default function AppointmentScreen() {
   const { t } = useTranslation();
 
-  const initialRef = useRef<boolean>();
+  const initialRef = useRef<boolean>(false);
   const router = useRouter();
   
   const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);

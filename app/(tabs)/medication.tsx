@@ -37,13 +37,16 @@ import {
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
+import { useSearchParams } from 'expo-router/build/hooks';
 
 export default function MedicationScreen() {
-  const initialRef = useRef<boolean>();
+  const initialRef = useRef<boolean>(false);
+  const initialParamRef = useRef<boolean>(false);
   const router = useRouter();
-  
+  const params = useLocalSearchParams();
+
   const { t } = useTranslation();
 
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
@@ -57,6 +60,7 @@ export default function MedicationScreen() {
     if (initialRef.current) return;
 
     initialRef.current = true;
+    
     getMedicationList()
       .then((res: TResponse) => {
         if (res.success) {
@@ -66,6 +70,22 @@ export default function MedicationScreen() {
         }
       });
   }, []);
+
+  useEffect(() => {
+    console.log('init param', initialParamRef.current)
+    if (medicationList.length === 0) return;
+    if (!params.medicationId) return;
+    if (initialParamRef.current) return;
+
+    initialParamRef.current = true;
+
+    const medicationId = parseInt(params.medicationId as string, 10);
+    const find = medicationList.find((v: IMedication) => v.id === medicationId);
+    
+    if (find) {
+      setReminderSettingPanelOptions({ opened: true, id: medicationId });
+    }
+  }, [params, medicationList]);
 
   const getColorByLevel = (stock: number): string => {
     if (stock > 15) {

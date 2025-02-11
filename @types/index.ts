@@ -57,6 +57,7 @@ export interface INotification {
   type: number,
   var1: string,
   status: number,
+  targetId: number,
   reservedTime: number,
 }
 

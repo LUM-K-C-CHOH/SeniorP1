@@ -19,7 +19,7 @@ import { IMedication, TResponse } from '@/@types';
 
 export default function MedicationEditScreen() {
   const params = useLocalSearchParams();
-  const initialRef = useRef<boolean>();
+  const initialRef = useRef<boolean>(false);
 
   const [medication, setMedication] = useState<IMedication>()
 
