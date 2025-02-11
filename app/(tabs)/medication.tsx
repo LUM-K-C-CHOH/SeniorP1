@@ -349,17 +349,17 @@ export default function MedicationScreen() {
                 onPress={handleReminderSettingSave}
                 style={rstyles.button}
               >
-                <View style={[rstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
+                <ThemedView style={[rstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
                   <ThemedText type="default" style={rstyles.buttonText}>{t('save')}</ThemedText>
-                </View>
+                </ThemedView>
               </TouchableHighlight>
               <TouchableHighlight
                 onPress={() => handleReminderSettingVisible(false)}
                 style={rstyles.button}
               >
-                <View style={rstyles.buttonTextWrapper}>
+                <ThemedView style={rstyles.buttonTextWrapper}>
                   <ThemedText type="default" style={rstyles.buttonText}>{t('dismiss')}</ThemedText>
-                </View>
+                </ThemedView>
               </TouchableHighlight>
             </View>
           </ThemedView>
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
   },
   rowBack: {
     alignItems: 'center',
-    backgroundColor: '#DDD',
+    backgroundColor: '#ddd',
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -528,7 +528,6 @@ const rstyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff'
   },
   buttonText: {
     color: '#000'

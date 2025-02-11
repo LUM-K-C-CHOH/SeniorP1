@@ -271,7 +271,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               style={{ borderRadius: 5, marginTop: 5 }}
               onPress={() => handleCalendarPopupVisible(true)}
             >
-              <View style={styles.dateControl}>
+              <ThemedView style={styles.dateControl}>
                 <ThemedText
                   type="defaultMedium"
                   style={[styles.dateText, { fontWeight: 400 }]}
@@ -279,7 +279,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
                   {selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}
                 </ThemedText>
                 <CalendarIcon />
-              </View>
+              </ThemedView>
             </TouchableHighlight>
             {errors.date&&
               <ThemedText
@@ -447,7 +447,6 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 10,
     borderRadius: 5,
-    backgroundColor: '#fff',
   }, 
   dateText: {
     color: '#222',
@@ -533,13 +532,11 @@ const cstyles = StyleSheet.create({
     top: 220,
     left: 15,
     right: 15,
-    backgroundColor: '#fff',
     minHeight: 200,
     maxHeight: 250
   },
   contactNameWrapper: {
     width: '100%',
-    backgroundColor: '#fff',
     paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',

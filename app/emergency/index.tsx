@@ -245,7 +245,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 10
   },
   contactButtonText: {
@@ -256,7 +255,6 @@ const styles = StyleSheet.create({
 
 const rstyles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     flex: 1,
   },
   titleText: {

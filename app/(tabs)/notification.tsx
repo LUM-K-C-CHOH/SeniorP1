@@ -202,27 +202,27 @@ export default function NotificationScreen() {
               onPress={() => handleRefillReminderSetting(notificationPopupOptions.notification)}
               style={pstyles.button}
             >
-              <View style={[pstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
+              <ThemedView style={[pstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
                 <ThemedText
                   type="default"
                   style={pstyles.buttonText}
                 >
                   {t('refill_now')
                 }</ThemedText>
-              </View>
+              </ThemedView>
             </TouchableHighlight>
             <TouchableHighlight
               onPress={() => setNotificationPopupOptions({ opened: false, notification: null })}
               style={pstyles.button}
             >
-              <View style={pstyles.buttonTextWrapper}>
+              <ThemedView style={pstyles.buttonTextWrapper}>
                 <ThemedText
                   type="default"
                   style={pstyles.buttonText}
                 >
                   {t('snooze')}
                 </ThemedText>
-              </View>
+              </ThemedView>
             </TouchableHighlight>
         </View>
         </ThemedView>
@@ -342,7 +342,6 @@ const pstyles = StyleSheet.create({
   mainWrapper: {
     width: '90%',
     maxWidth: 450,
-    backgroundColor: '#fff',
     borderRadius: 10
   },
   titleWrapper: {
@@ -379,7 +378,6 @@ const pstyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   buttonText: {
     color: '#000'

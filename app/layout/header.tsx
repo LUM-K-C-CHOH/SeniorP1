@@ -103,7 +103,7 @@ export default function Header() {
             style={styles.popupMenuOverlay}
             onPress={() => setPopupMenuVisible(false)}
           />
-          <View
+          <ThemedView
             style={[
               styles.popupMenuContainer,
               generateBoxShadowStyle(-2, 4, '#171717', 0.2, 3, 4, '#171717')
@@ -117,7 +117,7 @@ export default function Header() {
                 </ThemedView>
               </TouchableHighlight>
             )}
-          </View>
+          </ThemedView>
         </Modal>
       </View>
     </ThemedView>
@@ -126,7 +126,6 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   headerWrapper: {
-    backgroundColor: '#fff',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -149,7 +148,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
     right: 10,
-    backgroundColor: '#fff',
   },
   popupMenuItem: {
     flexDirection: 'row',

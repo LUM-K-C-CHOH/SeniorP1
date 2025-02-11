@@ -71,17 +71,17 @@ const ConfirmPanel = ({
                 onPress={onCancel}
                 style={styles.button}
               >
-                <View style={[styles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
+                <ThemedView style={[styles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
                   <ThemedText type="default" style={styles.buttonText}>{negativeButtonText}</ThemedText>
-                </View>
+                </ThemedView>
               </TouchableHighlight>
               <TouchableHighlight
                 onPress={onConfirm}
                 style={styles.button}
               >
-                <View style={styles.buttonTextWrapper}>
+                <ThemedView style={styles.buttonTextWrapper}>
                   <ThemedText type="default" style={styles.buttonText}>{positiveButtonText}</ThemedText>
-                </View>
+                </ThemedView>
               </TouchableHighlight>
           </View>
         </ThemedView>
@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff'
   },
   buttonText: {
     color: '#000'

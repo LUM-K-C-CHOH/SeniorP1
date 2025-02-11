@@ -243,11 +243,13 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
         <ThemedView style={styles.yearWrapper}>
           {Array.from(new Array(20), (_, index) => year - 5 + index).map((v: number, index: number) =>
             <TouchableHighlight key={index} onPress={() => handleYearSelect(v)}>
-              <ThemedText
-                style={[styles.yearText, year === v&& styles.selectedYearText]}
-              >
-                {v}
-              </ThemedText>
+              <ThemedView style={styles.yearTextWrapper}>
+                <ThemedText
+                  style={[styles.yearText, year === v&& styles.selectedYearText]}
+                >
+                  {v}
+                </ThemedText>
+              </ThemedView>
             </TouchableHighlight>
           )}
         </ThemedView>
@@ -256,11 +258,13 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
         <ThemedView style={styles.monthWrapper}>
           {MonthFullNames.map((v: string, index: number) =>
             <TouchableHighlight key={index} onPress={() => handleMonthSelect(index)}>
-              <ThemedText
-                style={[styles.monthText, month === index&& styles.selectedMonthText]}
-              >
-                {v}
-              </ThemedText>
+              <ThemedView style={styles.monthTextWrapper}>
+                <ThemedText
+                  style={[styles.monthText, month === index&& styles.selectedMonthText]}
+                >
+                  {v}
+                </ThemedText>
+              </ThemedView>
             </TouchableHighlight>
           )}
         </ThemedView>
@@ -330,7 +334,6 @@ const styles = StyleSheet.create({
     height: 355,
     maxWidth: 355,
     minWidth: 355,
-    backgroundColor: '#fff',
     borderRadius: 20,
     alignSelf: 'center'
   },
@@ -343,7 +346,6 @@ const styles = StyleSheet.create({
   navButton: {
     width: 30,
     height: 30,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -352,12 +354,10 @@ const styles = StyleSheet.create({
     columnGap: 10
   },
   yyButtonWrapper: {
-    backgroundColor: '#fff',
     paddingHorizontal: 10,
     paddingVertical: 5
   },
   mmButtonWrapper: {
-    backgroundColor: '#fff',
     paddingHorizontal: 10,
     paddingVertical: 5
   },
@@ -385,12 +385,13 @@ const styles = StyleSheet.create({
     rowGap: 5,
     padding: 15
   },
+  monthTextWrapper: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
   monthText: {
     fontSize: 16,
     fontWeight: 400,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#fff',
     color: '#222',
   },
   selectedMonthText: {
@@ -404,12 +405,13 @@ const styles = StyleSheet.create({
     rowGap: 5,
     padding: 15
   },
+  yearTextWrapper: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
   yearText: {
     fontSize: 16,
     fontWeight: 400,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#fff',
     color: '#222',
   },
   selectedYearText: {
