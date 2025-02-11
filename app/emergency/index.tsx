@@ -6,7 +6,7 @@
  */
 import React, { useState } from 'react';
 import Header from '@/app/layout/header';
-import Modal from 'react-native-modal';
+import ConfirmPanel from '@/components/ConfrimPanel';
 
 import { Stack } from 'expo-router';
 import {
@@ -57,43 +57,15 @@ export default function EmergencyScreen() {
         options={{ headerShown: false }}
       />
       <Header />
-      <Modal
-        isVisible={callConfirmVisible}
-        swipeDirection={['down']}
-        style={pstyles.confirmPanel}
-        onBackdropPress={() => setCallConfirmVisible(false)}
-        onBackButtonPress={() => setCallConfirmVisible(false)}
-        onSwipeComplete={() => setCallConfirmVisible(false)}
-        animationInTiming={300}
-        animationOutTiming={300}
-      >
-        <ThemedView style={pstyles.container}>
-          <View style={pstyles.header}>
-            <ThemedText style={pstyles.titleText}>{t('confirmation')}</ThemedText>            
-          </View>
-          <View style={pstyles.body}>
-            <ThemedText style={pstyles.text}>{t('emergency_control.call_confirm_text')}</ThemedText>
-          </View>
-          <View style={pstyles.actions}>
-              <TouchableHighlight
-                onPress={() => setCallConfirmVisible(false)}
-                style={pstyles.button}
-              >
-                <View style={[pstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
-                  <Text style={pstyles.buttonText}>{t('no')}</Text>
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight
-                onPress={() => handleCallHelp()}
-                style={pstyles.button}
-              >
-                <View style={pstyles.buttonTextWrapper}>
-                  <Text style={pstyles.buttonText}>{t('yes')}</Text>
-                </View>
-              </TouchableHighlight>
-          </View>
-        </ThemedView>
-      </Modal>
+      <ConfirmPanel
+        visible={callConfirmVisible}
+        titleText={t('confirmation')}
+        positiveButtonText={t('yes')}
+        negaitiveButtonText={t('no')}
+        bodyText={t('emergency_control.call_confirm_text')}
+        onCancel={() => setCallConfirmVisible(false)}
+        onConfirm={handleCallHelp}
+      />
       {callResultVisible&&
         <ThemedView style={rstyles.container}>
           <ThemedText style={rstyles.titleText}>{t('emergency_control.emergency_alert_released')}!</ThemedText>
@@ -224,58 +196,6 @@ const styles = StyleSheet.create({
     color: '#236ad3',
     fontSize: 14,
     fontWeight: 600,
-  }
-});
-
-const pstyles = StyleSheet.create({
-  confirmPanel: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  container: {
-    paddingTop: 30
-  },
-  header: {
-    alignItems: 'center'
-  },
-  titleText: {
-    fontSize: 17,
-    fontWeight: 600,
-    color: '#000'
-  },
-  body: {
-    width: 238,
-    paddingBottom: 30,
-    alignSelf: 'center',
-    marginTop: 10
-  },
-  text: {
-    fontSize: 13,
-    fontWeight: 400,
-    color: '#000',
-    textAlign: 'center'
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderTopColor: '#e2e2e2',
-    borderTopWidth: 1
-  },
-  button: {
-    flex: 1,
-    height: 45
-  },
-  buttonTextWrapper: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff'
-  },
-  buttonText: {
-    fontSize: 15,
-    fontWeight: 400,
-    color: '#000'
   }
 });
 

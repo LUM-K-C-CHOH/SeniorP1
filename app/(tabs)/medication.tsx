@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Modal from 'react-native-modal';
+import ConfirmPanel from '@/components/ConfrimPanel';
 
 import {
   Image,
@@ -205,37 +206,15 @@ export default function MedicationScreen() {
 
   return (
     <GestureHandlerRootView style={styles.mainWrapper}>
-      <Modal
-        isVisible={deleteConfirmPopupOptions.opened as boolean}
-        onBackdropPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
-        onBackButtonPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
-        onSwipeComplete={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
-        swipeDirection="left"
-        animationIn="zoomIn"
-        animationOut="zoomOut"
-        animationInTiming={300}
-        animationOutTiming={300}
-      >
-        <ThemedView style={pstyles.deleteConfirmModalContainer}>
-          <View style={pstyles.deleteConfirmModalBody}>
-            <ThemedText style={pstyles.deleteConfirmModalBodyText}>{t('message.confirm_delete')}</ThemedText>
-          </View>
-          <View style={pstyles.deleteConfirmModalActions}>
-            <TouchableOpacity
-              style={pstyles.deleteConfirmModalNegativeButton}
-              onPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
-            >
-              <Text style={pstyles.deleteConfirmModalNegativeButtonText}>{t('cancel')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={pstyles.deleteConfirmModalPositiveButton}
-              onPress={handleDeleteConfrim}
-            >
-              <Text style={pstyles.deleteConfirmModalPositiveButtonText}>{t('delete')}</Text>
-            </TouchableOpacity>
-          </View>
-        </ThemedView>
-      </Modal>
+      <ConfirmPanel
+        visible={deleteConfirmPopupOptions.opened as boolean}
+        titleText={t('confirmation')}
+        positiveButtonText={t('delete')}
+        negaitiveButtonText={t('cancel')}
+        bodyText={t('message.confirm_delete')}
+        onCancel={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+        onConfirm={handleDeleteConfrim}
+      />
       <Modal
         isVisible={reminderSettingPanelOptions.opened as boolean}
         swipeDirection={['down']}

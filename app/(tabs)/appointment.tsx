@@ -26,6 +26,7 @@ import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { getContactList } from '@/services/contact';
+import ConfirmPanel from '@/components/ConfrimPanel';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
@@ -164,37 +165,15 @@ export default function AppointmentScreen() {
   
   return (
     <GestureHandlerRootView style={styles.mainContainer}>
-      <Modal
-        isVisible={deleteConfirmPopupOptions.opened as boolean}
-        onBackdropPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
-        onBackButtonPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
-        onSwipeComplete={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
-        swipeDirection="left"
-        animationIn="zoomIn"
-        animationOut="zoomOut"
-        animationInTiming={300}
-        animationOutTiming={300}
-      >
-        <ThemedView style={pstyles.deleteConfirmModalContainer}>
-          <View style={pstyles.deleteConfirmModalBody}>
-            <ThemedText style={pstyles.deleteConfirmModalBodyText}>{t('message.confirm_delete')}</ThemedText>
-          </View>
-          <View style={pstyles.deleteConfirmModalActions}>
-            <TouchableOpacity
-              style={pstyles.deleteConfirmModalNegativeButton}
-              onPress={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
-            >
-              <Text style={pstyles.deleteConfirmModalNegativeButtonText}>{t('cancel')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={pstyles.deleteConfirmModalPositiveButton}
-              onPress={handleDeleteConfrim}
-            >
-              <Text style={pstyles.deleteConfirmModalPositiveButtonText}>{t('delete')}</Text>
-            </TouchableOpacity>
-          </View>
-        </ThemedView>
-      </Modal>
+      <ConfirmPanel
+        visible={deleteConfirmPopupOptions.opened as boolean}
+        titleText={t('confirmation')}
+        positiveButtonText={t('delete')}
+        negaitiveButtonText={t('cancel')}
+        bodyText={t('message.confirm_delete')}
+        onCancel={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+        onConfirm={handleDeleteConfrim}
+      />
       <SwipeListView
         style={styles.mainWrapper}
         data={appointmentList}
