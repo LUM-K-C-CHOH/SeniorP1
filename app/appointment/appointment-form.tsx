@@ -40,7 +40,7 @@ const TimeType = {
 }
 
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
-  const initialRef = useRef<boolean>(false);
+  const initiatedRef = useRef<boolean>(false);
 
   const { t } = useTranslation();
 
@@ -56,9 +56,9 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const [errors, setErrors] = useState<{[k: string]: string}>({});
 
   useEffect(() => {
-    if (initialRef.current) return;
+    if (initiatedRef.current) return;
 
-    initialRef.current = true;
+    initiatedRef.current = true;
 
     getContactList()
       .then((res: TResponse) => {

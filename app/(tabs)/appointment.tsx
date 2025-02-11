@@ -5,8 +5,8 @@
  * Created By Thornton at 01/28/2025
  */
 import React, { useEffect, useState, useRef } from 'react';
-import Modal from 'react-native-modal';
 import CustomButton from '@/components/CustomButton';
+import ConfirmPanel from '@/components/ConfrimPanel';
 
 import {
   StyleSheet,
@@ -26,12 +26,11 @@ import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { getContactList } from '@/services/contact';
-import ConfirmPanel from '@/components/ConfrimPanel';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
 
-  const initialRef = useRef<boolean>(false);
+  const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
   
   const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);
@@ -40,9 +39,9 @@ export default function AppointmentScreen() {
   const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
 
   useEffect(() => {
-    if (initialRef.current) return;
+    if (initiatedRef.current) return;
 
-    initialRef.current = true;
+    initiatedRef.current = true;
     Promise.all(
       [
         getAppointmentList(),

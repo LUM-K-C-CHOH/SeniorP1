@@ -4,7 +4,7 @@
  * 
  * Created By Thornton at 01/28/2025
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Modal from 'react-native-modal';
 import ConfirmPanel from '@/components/ConfrimPanel';
@@ -37,18 +37,17 @@ import {
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
-import { useSearchParams } from 'expo-router/build/hooks';
 
 export default function MedicationScreen() {
-  const initialRef = useRef<boolean>(false);
-  const initialParamRef = useRef<boolean>(false);
+  const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
   const params = useLocalSearchParams();
 
   const { t } = useTranslation();
 
+  const [initiatedParam, setInitiatedParam] = useState<boolean>(false);
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
@@ -57,9 +56,9 @@ export default function MedicationScreen() {
   const [reminderSettingErrors, setReminderSettingErrors] = useState<{[k: string]: string}>();
 
   useEffect(() => {
-    if (initialRef.current) return;
+    if (initiatedRef.current) return;
 
-    initialRef.current = true;
+    initiatedRef.current = true;
     
     getMedicationList()
       .then((res: TResponse) => {
@@ -71,13 +70,18 @@ export default function MedicationScreen() {
       });
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      setInitiatedParam(false);
+    }, [])
+  );
+
   useEffect(() => {
-    console.log('init param', initialParamRef.current)
     if (medicationList.length === 0) return;
     if (!params.medicationId) return;
-    if (initialParamRef.current) return;
+    if (initiatedParam) return;
 
-    initialParamRef.current = true;
+    setInitiatedParam(true);
 
     const medicationId = parseInt(params.medicationId as string, 10);
     const find = medicationList.find((v: IMedication) => v.id === medicationId);
@@ -165,7 +169,6 @@ export default function MedicationScreen() {
       setReminderSettingErrors(errors);
       return;
     }
-
 
     setReminderSettingErrors({});
     setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, saved: true })

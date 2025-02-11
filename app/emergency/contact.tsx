@@ -29,7 +29,7 @@ import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 
 export default function EmergencyContactScreen() {
-  const initialRef = useRef<boolean>(false);
+  const initiatedRef = useRef<boolean>(false);
   
   const { t } = useTranslation();
 
@@ -40,9 +40,9 @@ export default function EmergencyContactScreen() {
   const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    if (initialRef.current) return;
+    if (initiatedRef.current) return;
 
-    initialRef.current = true;
+    initiatedRef.current = true;
 
     getContactList()
       .then((res: TResponse) => {

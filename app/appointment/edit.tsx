@@ -12,22 +12,21 @@ import AppointmentForm from '@/app/appointment/appointment-form';
 import { getAppointmentList } from '@/services/appointment';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import {
-  StyleSheet,
   SafeAreaView,
 } from 'react-native';
 import { IAppointment, TResponse } from '@/@types';
 
 export default function AppointmentEditScreen() {
   const params = useLocalSearchParams();
-  const initialRef = useRef<boolean>(false);
+  const initiatedRef = useRef<boolean>(false);
 
   const [appointment, setAppointment] = useState<IAppointment>()
 
   useEffect(() => {
-    if (initialRef.current) return;
+    if (initiatedRef.current) return;
     if (!params.id) return;
 
-    initialRef.current = true;
+    initiatedRef.current = true;
 
     getAppointmentList()
       .then((res: TResponse) => {

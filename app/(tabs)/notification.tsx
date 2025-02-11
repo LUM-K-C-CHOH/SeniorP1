@@ -27,7 +27,7 @@ import { NotificationType } from '@/config/constants';
 import { useRouter } from 'expo-router';
 
 export default function NotificationScreen() {
-  const initialRef = useRef<boolean>(false);
+  const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
 
   const { t } = useTranslation();
@@ -40,9 +40,9 @@ export default function NotificationScreen() {
   const [notificationPopupOptions, setNotificationPopupOptions] = useState<{ opened: boolean, notification: INotification|null }>({ opened: false, notification: null });
 
   useEffect(() => {
-    if (initialRef.current) return;
+    if (initiatedRef.current) return;
 
-    initialRef.current = true;
+    initiatedRef.current = true;
 
     getNotificationList()
       .then((res: TResponse) => {
