@@ -205,7 +205,7 @@ export default function MedicationScreen() {
   );
 
   return (
-    <GestureHandlerRootView style={styles.mainWrapper}>
+    <GestureHandlerRootView style={styles.container}>
       <ConfirmPanel
         visible={deleteConfirmPopupOptions.opened as boolean}
         titleText={t('confirmation')}
@@ -347,7 +347,6 @@ export default function MedicationScreen() {
         </ThemedText>
       </ThemedView>
       <SwipeListView
-        style={styles.mainWrapper}
         data={medicationList}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}
@@ -371,9 +370,9 @@ export default function MedicationScreen() {
 }
 
 const styles = StyleSheet.create({
-  mainWrapper: {
+  container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
   },
   listHeader: {
     flexDirection: 'row',
@@ -387,7 +386,7 @@ const styles = StyleSheet.create({
   itemWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    padding: 15,
     borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,
@@ -447,8 +446,8 @@ const styles = StyleSheet.create({
   },
   actionWrapper: {
     alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 20
+    paddingVertical: 15,
+    paddingHorizontal: 15
   }
 });
 

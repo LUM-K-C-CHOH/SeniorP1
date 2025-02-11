@@ -17,7 +17,7 @@ export default function DashboardScreen() {
   const { t } = useTranslation();
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
+    <SafeAreaView style={styles.container}>
       <Animated.ScrollView>
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">{t('dashboard.dashboard')}</ThemedText>
@@ -35,7 +35,7 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  container: {
     flex: 1,
     backgroundColor: '#fff',
     paddingLeft: 10,

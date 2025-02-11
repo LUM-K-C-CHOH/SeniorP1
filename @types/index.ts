@@ -37,6 +37,7 @@ export interface IAppointment {
   contactId: number,
   scheduledTime: string,
   description: string,
+  location: string,
   createdAt: string,
 }
 
@@ -49,6 +50,14 @@ export interface IContact {
 
 export interface IEmergencyContact extends IContact {
   type?: string
+}
+
+export interface INotification {
+  id: number,
+  type: number,
+  var1: string,
+  status: number,
+  reservedTime: number,
 }
 
 export type TResponse = {

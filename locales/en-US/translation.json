@@ -20,6 +20,8 @@
   "to_continue": "to continue.",
   "to_back": "to back",
   "select_all": "Select All",
+  "refill_now": "Refill Now",
+  "snooze": "Snooze",
   "message": {
     "confirm_delete": "Are you sure to delete it?",
     "alert_threshold": "Threshold must be value in range ${range}.",
@@ -74,5 +76,13 @@
     "support": "Support",
     "add_from_contact": "Add from Contact",
     "confirm_delete": "Are you sure to delete ${count} emergency contacts?"
+  },
+  "notification_manage": {
+    "low_stock_alert": "Low Stock Alert",
+    "appointment_alert": "Appointment Alert",
+    "emergency_alert": "Emergency Alert",
+    "message_low_stock": "${var1} is running low, below the threshold. Please refill soon.",
+    "message_appointment": "Reach out to the scheuled time for appointment.",
+    "message_emergency": "Used the emergency call."
   }
 }

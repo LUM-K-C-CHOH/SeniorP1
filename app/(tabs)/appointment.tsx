@@ -72,7 +72,6 @@ export default function AppointmentScreen() {
   }
 
   const handleDeleteRow = (rowMap: RowMap<IAppointment>, id: number): void => {
-    console.log('delete', id);
     setDeleteConfirmPopupOptions({ opened: true, id });
   }
 
@@ -116,55 +115,55 @@ export default function AppointmentScreen() {
   }
 
   const renderItem = (data: ListRenderItemInfo<IAppointment>) => (
-      <ThemedView style={styles.itemWrapper}>
-        <View
-          style={[
-            styles.logoWrapper,
-            { backgroundColor: getMarkColorFromName(getContactName(data.item.contactId)).bgColor }
-          ]}
+    <ThemedView style={styles.itemWrapper}>
+      <View
+        style={[
+          styles.logoWrapper,
+          { backgroundColor: getMarkColorFromName(getContactName(data.item.contactId)).bgColor }
+        ]}
+      >
+        <ThemedText
+          style={[{ color: getMarkColorFromName(getContactName(data.item.contactId)).textColor }]}            
         >
-          <ThemedText
-            style={[{ color: getMarkColorFromName(getContactName(data.item.contactId)).textColor }]}            
-          >
-            {getMarkLabelFromName(getContactName(data.item.contactId))}
+          {getMarkLabelFromName(getContactName(data.item.contactId))}
+        </ThemedText>
+      </View>
+      <View style={styles.infoWrapper}>
+        <View style={styles.rowWrapper}>
+          <ThemedText style={styles.normalText}>
+            {getContactName(data.item.contactId)}
           </ThemedText>
         </View>
-        <View style={styles.infoWrapper}>
-          <View style={styles.rowWrapper}>
-            <ThemedText style={styles.normalText}>
-              {getContactName(data.item.contactId)}
-            </ThemedText>
-          </View>
-          <View style={styles.rowWrapper}>
-            <ClockIcon />
-            <ThemedText style={styles.normalText}>{getDateString(data.item.scheduledTime)}</ThemedText>
-          </View>
-          <View style={styles.rowWrapper}>
-            <ThemedText style={[styles.normalText, { color: '#999' }]}>{data.item.description}</ThemedText>
-          </View>          
+        <View style={styles.rowWrapper}>
+          <ClockIcon />
+          <ThemedText style={styles.normalText}>{getDateString(data.item.scheduledTime)}</ThemedText>
         </View>
-      </ThemedView>
-    );
+        <View style={styles.rowWrapper}>
+          <ThemedText style={[styles.normalText, { color: '#999' }]}>{data.item.description}</ThemedText>
+        </View>          
+      </View>
+    </ThemedView>
+  );
   
-    const renderHiddenItem = (data: ListRenderItemInfo<IAppointment>, rowMap: RowMap<IAppointment>) => (
-      <ThemedView style={styles.rowBack}>
-        <TouchableOpacity
-          style={[styles.backRightBtn, styles.backRightBtnLeft]}
-          onPress={() => handleEditRow(rowMap, data.item.id)}
-        >
-          <EditIcon />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.backRightBtn, styles.backRightBtnRight]}
-          onPress={() => handleDeleteRow(rowMap, data.item.id)}
-        >
-          <DeleteIcon />
-        </TouchableOpacity>
-      </ThemedView>
-    );
+  const renderHiddenItem = (data: ListRenderItemInfo<IAppointment>, rowMap: RowMap<IAppointment>) => (
+    <ThemedView style={styles.rowBack}>
+      <TouchableOpacity
+        style={[styles.backRightBtn, styles.backRightBtnLeft]}
+        onPress={() => handleEditRow(rowMap, data.item.id)}
+      >
+        <EditIcon />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.backRightBtn, styles.backRightBtnRight]}
+        onPress={() => handleDeleteRow(rowMap, data.item.id)}
+      >
+        <DeleteIcon />
+      </TouchableOpacity>
+    </ThemedView>
+  );
   
   return (
-    <GestureHandlerRootView style={styles.mainContainer}>
+    <GestureHandlerRootView style={styles.container}>
       <ConfirmPanel
         visible={deleteConfirmPopupOptions.opened as boolean}
         titleText={t('confirmation')}
@@ -175,7 +174,6 @@ export default function AppointmentScreen() {
         onConfirm={handleDeleteConfrim}
       />
       <SwipeListView
-        style={styles.mainWrapper}
         data={appointmentList}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}
@@ -199,20 +197,17 @@ export default function AppointmentScreen() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
+  container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingLeft: 10,
-    paddingRight: 10
   },
   mainWrapper: {
     flex: 1,
-    backgroundColor: 'white',    
   },
   itemWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    padding: 15,
     borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,
@@ -267,8 +262,8 @@ const styles = StyleSheet.create({
   },
   actionWrapper: {
     alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 20
+    paddingVertical: 15,
+    paddingHorizontal: 15
   },
   addAppointmentButtonText: {
     color: '#fff',

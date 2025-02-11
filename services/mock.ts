@@ -8,6 +8,7 @@ import axios from 'axios';
 
 import MockAdapter from 'axios-mock-adapter';
 import axiosInstance from './instance';
+import { NotificationType } from '@/config/constants';
 
 const mock = new MockAdapter(axiosInstance);
 
@@ -276,6 +277,32 @@ mock.onGet('/emergency/contact/list').reply(200, [
     id: 10,
     name: 'Daniel Allen',
     phone: '+1(123) 456 7890'
+  },
+]);
+mock.onGet('/notification/list').reply(200, [
+  {
+    id: 1,
+    type: NotificationType.MEDICATION,
+    targetId: 1,
+    var1: 'Aspirin 81mg'
+  },
+  {
+    id: 2,
+    type: NotificationType.MEDICATION,
+    targetId: 2,
+    var1: 'Aspirin 81mg'
+  },
+  {
+    id: 3,
+    type: NotificationType.MEDICATION,
+    targetId: 3,
+    var1: 'Metoprolol 30mg'
+  },
+  {
+    id: 4,
+    type: NotificationType.MEDICATION,
+    targetId: 4,
+    var1: 'Metoprolol 30mg'
   },
 ]);
 

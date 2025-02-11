@@ -37,3 +37,14 @@ export const InitialAppState: IAppState = {
   currentPath: '/login',
   lockScreen: false,
 }
+
+export const NotificationType = {
+  MEDICATION: 1,
+  APPOINTMENT: 2,
+  EMERGENCY: 3
+}
+
+export const NotificationStatus = {
+  PENDING: 1,
+  SENT: 2
+}

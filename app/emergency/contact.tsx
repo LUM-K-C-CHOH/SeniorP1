@@ -90,12 +90,11 @@ export default function EmergencyContactScreen() {
     name: string,
     phone: string,
     checkedStatus: boolean,
-    onLongPress: () => void,
-    onChangeStatus: (id: number, status: boolean) => void
   };
-  const ContactItem = ({ id, name, phone, checkedStatus, onLongPress, onChangeStatus }: ContactItemProps): JSX.Element => {
+
+  const ContactItem = ({ id, name, phone, checkedStatus }: ContactItemProps): JSX.Element => {
     return (
-      <TouchableHighlight onLongPress={() => onLongPress()}>
+      <TouchableHighlight onLongPress={handleLongPress}>
         <ThemedView style={cstyles.itemWrapper}>
           <View
             style={[
@@ -121,7 +120,7 @@ export default function EmergencyContactScreen() {
             </View>
           </View>
           {selectableVisible&&
-            <TouchableOpacity onPress={() => onChangeStatus(id, !checkedStatus)}>
+            <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
               {checkedStatus
                 ? <CheckboxFilledIcon />
                 : <CheckboxBlankIcon />
@@ -134,7 +133,7 @@ export default function EmergencyContactScreen() {
   }
 
   return (
-   <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen
         options={{ headerShown: false }}
       />
@@ -175,14 +174,14 @@ export default function EmergencyContactScreen() {
                   ? <CheckboxFilledIcon />
                   : <CheckboxBlankIcon />
                 }                
-                <Text>{t('select_all')}</Text>
+                <Text style={styles.toobarText}>{t('select_all')}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setDeleteConfirmVisible(true)}>
-              <Text>{t('delete')}({checkedIdList.length})</Text>
+              <Text style={styles.toobarText}>{t('delete')}({checkedIdList.length})</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setSelectableVisible(false)}>
-              <Text>{t('cancel')}</Text>
+              <Text style={styles.toobarText}>{t('cancel')}</Text>
             </TouchableOpacity>
           </ThemedView>
         }
@@ -194,8 +193,6 @@ export default function EmergencyContactScreen() {
                           name={item.name}
                           phone={item.phone}
                           checkedStatus={checkedIdList.includes(item.id)}
-                          onLongPress={() => handleLongPress() }
-                          onChangeStatus={(id: number, status: boolean) => handleStatusChange(id, status)}
                         />
           }
           keyExtractor={item => `${item.id}`}
@@ -218,7 +215,7 @@ const styles = StyleSheet.create({
   actionWrapper: {
     alignItems: 'center',    
     paddingHorizontal: 15,
-    paddingVertical: 20
+    paddingVertical: 15
   },
   addContactButtonText: {
     color: '#fff',
@@ -231,6 +228,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginTop: 10
   },
+  toobarText: {
+    fontSize: 14,
+    fontWeight: 400,
+    color: '#000'
+  }
 });
 
 const cstyles = StyleSheet.create({
