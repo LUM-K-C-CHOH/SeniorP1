@@ -50,6 +50,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
+            href: '/',
             tabBarStyle: { paddingTop: 5 },
             tabBarShowLabel: false,
             tabBarIcon: ({ color }) => <HomeIcon color={color} />,
@@ -58,6 +59,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="medication"
           options={{
+            href: '/medication',
             tabBarStyle: { paddingTop: 5 },
             tabBarShowLabel: false,
             tabBarIcon: ({ color }) => <MedicationIcon color={color} width={38} height={38} />,
@@ -66,6 +68,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="appointment"
           options={{
+            href: '/appointment',
             tabBarStyle: { paddingTop: 5 },
             tabBarShowLabel: false,
             tabBarIcon: ({ color }) => <AppointmentIcon color={color} width={24} height={24} />,
@@ -74,6 +77,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="notification"
           options={{
+            href: '/notification',
             tabBarStyle: { paddingTop: 5 },
             tabBarBadge: 2,
             tabBarShowLabel: false,

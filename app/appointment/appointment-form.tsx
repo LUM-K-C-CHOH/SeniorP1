@@ -18,9 +18,7 @@ import {
   Pressable,
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
-  TextInput,
   TouchableHighlight,
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
@@ -29,6 +27,7 @@ import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName } fr
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon, LocationPinIcon } from '@/utils/svgs';
 import { getContactList } from '@/services/contact';
+import ThemedInput from '@/components/ThemedIntput';
 
 type TAppointmentFormProps = {
   appointment?: IAppointment
@@ -290,15 +289,17 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             }
           </View>
           <View style={styles.timeWrapper}>
-            <TextInput
+            <ThemedInput
               style={styles.minuteInputControl}
+              type="default"
               placeholder="00"
               value={hour}
               onChangeText={(v) => handleTimeChange('hour', v)}
             />
             <ThemedText>:</ThemedText>
-            <TextInput
+            <ThemedInput
               style={styles.minuteInputControl}
+              type="default"
               placeholder="00"
               value={minute}
               onChangeText={(v) => handleTimeChange('minute', v)}
@@ -353,8 +354,9 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           >
             {t('appointment_manage.description')}{' : '}
           </ThemedText>
-          <TextInput
+          <ThemedInput
             style={styles.descriptionInputControl}
+            type="default"
             multiline={true}
             autoCapitalize="none"
             placeholder=""
@@ -462,8 +464,6 @@ const styles = StyleSheet.create({
     width: 50,
     paddingVertical: 6,
     textAlign: 'center',
-    fontSize: 16,
-    fontWeight: 400,
     color: '#222',
   },
   amWrapper: {
@@ -503,8 +503,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 100,
     textAlignVertical: 'top',
-    fontSize: 16,
-    fontWeight: 400,
     color: '#222',
     paddingHorizontal: 13
   },

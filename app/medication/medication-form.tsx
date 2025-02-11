@@ -13,11 +13,11 @@ import { ThemedView } from '@/components/ThemedView';
 import {
   StyleSheet,
   SafeAreaView,
-  TextInput,
   View
 } from 'react-native';
 import { IMedication } from '@/@types';
 import { useTranslation } from 'react-i18next';
+import ThemedInput from '@/components/ThemedIntput';
 
 type TMedicationFormProps = {
   medication?: IMedication
@@ -177,11 +177,12 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             Name:
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <TextInput
+            <ThemedInput
               style={[
                 styles.formControl,
                 errors.name ? { borderColor: 'red' } : {}
               ]}
+              type="default"
               value={name}
               onChangeText={(v) => changeFormValue('name', v)}
             />
@@ -198,7 +199,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             Dosage:
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <TextInput
+            <ThemedInput
+              type="default"
               style={[
                 styles.formControl,
                 errors.dosage ? { borderColor: 'red' } : {}
@@ -219,7 +221,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             Frequency:
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <TextInput
+            <ThemedInput
+              type="default"
               style={[
                 styles.formControl,
                 errors.frequency ? { borderColor: 'red' } : {}
@@ -240,7 +243,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             Stock:
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <TextInput
+            <ThemedInput
+              type="default"
               style={[
                 styles.formControl,
                 errors.stock ? { borderColor: 'red' } : {}
@@ -261,7 +265,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             Stock Limitation:
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <TextInput
+            <ThemedInput
+              type="default"
               style={[
                 styles.formControl,
                 errors.miniStock ? { borderColor: 'red' } : {}
@@ -282,7 +287,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             Start Date:
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <TextInput
+            <ThemedInput
+              type="default"
               style={[
                 styles.formControl,
                 errors.startDate ? { borderColor: 'red' } : {}
@@ -303,7 +309,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             End Date:
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <TextInput
+            <ThemedInput
+              type="default"
               style={[
                 styles.formControl,
                 errors.endDate ? { borderColor: 'red' } : {}
@@ -356,8 +363,6 @@ const styles = StyleSheet.create({
     borderColor: '#e2e2e2',
     borderWidth: 1,
     borderRadius: 5,
-    fontWeight: 400,
-    fontSize: 16,
   },
   actionWrapper: {
     paddingTop: 10,
