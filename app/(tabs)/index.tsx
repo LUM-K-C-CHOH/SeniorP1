@@ -9,26 +9,27 @@ import Animated from 'react-native-reanimated';
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function DashboardScreen() {
   const { t } = useTranslation();
+  const backgroundColor = useThemeColor({}, 'background');
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <Animated.ScrollView>
-        <ThemedView style={styles.titleContainer}>
+        <View style={styles.titleContainer}>
           <ThemedText type="title">{t('dashboard.dashboard')}</ThemedText>
-        </ThemedView>
-        <ThemedView style={{ alignItems: 'center' }}>
+        </View>
+        <View style={{ alignItems: 'center' }}>
         <Link href="/emergency" style={{ marginTop: 50 }}>
           <View style={styles.emergencyButton}>
             <ThemedText style={styles.emergencyButtonText}>{t('dashboard.alert_emergency')}</ThemedText>
           </View>
         </Link>
-        </ThemedView>
+        </View>
       </Animated.ScrollView>
     </SafeAreaView>
   );
@@ -37,9 +38,7 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingLeft: 10,
-    paddingRight: 10
+    padding: 10
   },
   titleContainer: {
     flexDirection: 'row',

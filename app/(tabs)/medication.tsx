@@ -15,7 +15,6 @@ import {
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
-  Text,
   TouchableHighlight,
   Switch,
   View
@@ -39,11 +38,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function MedicationScreen() {
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
   const params = useLocalSearchParams();
+  const backgroundColor = useThemeColor({}, 'background');
 
   const { t } = useTranslation();
 
@@ -212,7 +213,7 @@ export default function MedicationScreen() {
   );
 
   const renderHiddenItem = (data: ListRenderItemInfo<IMedication>, rowMap: RowMap<IMedication>) => (
-    <ThemedView style={styles.rowBack}>
+    <View style={styles.rowBack}>
       <TouchableOpacity
         style={[styles.backRightBtn, styles.backRightBtnLeft]}
         onPress={() => handleEditRow(rowMap, data.item.id)}
@@ -225,11 +226,11 @@ export default function MedicationScreen() {
       >
         <DeleteIcon />
       </TouchableOpacity>
-    </ThemedView>
+    </View>
   );
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={[styles.container, { backgroundColor }]}>
       <ConfirmPanel
         visible={deleteConfirmPopupOptions.opened as boolean}
         titleText={t('confirmation')}
@@ -364,7 +365,7 @@ export default function MedicationScreen() {
           </ThemedView>
         }
       </Modal>
-      <ThemedView style={styles.listHeader}>
+      <View style={styles.listHeader}>
         <ThemedText
           type="default"
           style={[styles.listHeaderText, { width: '20%' }]}
@@ -381,7 +382,7 @@ export default function MedicationScreen() {
         >
           {t('medication_manage.refill_reminder')}
         </ThemedText>
-      </ThemedView>
+      </View>
       <SwipeListView
         data={medicationList}
         renderItem={renderItem}
@@ -396,11 +397,11 @@ export default function MedicationScreen() {
           <RefreshControl refreshing={isLoading} onRefresh={handleLoadData} />
         }
       />
-      <ThemedView style={styles.actionWrapper}>
+      <View style={styles.actionWrapper}>
         <CustomButton onPress={handleAddMedication}>
           <ThemedText type="button" style={styles.addMedicationButtonText}>+{t('medication_manage.add_medication')}</ThemedText>
         </CustomButton>
-      </ThemedView>
+      </View>
     </GestureHandlerRootView>
   );
 }
@@ -408,7 +409,6 @@ export default function MedicationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   listHeader: {
     flexDirection: 'row',

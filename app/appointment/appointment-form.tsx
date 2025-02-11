@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon, LocationPinIcon } from '@/utils/svgs';
 import { getContactList } from '@/services/contact';
 import ThemedInput from '@/components/ThemedIntput';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 type TAppointmentFormProps = {
   appointment?: IAppointment
@@ -40,6 +41,7 @@ const TimeType = {
 
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
   const initiatedRef = useRef<boolean>(false);
+  const backgroundColor = useThemeColor({}, 'background');
 
   const { t } = useTranslation();
 
@@ -177,7 +179,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <AnimatedModal
         isVisible={calendarPopupVisible}
         onBackdropPress={() => handleCalendarPopupVisible(false)}
@@ -204,7 +206,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         </ThemedView>
       </Modal>
       <Animated.ScrollView>
-        <ThemedView style={styles.providerWrapper}>
+        <View style={styles.providerWrapper}>
           <ThemedText
             type="defaultMedium"
             style={styles.labelText}
@@ -256,8 +258,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               {errors.contact}
             </ThemedText>
           }
-        </ThemedView>
-        <ThemedView style={styles.scheduledTimeWrapper}>
+        </View>
+        <View style={styles.scheduledTimeWrapper}>
           <ThemedText
             type="defaultMedium"
             style={styles.labelText}
@@ -346,8 +348,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               {errors.time}
             </ThemedText>
           }
-        </ThemedView>
-        <ThemedView style={styles.descriptionWrapper}>
+        </View>
+        <View style={styles.descriptionWrapper}>
           <ThemedText
             type="defaultMedium"
             style={styles.labelText}
@@ -371,9 +373,9 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               {errors.description}
             </ThemedText>
           }
-        </ThemedView>
+        </View>
       </Animated.ScrollView>
-      <ThemedView style={styles.actionWrapper}>
+      <View style={styles.actionWrapper}>
         <CustomButton onPress={handleSchedule}>
           <ThemedText
             type="button"
@@ -382,7 +384,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             {t('appointment_manage.schedule')}
           </ThemedText>
         </CustomButton>
-      </ThemedView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -390,7 +392,6 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     paddingHorizontal: 15,
     paddingVertical: 15
   },

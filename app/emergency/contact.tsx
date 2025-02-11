@@ -8,12 +8,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/app/layout/header';
 import CustomButton from '@/components/CustomButton';
+import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 
 import { Stack } from 'expo-router';
 import {
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
   TouchableHighlight,
   TouchableOpacity
@@ -26,11 +26,12 @@ import { ThemedText } from '@/components/ThemedText';
 import { IEmergencyContact, TResponse } from '@/@types';
 import { getContactList } from '@/services/emergency';
 import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
-import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function EmergencyContactScreen() {
   const initiatedRef = useRef<boolean>(false);
-  
+  const backgroundColor = useThemeColor({}, 'background');
+
   const { t } = useTranslation();
 
   const [contactList, setContactList] = useState<IEmergencyContact[]>([]);
@@ -173,9 +174,9 @@ export default function EmergencyContactScreen() {
         onCancel={handleDeleteConfirmResult}
         onConfirm={handleContactDelete}
       />
-      <GestureHandlerRootView style={styles.container}>
+      <GestureHandlerRootView style={[styles.container, { backgroundColor }]}>
         {selectableVisible&&
-          <ThemedView style={styles.toolbarWrapper}>
+          <View style={styles.toolbarWrapper}>
             <TouchableOpacity onPress={handleSelectAll}>
               <View style={{ flexDirection: 'row', columnGap: 5, alignItems: 'center' }}>
                 {checkedIdList.length === contactList.length
@@ -206,7 +207,7 @@ export default function EmergencyContactScreen() {
                 {t('cancel')}
               </ThemedText>
             </TouchableOpacity>
-          </ThemedView>
+          </View>
         }
         <FlatList
           data={contactList}
@@ -220,7 +221,7 @@ export default function EmergencyContactScreen() {
           }
           keyExtractor={item => `${item.id}`}
         />
-        <ThemedView style={styles.actionWrapper}>
+        <View style={styles.actionWrapper}>
           <CustomButton onPress={() => {}}>
             <ThemedText
               type="button"
@@ -229,7 +230,7 @@ export default function EmergencyContactScreen() {
               + {t('emergency_control.add_from_contact')}
             </ThemedText>
           </CustomButton>
-        </ThemedView>
+        </View>
       </GestureHandlerRootView>
     </SafeAreaView>
   );
@@ -238,7 +239,6 @@ export default function EmergencyContactScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   actionWrapper: {
     alignItems: 'center',    

@@ -9,7 +9,6 @@ import CustomButton from '@/components/CustomButton';
 import Animated from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import {
   StyleSheet,
   SafeAreaView,
@@ -18,12 +17,15 @@ import {
 import { IMedication } from '@/@types';
 import { useTranslation } from 'react-i18next';
 import ThemedInput from '@/components/ThemedIntput';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 type TMedicationFormProps = {
   medication?: IMedication
 };
 
 export default function MedicationForm({ medication }: TMedicationFormProps) {
+  const backgroundColor = useThemeColor({}, 'background');
+
   const { t } = useTranslation();
 
   const [errors, setErrors] = useState<{[k: string]: string}>({});
@@ -167,9 +169,9 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <Animated.ScrollView>
-        <ThemedView style={styles.formGroup}>
+        <View style={styles.formGroup}>
           <ThemedText
             type="default"
             style={styles.controlLabel}
@@ -190,8 +192,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               <ThemedText type="small" style={styles.errorText}>{errors.name}</ThemedText>
             }
           </View>
-        </ThemedView>
-        <ThemedView style={styles.formGroup}>
+        </View>
+        <View style={styles.formGroup}>
           <ThemedText
             type="default"
             style={styles.controlLabel}
@@ -212,8 +214,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               <ThemedText type="small" style={styles.errorText}>{errors.dosage}</ThemedText>
             }
           </View>
-        </ThemedView>
-        <ThemedView style={styles.formGroup}>
+        </View>
+        <View style={styles.formGroup}>
           <ThemedText
             type="default"
             style={styles.controlLabel}
@@ -234,8 +236,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               <ThemedText type="small" style={styles.errorText}>{errors.frequency}</ThemedText>
             }
           </View>
-        </ThemedView>
-        <ThemedView style={styles.formGroup}>
+        </View>
+        <View style={styles.formGroup}>
           <ThemedText
             type="default"
             style={styles.controlLabel}
@@ -256,8 +258,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               <ThemedText type="small" style={styles.errorText}>{errors.stock}</ThemedText>
             }
           </View>
-        </ThemedView>
-        <ThemedView style={styles.formGroup}>
+        </View>
+        <View style={styles.formGroup}>
           <ThemedText
             type="default"
             style={styles.controlLabel}
@@ -278,8 +280,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               <ThemedText type="small" style={styles.errorText}>{errors.miniStock}</ThemedText>
             }
           </View>
-        </ThemedView>
-        <ThemedView style={styles.formGroup}>
+        </View>
+        <View style={styles.formGroup}>
           <ThemedText
             type="default"
             style={styles.controlLabel}
@@ -300,8 +302,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               <ThemedText type="small" style={styles.errorText}>{errors.startDate}</ThemedText>
             }
           </View>
-        </ThemedView>
-        <ThemedView style={styles.formGroup}>
+        </View>
+        <View style={styles.formGroup}>
           <ThemedText
             type="default"
             style={styles.controlLabel}
@@ -322,9 +324,9 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               <ThemedText type="small" style={styles.errorText}>{errors.endDate}</ThemedText>
             }
           </View>
-        </ThemedView>
+        </View>
       </Animated.ScrollView>
-      <ThemedView style={styles.actionWrapper}>
+      <View style={styles.actionWrapper}>
         <CustomButton onPress={handleAddMedication}>
           <ThemedText
             type="button"
@@ -333,7 +335,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {t('save')}
           </ThemedText>
         </CustomButton>
-      </ThemedView>
+      </View>
     </SafeAreaView>
   )
 }
@@ -341,7 +343,6 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     paddingVertical: 10,
     paddingHorizontal: 10,
   },

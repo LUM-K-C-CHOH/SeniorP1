@@ -12,7 +12,6 @@ import {
   StyleSheet,
   ListRenderItemInfo,
   TouchableOpacity,
-  Text,
   View
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -26,13 +25,15 @@ import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { getContactList } from '@/services/contact';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
 
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
-  
+  const backgroundColor = useThemeColor({}, 'background');
+
   const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);
   const [contactList, setContactList] = useState<IContact[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -145,7 +146,7 @@ export default function AppointmentScreen() {
   );
   
   const renderHiddenItem = (data: ListRenderItemInfo<IAppointment>, rowMap: RowMap<IAppointment>) => (
-    <ThemedView style={styles.rowBack}>
+    <View style={styles.rowBack}>
       <TouchableOpacity
         style={[styles.backRightBtn, styles.backRightBtnLeft]}
         onPress={() => handleEditRow(rowMap, data.item.id)}
@@ -158,11 +159,11 @@ export default function AppointmentScreen() {
       >
         <DeleteIcon />
       </TouchableOpacity>
-    </ThemedView>
+    </View>
   );
   
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={[styles.container, { backgroundColor }]}>
       <ConfirmPanel
         visible={deleteConfirmPopupOptions.opened as boolean}
         titleText={t('confirmation')}
@@ -186,11 +187,11 @@ export default function AppointmentScreen() {
           <RefreshControl refreshing={isLoading} onRefresh={handleLoadData} />
         }
       />
-      <ThemedView style={styles.actionWrapper}>
+      <View style={styles.actionWrapper}>
         <CustomButton onPress={handleAddAppointment}>
           <ThemedText type="button" style={styles.addAppointmentButtonText}>+{t('appointment_manage.add_appointment')}</ThemedText>
         </CustomButton>
-      </ThemedView>
+      </View>
     </GestureHandlerRootView>
   );
 }
@@ -198,7 +199,6 @@ export default function AppointmentScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   mainWrapper: {
     flex: 1,

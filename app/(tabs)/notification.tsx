@@ -11,7 +11,6 @@ import Modal from 'react-native-modal';
 import {
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   TouchableHighlight
@@ -25,10 +24,12 @@ import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon } from '@/utils/svgs';
 import { NotificationType } from '@/config/constants';
 import { useRouter } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function NotificationScreen() {
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
+  const backgroundColor = useThemeColor({}, 'background');
 
   const { t } = useTranslation();
 
@@ -253,9 +254,9 @@ export default function NotificationScreen() {
         onCancel={handleDeleteConfirmResult}
         onConfirm={handleContactDelete}
       />
-      <GestureHandlerRootView style={styles.container}>
+      <GestureHandlerRootView style={[styles.container, { backgroundColor }]}>
         {selectableVisible&&
-          <ThemedView style={styles.toolbarWrapper}>
+          <View style={styles.toolbarWrapper}>
             <TouchableOpacity onPress={handleSelectAll}>
               <View style={{ flexDirection: 'row', columnGap: 5, alignItems: 'center' }}>
                 {checkedIdList.length === notificationList.length
@@ -271,7 +272,7 @@ export default function NotificationScreen() {
             <TouchableOpacity onPress={() => setSelectableVisible(false)}>
               <ThemedText type="default" style={styles.toolbarText}>{t('cancel')}</ThemedText>
             </TouchableOpacity>
-          </ThemedView>
+          </View>
         }
         <FlatList
           data={notificationList}
@@ -292,7 +293,6 @@ export default function NotificationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   actionWrapper: {
     alignItems: 'center',    

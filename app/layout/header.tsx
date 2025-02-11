@@ -113,7 +113,7 @@ export default function Header() {
               <TouchableHighlight key={index} onPress={() => handlePopupMenuItemTap(v.id)}>
                 <ThemedView style={styles.popupMenuItem}>
                   {v.icon}
-                  <ThemedText>{v.label}</ThemedText>
+                  <ThemedText type="default" style={styles.popupMenuText}>{v.label}</ThemedText>
                 </ThemedView>
               </TouchableHighlight>
             )}
@@ -157,5 +157,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 10
+  },
+  popupMenuText: {
+    color: '#000'
   }
 });

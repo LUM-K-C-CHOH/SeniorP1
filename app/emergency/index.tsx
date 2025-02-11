@@ -27,9 +27,11 @@ import { generateBoxShadowStyle } from '@/utils';
 import { PhonebookIcon } from '@/utils/svgs';
 import { Images } from '@/utils/assets';
 import { useRouter } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function EmergencyScreen() {
   const router = useRouter();
+  const backgroundColor = useThemeColor({}, 'background');
 
   const { t } = useTranslation();
   
@@ -67,7 +69,7 @@ export default function EmergencyScreen() {
         onConfirm={handleCallHelp}
       />
       {callResultVisible&&
-        <ThemedView style={rstyles.container}>
+        <View style={[rstyles.container, { backgroundColor }]}>
           <ThemedText
             type="bigTitle"
             style={rstyles.titleText}
@@ -127,11 +129,11 @@ export default function EmergencyScreen() {
               </ThemedText>
             </TouchableOpacity>
           </View>
-        </ThemedView>
+        </View>
       }
       {!callResultVisible&&
-        <GestureHandlerRootView style={styles.container}>
-          <ThemedView style={styles.shareLocationWrapper}>
+        <GestureHandlerRootView style={[styles.container, { backgroundColor }]}>
+          <View style={styles.shareLocationWrapper}>
             <ThemedText
               type="defaultMedium"
               style={styles.shareLocationText}
@@ -145,8 +147,8 @@ export default function EmergencyScreen() {
               value={shareLocation}
               onValueChange={(v) => handleShareLocationChange(v)}
             />
-          </ThemedView>
-          <ThemedView style={styles.callButtonWrapper}>
+          </View>
+          <View style={styles.callButtonWrapper}>
             <TouchableOpacity
               style={[
                 styles.callButton,
@@ -156,8 +158,8 @@ export default function EmergencyScreen() {
             >
               <Text style={styles.callButtonText}>{t('emergency_control.call_for_help')}!</Text>
             </TouchableOpacity>
-          </ThemedView>
-          <ThemedView style={styles.helpWrapper}>
+          </View>
+          <View style={styles.helpWrapper}>
             <ThemedText
               type="default"
               style={styles.helpText}
@@ -170,7 +172,7 @@ export default function EmergencyScreen() {
             >
               {t('emergency_control.text_2')}
             </ThemedText>
-          </ThemedView>
+          </View>
           <TouchableHighlight style={styles.contactButtonWrapper} onPress={() => router.push('/emergency/contact')}>
             <ThemedView style={styles.contactButton}>
               <PhonebookIcon />
@@ -191,7 +193,6 @@ export default function EmergencyScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     justifyContent: 'center',
   },
   shareLocationWrapper: {
