@@ -26,7 +26,8 @@
     "alert_select_schedule_date": "Please select a scheduled date.",
     "alert_select_provider": "Please select a provider",
     "alert_input_schedule_time": "Please enter a scheduled time.",
-    "alert_input_description": "Please enter a description."
+    "alert_input_description": "Please enter a description.",
+    "deleted_successfully": "Deleted successfully."
   },
   "dashboard": {
     "dashboard": "Dashboard",
@@ -71,6 +72,7 @@
     "need_help": "Need help",
     "check": "Check",
     "support": "Support",
-    "add_from_contact": "Add from Contact"
+    "add_from_contact": "Add from Contact",
+    "confirm_delete": "Are you sure to delete ${count} emergency contacts?"
   }
 }

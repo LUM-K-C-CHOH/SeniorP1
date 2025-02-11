@@ -21,11 +21,12 @@ import {
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
-import { CheckboxBlankIcon, CheckboxFilledIcon, PhoneIcon } from '@/utils/svgs';
+import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon, PhoneIcon } from '@/utils/svgs';
 import { ThemedText } from '@/components/ThemedText';
 import { IEmergencyContact, TResponse } from '@/@types';
 import { getContactList } from '@/services/emergency';
 import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
+import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 
 
 export default function EmergencyContactScreen() {
@@ -37,6 +38,7 @@ export default function EmergencyContactScreen() {
   const [selectableVisible, setSelectableVisible] = useState<boolean>(false);
   const [checkedIdList, setCheckedIdList] = useState<number[]>([]);
   const [deleteConfrimVisible, setDeleteConfirmVisible] = useState<boolean>(false);
+  const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
 
   useEffect(() => {
     if (initialRef.current) return;
@@ -75,7 +77,13 @@ export default function EmergencyContactScreen() {
   }
 
   const handleContactDelete = (): void => {
-    
+    setDeleteConfirmResultVisible(true);
+  }
+
+  const handleDeleteConfirmResult = (): void => {
+    setDeleteConfirmVisible(false);
+    setDeleteConfirmResultVisible(false);
+    setCheckedIdList([]);
   }
 
   type ContactItemProps = {
@@ -132,6 +140,33 @@ export default function EmergencyContactScreen() {
         options={{ headerShown: false }}
       />
       <Header />
+      <ConfirmPanel
+        visible={deleteConfrimVisible}
+        titleText={t('confirmation')}
+        positiveButtonText={t('yes')}
+        negaitiveButtonText={t('no')}
+        bodyText={t('emergency_control.confirm_delete').replace('${count}', `${checkedIdList.length}`)}
+        resultVisible={deleteConfirmResultVisible}
+        resultElement={
+          <ThemedView style={ConfirmResultStyle.container}>
+            <ThemedText style={ConfirmResultStyle.titleText}>
+              {t('message.deleted_successfully')}
+            </ThemedText>
+            <View style={ConfirmResultStyle.iconWrapper}><CircleCheckIcon /></View>
+            <View style={ConfirmResultStyle.actionsWrapper}>
+              <ThemedText style={ConfirmResultStyle.labelText}>{t('click')}</ThemedText>
+              <TouchableOpacity
+                onPress={handleDeleteConfirmResult}
+              >
+                <ThemedText style={[ConfirmResultStyle.labelText, ConfirmResultStyle.linkText]}>{t('here')}</ThemedText>
+              </TouchableOpacity>
+              <ThemedText style={ConfirmResultStyle.labelText}>{t('to_continue')}</ThemedText>
+            </View>
+          </ThemedView>
+        }
+        onCancel={handleDeleteConfirmResult}
+        onConfirm={handleContactDelete}
+      />
       <GestureHandlerRootView style={styles.container}>
         {selectableVisible&&
           <ThemedView style={styles.toolbarWrapper}>
