@@ -2,7 +2,7 @@
  * Delete Confrim Panel
  * RTHA
  * 
- * Created by Thornton at 02/10/2025
+ * Created By Thornton at 02/10/2025
  */
 import React from 'react';
 import Modal from 'react-native-modal';
@@ -24,7 +24,7 @@ type ConfirmPanelProps = {
   resultVisible?: boolean,
   resultElement?: React.ReactNode,
   positiveButtonText: string,
-  negaitiveButtonText: string,
+  negativeButtonText: string,
   onConfirm: () => void
   onCancel: () => void
 };
@@ -37,7 +37,7 @@ const ConfirmPanel = ({
   resultVisible,
   resultElement,
   positiveButtonText,
-  negaitiveButtonText,
+  negativeButtonText,
   onConfirm,
   onCancel
 }: ConfirmPanelProps): JSX.Element => {
@@ -72,7 +72,7 @@ const ConfirmPanel = ({
                 style={styles.button}
               >
                 <View style={[styles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
-                  <Text style={styles.buttonText}>{negaitiveButtonText}</Text>
+                  <Text style={styles.buttonText}>{negativeButtonText}</Text>
                 </View>
               </TouchableHighlight>
               <TouchableHighlight

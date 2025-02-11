@@ -61,7 +61,7 @@ export default function EmergencyScreen() {
         visible={callConfirmVisible}
         titleText={t('confirmation')}
         positiveButtonText={t('yes')}
-        negaitiveButtonText={t('no')}
+        negativeButtonText={t('no')}
         bodyText={t('emergency_control.call_confirm_text')}
         onCancel={() => setCallConfirmVisible(false)}
         onConfirm={handleCallHelp}

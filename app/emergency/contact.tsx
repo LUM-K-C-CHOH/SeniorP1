@@ -28,7 +28,6 @@ import { getContactList } from '@/services/emergency';
 import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 
-
 export default function EmergencyContactScreen() {
   const initialRef = useRef<boolean>(false);
   
@@ -144,7 +143,7 @@ export default function EmergencyContactScreen() {
         visible={deleteConfrimVisible}
         titleText={t('confirmation')}
         positiveButtonText={t('yes')}
-        negaitiveButtonText={t('no')}
+        negativeButtonText={t('no')}
         bodyText={t('emergency_control.confirm_delete').replace('${count}', `${checkedIdList.length}`)}
         resultVisible={deleteConfirmResultVisible}
         resultElement={

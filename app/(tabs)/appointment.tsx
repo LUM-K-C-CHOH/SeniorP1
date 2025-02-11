@@ -169,7 +169,7 @@ export default function AppointmentScreen() {
         visible={deleteConfirmPopupOptions.opened as boolean}
         titleText={t('confirmation')}
         positiveButtonText={t('delete')}
-        negaitiveButtonText={t('cancel')}
+        negativeButtonText={t('cancel')}
         bodyText={t('message.confirm_delete')}
         onCancel={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
         onConfirm={handleDeleteConfrim}
