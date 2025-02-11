@@ -238,7 +238,8 @@ const cstyles = StyleSheet.create({
   itemWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
     borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,

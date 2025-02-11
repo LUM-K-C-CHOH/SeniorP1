@@ -374,6 +374,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 10,
     borderRadius: 5,
+    backgroundColor: '#fff',
   }, 
   dateText: {
     color: '#222',
