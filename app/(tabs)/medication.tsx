@@ -179,16 +179,17 @@ export default function MedicationScreen() {
       <Image source={{ uri: data.item.image }} width={60} height={60}/>
       <View style={styles.infoWrapper}>
         <View style={{ flexGrow: 1 }}>
-          <ThemedText style={styles.itemTitle}>{data.item.name}</ThemedText>
+          <ThemedText type="defaultMedium" style={styles.itemTitle}>{data.item.name}</ThemedText>
           <View style={styles.itemTextWrapper}>
             <PillIcon />
-            <ThemedText style={styles.normalText}>{data.item.dosage}</ThemedText>
+            <ThemedText type="default" style={styles.normalText}>{data.item.dosage}</ThemedText>
             <ThemedText>{'•'}</ThemedText>
-            <ThemedText style={styles.normalText}>{data.item.frequency}</ThemedText>
+            <ThemedText type="default" style={styles.normalText}>{data.item.frequency}</ThemedText>
           </View>
           <View style={styles.itemTextWrapper}>
             <StockIcon color={getColorByLevel(data.item.stock)} />
             <ThemedText
+              type="default"
               style={[styles.normalText, { color: getColorByLevel(data.item.stock) }]}
             >
               {`${data.item.stock} Tablets`}
@@ -260,6 +261,7 @@ export default function MedicationScreen() {
             ]}
           >
             <ThemedText
+              type="subtitle"
               style={[
                 rstyles.titleText,
                 {
@@ -277,22 +279,32 @@ export default function MedicationScreen() {
                 justifyContent: 'center'
               }}
             >
-              <ThemedText style={rstyles.labelText}>{t('click')}</ThemedText>
+              <ThemedText type="default" style={rstyles.labelText}>{t('click')}</ThemedText>
               <TouchableOpacity onPress={() => handleReminderSettingVisible(false)}>
-                <ThemedText style={[rstyles.labelText, { fontWeight: 600 }]}>{t('here')}</ThemedText>
+                <ThemedText type="default" style={[rstyles.labelText, { fontWeight: 600 }]}>{t('here')}</ThemedText>
               </TouchableOpacity>
-              <ThemedText style={rstyles.labelText}>{t('to_continue')}</ThemedText>
+              <ThemedText type="default" style={rstyles.labelText}>{t('to_continue')}</ThemedText>
             </View>
           </ThemedView>
         }
         {!reminderSettingPanelOptions.saved&&
           <ThemedView style={rstyles.container}>
             <View style={rstyles.header}>
-              <ThemedText style={rstyles.titleText}>{t('refill_reminder_preference.refill_reminder_preference')}</ThemedText>
-              <ThemedText style={rstyles.descText}>{t('refill_reminder_preference.alert_when_amount_low').replace('${mini}', `${reminderSettingPanelOptions.miniStock?? 1}`)}</ThemedText>
+              <ThemedText
+                type="subtitle"
+                style={rstyles.titleText}
+              >
+                {t('refill_reminder_preference.refill_reminder_preference')}
+              </ThemedText>
+              <ThemedText
+                type="default"
+                style={rstyles.descText}
+              >
+                {t('refill_reminder_preference.alert_when_amount_low').replace('${mini}', `${reminderSettingPanelOptions.miniStock?? 1}`)}
+              </ThemedText>
             </View>
             <View style={[rstyles.rowWrapper, rstyles.thretholdWrapper]}>
-              <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.threshold')}:</ThemedText>
+              <ThemedText type="default" style={rstyles.labelText}>{t('refill_reminder_preference.threshold')}:</ThemedText>
               <View style={{ flex: 1 }}>
                 <TextInput
                   style={{ textAlign: 'right', height: 50 }}
@@ -304,11 +316,11 @@ export default function MedicationScreen() {
             </View>
             {reminderSettingErrors?.threshold&&
               <View style={[rstyles.rowWrapper]}>
-                <ThemedText style={rstyles.errorText}>{reminderSettingErrors.threshold}</ThemedText>
+                <ThemedText type="small" style={rstyles.errorText}>{reminderSettingErrors.threshold}</ThemedText>
               </View>
             }
             <View style={[rstyles.rowWrapper]}>
-              <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.push_notification')}:</ThemedText>
+              <ThemedText type="default" style={rstyles.labelText}>{t('refill_reminder_preference.push_notification')}:</ThemedText>
               <View>
                 <Switch
                   trackColor={{ false: '#eee', true: '#0066ff' }}
@@ -320,7 +332,7 @@ export default function MedicationScreen() {
               </View>
             </View>
             <View style={[rstyles.rowWrapper]}>
-              <ThemedText style={rstyles.labelText}>{t('refill_reminder_preference.email_alert')}:</ThemedText>
+              <ThemedText type="default" style={rstyles.labelText}>{t('refill_reminder_preference.email_alert')}:</ThemedText>
               <View>
                 <Switch
                   trackColor={{ false: '#eee', true: '#0066ff' }}
@@ -337,7 +349,7 @@ export default function MedicationScreen() {
                 style={rstyles.button}
               >
                 <View style={[rstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
-                  <Text style={rstyles.buttonText}>{t('save')}</Text>
+                  <ThemedText type="default" style={rstyles.buttonText}>{t('save')}</ThemedText>
                 </View>
               </TouchableHighlight>
               <TouchableHighlight
@@ -345,7 +357,7 @@ export default function MedicationScreen() {
                 style={rstyles.button}
               >
                 <View style={rstyles.buttonTextWrapper}>
-                  <Text style={rstyles.buttonText}>{t('dismiss')}</Text>
+                  <ThemedText type="default" style={rstyles.buttonText}>{t('dismiss')}</ThemedText>
                 </View>
               </TouchableHighlight>
             </View>
@@ -354,6 +366,7 @@ export default function MedicationScreen() {
       </Modal>
       <ThemedView style={styles.listHeader}>
         <ThemedText
+          type="default"
           style={[styles.listHeaderText, { width: '20%' }]}
         >
           {t('medication_manage.item')}
@@ -385,7 +398,7 @@ export default function MedicationScreen() {
       />
       <ThemedView style={styles.actionWrapper}>
         <CustomButton onPress={handleAddMedication}>
-          <Text style={styles.addMedicationButtonText}>+{t('medication_manage.add_medication')}</Text>
+          <ThemedText type="button" style={styles.addMedicationButtonText}>+{t('medication_manage.add_medication')}</ThemedText>
         </CustomButton>
       </ThemedView>
     </GestureHandlerRootView>
@@ -404,7 +417,6 @@ const styles = StyleSheet.create({
   },
   listHeaderText: {
     textAlign: 'center',
-    fontSize: 14
   },
   itemWrapper: {
     flexDirection: 'row',
@@ -420,8 +432,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   itemTitle: {
-    fontSize: 16,
-    fontWeight: 500,
     color: '#777',    
   },
   itemTextWrapper: {
@@ -431,8 +441,6 @@ const styles = StyleSheet.create({
     columnGap: 5,
   },
   normalText: {
-    fontSize: 14,
-    fontWeight: 400,
     color: '#000'
   },
   rowBack: {
@@ -464,8 +472,6 @@ const styles = StyleSheet.create({
   },
   addMedicationButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 500
   },
   actionWrapper: {
     alignItems: 'center',
@@ -486,8 +492,6 @@ const rstyles = StyleSheet.create({
     alignItems: 'center'
   },
   titleText: {
-    fontSize: 20,
-    fontWeight: 600,
     color: '#000'
   },
   rowWrapper: {
@@ -498,12 +502,8 @@ const rstyles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    fontSize: 12,
-    fontWeight: 400
   },
   descText: {
-    fontSize: 14,
-    fontWeight: 400,
     color: '#000'
   },
   thretholdWrapper: {
@@ -511,8 +511,6 @@ const rstyles = StyleSheet.create({
     borderBottomWidth: 1
   },
   labelText: {
-    fontSize: 15,
-    fontWeight: 400,
     color: '#000'
   },
   action: {
@@ -533,8 +531,6 @@ const rstyles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   buttonText: {
-    fontSize: 15,
-    fontWeight: 400,
     color: '#000'
   }
 });

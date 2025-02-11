@@ -138,10 +138,20 @@ export default function NotificationScreen() {
           <View
             style={nstyles.typeWrapper}
           >
-            <ThemedText style={nstyles.typeText}>{getNotificationTypeText(notification)}</ThemedText>
+            <ThemedText
+              type="small"
+              style={nstyles.typeText}
+            >
+              {getNotificationTypeText(notification)}
+            </ThemedText>
           </View>
           <View style={nstyles.infoWrapper}>
-            <ThemedText style={nstyles.normalText}>{getNotificationMessage(notification)}</ThemedText>
+            <ThemedText
+              type="default"
+              style={nstyles.normalText}
+            >
+              {getNotificationMessage(notification)}
+            </ThemedText>
           </View>
           {selectableVisible&&
             <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
@@ -171,10 +181,20 @@ export default function NotificationScreen() {
       >
         <ThemedView style={pstyles.mainWrapper}>
           <View style={pstyles.titleWrapper}>
-            <ThemedText style={pstyles.titleText}>{getNotificationTypeText(notificationPopupOptions.notification)}</ThemedText>
+            <ThemedText
+              type="subtitle"
+              style={pstyles.titleText}
+            >
+              {getNotificationTypeText(notificationPopupOptions.notification)}
+            </ThemedText>
           </View>
           <View style={pstyles.textWrapper}>
-            <ThemedText style={pstyles.normalText}>{getNotificationMessage(notificationPopupOptions.notification)}</ThemedText>
+            <ThemedText
+              type="default"
+              style={pstyles.normalText}
+            >
+              {getNotificationMessage(notificationPopupOptions.notification)}
+            </ThemedText>
           </View>
           <View style={pstyles.actionsWrapper}>
             <TouchableHighlight
@@ -182,7 +202,12 @@ export default function NotificationScreen() {
               style={pstyles.button}
             >
               <View style={[pstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
-                <Text style={pstyles.buttonText}>{t('refill_now')}</Text>
+                <ThemedText
+                  type="default"
+                  style={pstyles.buttonText}
+                >
+                  {t('refill_now')
+                }</ThemedText>
               </View>
             </TouchableHighlight>
             <TouchableHighlight
@@ -190,7 +215,12 @@ export default function NotificationScreen() {
               style={pstyles.button}
             >
               <View style={pstyles.buttonTextWrapper}>
-                <Text style={pstyles.buttonText}>{t('snooze')}</Text>
+                <ThemedText
+                  type="default"
+                  style={pstyles.buttonText}
+                >
+                  {t('snooze')}
+                </ThemedText>
               </View>
             </TouchableHighlight>
         </View>
@@ -232,14 +262,14 @@ export default function NotificationScreen() {
                   ? <CheckboxFilledIcon />
                   : <CheckboxBlankIcon />
                 }                
-                <Text style={styles.toobarText}>{t('select_all')}</Text>
+                <ThemedText type="default" style={styles.toolbarText}>{t('select_all')}</ThemedText>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setDeleteConfirmVisible(true)}>
-              <Text style={styles.toobarText}>{t('delete')}({checkedIdList.length})</Text>
+              <ThemedText type="default" style={styles.toolbarText}>{t('delete')}({checkedIdList.length})</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setSelectableVisible(false)}>
-              <Text style={styles.toobarText}>{t('cancel')}</Text>
+              <ThemedText type="default" style={styles.toolbarText}>{t('cancel')}</ThemedText>
             </TouchableOpacity>
           </ThemedView>
         }
@@ -269,20 +299,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15
   },
-  addContactButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 500
-  },
   toolbarWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 15,
     marginTop: 10
   },
-  toobarText: {
-    fontSize: 14,
-    fontWeight: 400,
+  toolbarText: {
     color: '#000',
   }
 });
@@ -301,8 +324,6 @@ const nstyles = StyleSheet.create({
     width: 80,
   },
   typeText: {
-    fontSize: 12,
-    fontWeight: 400,
     color: '#000',    
     textTransform: 'uppercase'
   },
@@ -310,8 +331,6 @@ const nstyles = StyleSheet.create({
     flex: 1,
   },
   normalText: {
-    fontSize: 14,
-    fontWeight: 400,
     color: '#000'
   },
 });
@@ -331,8 +350,6 @@ const pstyles = StyleSheet.create({
     marginTop: 15
   },
   titleText: {
-    fontSize: 17,
-    fontWeight: 600,
     color: '#000'
   },
   textWrapper: {
@@ -341,8 +358,6 @@ const pstyles = StyleSheet.create({
     marginBottom: 15,
   },
   normalText: {
-    fontSize: 14,
-    fontWeight: 400,
     color: '#000',
     textAlign: 'center'
   },
@@ -367,8 +382,6 @@ const pstyles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   buttonText: {
-    fontSize: 15,
-    fontWeight: 400,
     color: '#000'
   }
 });

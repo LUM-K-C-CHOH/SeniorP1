@@ -110,13 +110,21 @@ export default function EmergencyContactScreen() {
           </View>
           <View style={cstyles.infoWrapper}>
             <View style={cstyles.rowWrapper}>
-              <ThemedText style={cstyles.normalText}>
+              <ThemedText
+                type="default"
+                style={cstyles.normalText}
+              >
                 {name}
               </ThemedText>
             </View>
             <View style={cstyles.rowWrapper}>
               <PhoneIcon />
-              <ThemedText style={cstyles.normalText}>{phone}</ThemedText>
+              <ThemedText
+                type="default"
+                style={cstyles.normalText}
+              >
+                {phone}
+              </ThemedText>
             </View>
           </View>
           {selectableVisible&&
@@ -174,14 +182,29 @@ export default function EmergencyContactScreen() {
                   ? <CheckboxFilledIcon />
                   : <CheckboxBlankIcon />
                 }                
-                <Text style={styles.toobarText}>{t('select_all')}</Text>
+                <ThemedText
+                  type="default"
+                  style={styles.toobarText}
+                >
+                  {t('select_all')}
+                </ThemedText>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setDeleteConfirmVisible(true)}>
-              <Text style={styles.toobarText}>{t('delete')}({checkedIdList.length})</Text>
+              <ThemedText
+                type="default"
+                style={styles.toobarText}
+              >
+                {t('delete')}({checkedIdList.length})
+              </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setSelectableVisible(false)}>
-              <Text style={styles.toobarText}>{t('cancel')}</Text>
+              <ThemedText
+                type="default"
+                style={styles.toobarText}
+              >
+                {t('cancel')}
+              </ThemedText>
             </TouchableOpacity>
           </ThemedView>
         }
@@ -199,7 +222,12 @@ export default function EmergencyContactScreen() {
         />
         <ThemedView style={styles.actionWrapper}>
           <CustomButton onPress={() => {}}>
-            <Text style={styles.addContactButtonText}>+ {t('emergency_control.add_from_contact')}</Text>
+            <ThemedText
+              type="button"
+              style={styles.addContactButtonText}
+            >
+              + {t('emergency_control.add_from_contact')}
+            </ThemedText>
           </CustomButton>
         </ThemedView>
       </GestureHandlerRootView>
@@ -218,9 +246,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15
   },
   addContactButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 500
+    color: '#fff',    
   },
   toolbarWrapper: {
     flexDirection: 'row',
@@ -229,8 +255,6 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   toobarText: {
-    fontSize: 14,
-    fontWeight: 400,
     color: '#000'
   }
 });
@@ -262,8 +286,6 @@ const cstyles = StyleSheet.create({
     columnGap: 5
   },
   normalText: {
-    fontSize: 14,
-    fontWeight: 400,
     color: '#000'
   },
 });

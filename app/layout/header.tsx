@@ -88,7 +88,7 @@ export default function Header() {
           </TouchableOpacity>
         }
       </View>
-      <ThemedText style={styles.headerTitle}>{getTitle()}</ThemedText>
+      <ThemedText type="title" style={styles.headerTitle}>{getTitle()}</ThemedText>
       <View style={{ marginRight: 10, position: 'relative' }}>
         <TouchableOpacity onPress={() => setPopupMenuVisible(!popupMenuVisible)}>
           <ThreeDotIcon color="#666" />
@@ -136,8 +136,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: 600,
+    color: '#000'
   },
   popupMenuOverlay: {
     position: 'absolute',

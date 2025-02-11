@@ -6,6 +6,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
+import Animated from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -13,17 +14,18 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  Text,
   View
 } from 'react-native';
 import { IMedication } from '@/@types';
-import Animated from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 
 type TMedicationFormProps = {
   medication?: IMedication
 };
 
 export default function MedicationForm({ medication }: TMedicationFormProps) {
+  const { t } = useTranslation();
+
   const [errors, setErrors] = useState<{[k: string]: string}>({});
   const [name, setName] = useState<string>(medication ? medication.name : '');
   const [dosage, setDosage] = useState<string>(medication ? medication.dosage : '');
@@ -168,7 +170,12 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
     <SafeAreaView style={styles.container}>
       <Animated.ScrollView>
         <ThemedView style={styles.formGroup}>
-          <ThemedText style={styles.controlLabel}>Name:</ThemedText>
+          <ThemedText
+            type="default"
+            style={styles.controlLabel}
+          >
+            Name:
+          </ThemedText>
           <View style={styles.formControlWrapper}>
             <TextInput
               style={[
@@ -179,12 +186,17 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('name', v)}
             />
             {errors.name&&
-              <ThemedText style={styles.errorText}>{errors.name}</ThemedText>
+              <ThemedText type="small" style={styles.errorText}>{errors.name}</ThemedText>
             }
           </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
-          <ThemedText style={styles.controlLabel}>Dosage:</ThemedText>
+          <ThemedText
+            type="default"
+            style={styles.controlLabel}
+          >
+            Dosage:
+          </ThemedText>
           <View style={styles.formControlWrapper}>
             <TextInput
               style={[
@@ -195,12 +207,17 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('dosage', v)}
             />
             {errors.dosage&&
-              <ThemedText style={styles.errorText}>{errors.dosage}</ThemedText>
+              <ThemedText type="small" style={styles.errorText}>{errors.dosage}</ThemedText>
             }
           </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
-          <ThemedText style={styles.controlLabel}>Frequency:</ThemedText>
+          <ThemedText
+            type="default"
+            style={styles.controlLabel}
+          >
+            Frequency:
+          </ThemedText>
           <View style={styles.formControlWrapper}>
             <TextInput
               style={[
@@ -211,12 +228,17 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('frequency', v)}
             />
             {errors.frequency&&
-              <ThemedText style={styles.errorText}>{errors.frequency}</ThemedText>
+              <ThemedText type="small" style={styles.errorText}>{errors.frequency}</ThemedText>
             }
           </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
-          <ThemedText style={styles.controlLabel}>Stock:</ThemedText>
+          <ThemedText
+            type="default"
+            style={styles.controlLabel}
+          >
+            Stock:
+          </ThemedText>
           <View style={styles.formControlWrapper}>
             <TextInput
               style={[
@@ -227,12 +249,17 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('stock', v)}
             />
             {errors.stock&&
-              <ThemedText style={styles.errorText}>{errors.stock}</ThemedText>
+              <ThemedText type="small" style={styles.errorText}>{errors.stock}</ThemedText>
             }
           </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
-          <ThemedText style={styles.controlLabel}>Stock Limitation:</ThemedText>
+          <ThemedText
+            type="default"
+            style={styles.controlLabel}
+          >
+            Stock Limitation:
+          </ThemedText>
           <View style={styles.formControlWrapper}>
             <TextInput
               style={[
@@ -243,12 +270,17 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('miniStock', v)}
             />
             {errors.miniStock&&
-              <ThemedText style={styles.errorText}>{errors.miniStock}</ThemedText>
+              <ThemedText type="small" style={styles.errorText}>{errors.miniStock}</ThemedText>
             }
           </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
-          <ThemedText style={styles.controlLabel}>Start Date:</ThemedText>
+          <ThemedText
+            type="default"
+            style={styles.controlLabel}
+          >
+            Start Date:
+          </ThemedText>
           <View style={styles.formControlWrapper}>
             <TextInput
               style={[
@@ -259,12 +291,17 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('startDate', v)}
             />
             {errors.startDate&&
-              <ThemedText style={styles.errorText}>{errors.startDate}</ThemedText>
+              <ThemedText type="small" style={styles.errorText}>{errors.startDate}</ThemedText>
             }
           </View>
         </ThemedView>
         <ThemedView style={styles.formGroup}>
-          <ThemedText style={styles.controlLabel}>End Date:</ThemedText>
+          <ThemedText
+            type="default"
+            style={styles.controlLabel}
+          >
+            End Date:
+          </ThemedText>
           <View style={styles.formControlWrapper}>
             <TextInput
               style={[
@@ -275,14 +312,19 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('endDate', v)}
             />
             {errors.endDate&&
-              <ThemedText style={styles.errorText}>{errors.endDate}</ThemedText>
+              <ThemedText type="small" style={styles.errorText}>{errors.endDate}</ThemedText>
             }
           </View>
         </ThemedView>
       </Animated.ScrollView>
       <ThemedView style={styles.actionWrapper}>
         <CustomButton onPress={handleAddMedication}>
-          <Text style={styles.addMedicationButtonText}>Save</Text>
+          <ThemedText
+            type="button"
+            style={styles.addMedicationButtonText}
+          >
+            {t('save')}
+          </ThemedText>
         </CustomButton>
       </ThemedView>
     </SafeAreaView>
@@ -303,8 +345,6 @@ const styles = StyleSheet.create({
   },
   controlLabel: {
     width: 70,
-    fontWeight: 400,
-    fontSize: 14,
     color: '#666',
     marginTop: 12
   },
@@ -325,12 +365,8 @@ const styles = StyleSheet.create({
   },
   addMedicationButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 500
   },
   errorText: {
     color: 'red',
-    fontSize: 12,
-    fontWeight: 400
   }
 });

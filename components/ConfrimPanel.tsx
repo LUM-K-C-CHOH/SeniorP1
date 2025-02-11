@@ -58,12 +58,12 @@ const ConfirmPanel = ({
       {!resultVisible&&
         <ThemedView style={styles.container}>
           <View style={styles.header}>
-            <ThemedText style={styles.titleText}>{titleText}</ThemedText>            
+            <ThemedText type="subtitle" style={styles.titleText}>{titleText}</ThemedText>            
           </View>
           <View style={styles.body}>
             {bodyElement&& <>{bodyElement}</>}
             {bodyText&&
-              <ThemedText style={styles.text}>{bodyText}</ThemedText>
+              <ThemedText type="default" style={styles.text}>{bodyText}</ThemedText>
             }
           </View>
           <View style={styles.actions}>
@@ -72,7 +72,7 @@ const ConfirmPanel = ({
                 style={styles.button}
               >
                 <View style={[styles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
-                  <Text style={styles.buttonText}>{negativeButtonText}</Text>
+                  <ThemedText type="default" style={styles.buttonText}>{negativeButtonText}</ThemedText>
                 </View>
               </TouchableHighlight>
               <TouchableHighlight
@@ -80,7 +80,7 @@ const ConfirmPanel = ({
                 style={styles.button}
               >
                 <View style={styles.buttonTextWrapper}>
-                  <Text style={styles.buttonText}>{positiveButtonText}</Text>
+                  <ThemedText type="default" style={styles.buttonText}>{positiveButtonText}</ThemedText>
                 </View>
               </TouchableHighlight>
           </View>
@@ -102,8 +102,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   titleText: {
-    fontSize: 17,
-    fontWeight: 600,
     color: '#000'
   },
   body: {
@@ -113,8 +111,6 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   text: {
-    fontSize: 13,
-    fontWeight: 400,
     color: '#000',
     textAlign: 'center'
   },
@@ -136,8 +132,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   buttonText: {
-    fontSize: 15,
-    fontWeight: 400,
     color: '#000'
   }
 });

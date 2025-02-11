@@ -166,7 +166,12 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
       <TouchableHighlight onPress={() => onSelectedContact(id)}>
         <ThemedView style={cstyles.contactNameWrapper}>
           <LocationPinIcon />
-          <ThemedText style={cstyles.contactNameText}>{name}</ThemedText>
+          <ThemedText
+            type="small"
+            style={[cstyles.contactNameText, { fontWeight: 500 }]}
+          >
+            {name}
+          </ThemedText>
         </ThemedView>
       </TouchableHighlight>
     );
@@ -201,7 +206,12 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
       </Modal>
       <Animated.ScrollView>
         <ThemedView style={styles.providerWrapper}>
-          <ThemedText style={styles.labelText}>{t('appointment_manage.provider')}{' : '}</ThemedText>
+          <ThemedText
+            type="defaultMedium"
+            style={styles.labelText}
+          >
+            {t('appointment_manage.provider')}{' : '}
+          </ThemedText>
           <View style={styles.providerInfoWrapper}>
             <View style={[styles.logoWrapper, { backgroundColor: getMarkColorFromName(selectedContactInfo?.name?? 'N A').bgColor }]}>
               <ThemedText style={[{ color: getMarkColorFromName(selectedContactInfo?.name?? 'N A').textColor }]}>
@@ -209,11 +219,19 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               </ThemedText>
             </View>
             <View>
-              <ThemedText style={styles.nameText}>
+              <ThemedText
+                type="default"
+                style={[styles.nameText, { fontWeight: 500 }]}
+              >
                 {selectedContactInfo ? selectedContactInfo.name : t('no_selected')}
               </ThemedText>
               {selectedContactInfo&&
-              <ThemedText style={styles.nameText}>{selectedContactInfo.phone}</ThemedText>
+                <ThemedText
+                  type="default"
+                  style={[styles.nameText, { fontWeight: 500 }]}
+                >
+                  {selectedContactInfo.phone}
+                </ThemedText>
               }
             </View>
           </View>
@@ -223,27 +241,52 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           >
             <View style={styles.providerPickButton}>
               <LocationIcon />
-              <Text style={styles.providerPickButtonText}>{t('appointment_manage.choose_from_contact')}</Text>
+              <ThemedText
+                type="defaultMedium"
+                style={styles.providerPickButtonText}
+              >
+                {t('appointment_manage.choose_from_contact')}
+              </ThemedText>
             </View>
           </TouchableHighlight>
           {errors.contact&&
-            <ThemedText style={styles.errorText}>{errors.contact}</ThemedText>
+            <ThemedText
+              type="small"
+              style={styles.errorText}
+            >
+              {errors.contact}
+            </ThemedText>
           }
         </ThemedView>
         <ThemedView style={styles.scheduledTimeWrapper}>
-          <ThemedText style={styles.labelText}>{t('appointment_manage.scheduled_time')}{' : '}</ThemedText>
+          <ThemedText
+            type="defaultMedium"
+            style={styles.labelText}
+          >
+            {t('appointment_manage.scheduled_time')}{' : '}
+          </ThemedText>
           <View style={styles.dateWrapper}>
             <TouchableHighlight
               style={{ borderRadius: 5, marginTop: 5 }}
               onPress={() => handleCalendarPopupVisible(true)}
             >
               <View style={styles.dateControl}>
-                <ThemedText style={styles.dateText}>{selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}</ThemedText>
+                <ThemedText
+                  type="defaultMedium"
+                  style={[styles.dateText, { fontWeight: 400 }]}
+                >
+                  {selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}
+                </ThemedText>
                 <CalendarIcon />
               </View>
             </TouchableHighlight>
             {errors.date&&
-              <ThemedText style={styles.errorText}>{errors.date}</ThemedText>
+              <ThemedText
+                type="small"
+                style={styles.errorText}
+              >
+                {errors.date}
+              </ThemedText>
             }
           </View>
           <View style={styles.timeWrapper}>
@@ -262,19 +305,32 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             />
             <ThemedText>:</ThemedText>
             <View style={styles.secondPlaceholderWrapper}>
-              <ThemedText style={styles.secondPlaceholderText}>00</ThemedText>
+              <ThemedText
+                type="defaultMedium"
+                style={[styles.secondPlaceholderText, { fontWeight: 400 }]}
+              >
+                00
+              </ThemedText>
             </View>   
             <View style={styles.amWrapper}>
               <Pressable onPress={() => setTimeType(TimeType.AM)}>
                 <ThemedText
-                  style={[styles.amText, timeType === TimeType.AM&& styles.amActive, { borderBottomLeftRadius: 5, borderTopLeftRadius: 5 }]}
+                  type="defaultMedium"
+                  style={[
+                    styles.amText, timeType === TimeType.AM&& styles.amActive,
+                    { fontWeight: 400, borderBottomLeftRadius: 5, borderTopLeftRadius: 5 }
+                  ]}
                 >
                   AM
                 </ThemedText>
               </Pressable>
               <Pressable onPress={() => setTimeType(TimeType.PM)}>
                 <ThemedText
-                  style={[styles.amText, timeType === TimeType.PM&& styles.amActive, { borderBottomRightRadius: 5, borderTopRightRadius: 5 }]}
+                  type="defaultMedium"
+                  style={[
+                    styles.amText, timeType === TimeType.PM&& styles.amActive,
+                    { fontWeight: 400, borderBottomRightRadius: 5, borderTopRightRadius: 5 }
+                  ]}
                 >
                   PM
                 </ThemedText>
@@ -282,11 +338,21 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             </View>
           </View>
           {errors.time&&
-            <ThemedText style={styles.errorText}>{errors.time}</ThemedText>
+            <ThemedText
+              type="small"
+              style={styles.errorText}
+            >
+              {errors.time}
+            </ThemedText>
           }
         </ThemedView>
         <ThemedView style={styles.descriptionWrapper}>
-          <ThemedText style={styles.labelText}>{t('appointment_manage.description')}{' : '}</ThemedText>
+          <ThemedText
+            type="defaultMedium"
+            style={styles.labelText}
+          >
+            {t('appointment_manage.description')}{' : '}
+          </ThemedText>
           <TextInput
             style={styles.descriptionInputControl}
             multiline={true}
@@ -296,13 +362,23 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             onChangeText={(v) => handleDescriptionChange(v)}
           />
           {errors.description&&
-            <ThemedText style={styles.errorText}>{errors.description}</ThemedText>
+            <ThemedText
+              type="small"
+              style={styles.errorText}
+            >
+              {errors.description}
+            </ThemedText>
           }
         </ThemedView>
       </Animated.ScrollView>
       <ThemedView style={styles.actionWrapper}>
         <CustomButton onPress={handleSchedule}>
-          <Text style={styles.scheduleButtonText}>{t('appointment_manage.schedule')}</Text>
+          <ThemedText
+            type="button"
+            style={styles.scheduleButtonText}
+          >
+            {t('appointment_manage.schedule')}
+          </ThemedText>
         </CustomButton>
       </ThemedView>
     </SafeAreaView>
@@ -334,15 +410,11 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   labelText: {
-    fontWeight: 500,
-    fontSize: 16,
     color: '#333',
     textDecorationColor: '#0066ff',
     textDecorationLine: 'underline',
   },
   nameText: {
-    fontSize: 14,
-    fontWeight: 500,
     color: '#777',
   },
   providerPickButton: {
@@ -356,8 +428,6 @@ const styles = StyleSheet.create({
   },
   providerPickButtonText: {
     color: '#87b5f2',
-    fontWeight: 600,
-    fontSize: 16
   },
   scheduledTimeWrapper: {
     marginTop: 20
@@ -378,8 +448,6 @@ const styles = StyleSheet.create({
   }, 
   dateText: {
     color: '#222',
-    fontSize: 16,
-    fontWeight: 400
   },
   timeWrapper: {
     flexDirection: 'row',
@@ -403,8 +471,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   amText: {
-    fontSize: 16,
-    fontWeight: 400,
     color: '#222',
     paddingVertical: 6,
     paddingHorizontal: 8,
@@ -425,8 +491,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   secondPlaceholderText: {
-    fontSize: 16,
-    fontWeight: 400,
     color: '#222',
   },
   descriptionWrapper: {
@@ -451,13 +515,9 @@ const styles = StyleSheet.create({
   },
   scheduleButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 500
   }, 
   errorText: {
-    color: 'red',
-    fontSize: 12,
-    fontWeight: 400
+    color: 'red'
   }
 });
 
@@ -488,8 +548,6 @@ const cstyles = StyleSheet.create({
     columnGap: 10
   },
   contactNameText: {
-    fontSize: 12,
-    fontWeight: 500,
     color: '#666'
   }
 });

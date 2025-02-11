@@ -68,23 +68,63 @@ export default function EmergencyScreen() {
       />
       {callResultVisible&&
         <ThemedView style={rstyles.container}>
-          <ThemedText style={rstyles.titleText}>{t('emergency_control.emergency_alert_released')}!</ThemedText>
+          <ThemedText
+            type="bigTitle"
+            style={rstyles.titleText}
+          >
+            {t('emergency_control.emergency_alert_released')}!
+          </ThemedText>
           <View style={rstyles.bgWrapper}>
             <Image source={Images.Emergency} />
           </View>
-          <ThemedText style={rstyles.resultText}>{t('emergency_control.text_3')}</ThemedText>
+          <ThemedText
+            type="title"
+            style={rstyles.resultText}
+          >
+            {t('emergency_control.text_3')}
+          </ThemedText>
           <View style={rstyles.backWrapper}>
-            <ThemedText style={rstyles.backText}>{t('click')}</ThemedText>
+            <ThemedText
+              type="subtitle"
+              style={[rstyles.backText, { fontWeight: 400 }]}
+            >
+              {t('click')}
+            </ThemedText>
             <TouchableOpacity onPress={handleBack}>
-              <ThemedText style={[rstyles.backText, { fontWeight: 600 }]}>{t('here')}</ThemedText>
+              <ThemedText
+                type="subtitle"
+                style={rstyles.backText}
+              >
+                {t('here')}
+              </ThemedText>
             </TouchableOpacity>
-            <ThemedText style={rstyles.backText}>{t('to_back')}</ThemedText>
+            <ThemedText
+              type="subtitle"
+              style={[rstyles.backText, { fontWeight: 400 }]}
+            >
+              {t('to_back')}
+            </ThemedText>
           </View>
           <View style={rstyles.helpWrapper}>
-            <ThemedText style={rstyles.helpText}>{t('emergency_control.need_help')}?</ThemedText>
-            <ThemedText style={rstyles.helpText}>{t('emergency_control.check')}</ThemedText>
+            <ThemedText
+              type="default"
+              style={rstyles.helpText}
+            >
+              {t('emergency_control.need_help')}?
+            </ThemedText>
+            <ThemedText
+              type="default"
+              style={rstyles.helpText}
+            >
+              {t('emergency_control.check')}
+            </ThemedText>
             <TouchableOpacity onPress={() => {}}>
-              <ThemedText style={[rstyles.helpText, { fontWeight: 600 }]}>{t('emergency_control.support')}</ThemedText>
+              <ThemedText
+                type="default"
+                style={[rstyles.helpText, { fontWeight: 600 }]}
+              >
+                {t('emergency_control.support')}
+              </ThemedText>
             </TouchableOpacity>
           </View>
         </ThemedView>
@@ -92,7 +132,12 @@ export default function EmergencyScreen() {
       {!callResultVisible&&
         <GestureHandlerRootView style={styles.container}>
           <ThemedView style={styles.shareLocationWrapper}>
-            <ThemedText style={styles.shareLocationText}>{t('emergency_control.share_my_location')}:</ThemedText>
+            <ThemedText
+              type="defaultMedium"
+              style={styles.shareLocationText}
+            >
+              {t('emergency_control.share_my_location')}:
+            </ThemedText>
             <Switch
               trackColor={{ false: '#eee', true: '#0066ff' }}
               ios_backgroundColor={'#0066ff'}
@@ -113,18 +158,32 @@ export default function EmergencyScreen() {
             </TouchableOpacity>
           </ThemedView>
           <ThemedView style={styles.helpWrapper}>
-            <ThemedText style={styles.helpText}>{t('emergency_control.text_1')}</ThemedText>
-            <ThemedText style={styles.helpText}>{t('emergency_control.text_2')}</ThemedText>
+            <ThemedText
+              type="default"
+              style={styles.helpText}
+            >
+              {t('emergency_control.text_1')}
+            </ThemedText>
+            <ThemedText
+              type="default"
+              style={styles.helpText}
+            >
+              {t('emergency_control.text_2')}
+            </ThemedText>
           </ThemedView>
           <TouchableHighlight style={styles.contactButtonWrapper} onPress={() => router.push('/emergency/contact')}>
             <ThemedView style={styles.contactButton}>
               <PhonebookIcon />
-              <Text style={styles.contactButtonText}>{t('emergency_control.emergency_contact')}</Text>
+              <ThemedText
+                type="default"
+                style={styles.contactButtonText}
+              >
+                {t('emergency_control.emergency_contact')}
+              </ThemedText>
             </ThemedView>
           </TouchableHighlight>
         </GestureHandlerRootView>
-      }
-      
+      }      
     </SafeAreaView>
   );
 }
@@ -144,8 +203,6 @@ const styles = StyleSheet.create({
   },
   shareLocationText: {
     color: '#3f3f3f',
-    fontSize: 17,
-    fontWeight: 600
   },
   callButtonWrapper: {
     alignItems: 'center',
@@ -172,8 +229,6 @@ const styles = StyleSheet.create({
   helpText: {
     width: 250,
     color: '#828282',
-    fontSize: 15,
-    fontWeight: 400
   },
   contactButtonWrapper: {
     position: 'absolute',
@@ -194,7 +249,6 @@ const styles = StyleSheet.create({
   },
   contactButtonText: {
     color: '#236ad3',
-    fontSize: 14,
     fontWeight: 600,
   }
 });
@@ -207,8 +261,6 @@ const rstyles = StyleSheet.create({
   titleText: {
     textAlign: 'center',
     color: '#0066ff',
-    fontSize: 24,
-    fontWeight: 700,
     marginTop: 100
   },
   bgWrapper: {
@@ -216,8 +268,6 @@ const rstyles = StyleSheet.create({
     alignItems: 'center',
   },
   resultText: {
-    fontSize: 20,
-    fontWeight: 600,
     color: '#454b60',
     width: 300,
     alignSelf: 'center',
@@ -231,8 +281,6 @@ const rstyles = StyleSheet.create({
     marginTop: 20,
   },
   backText: {
-    fontSize: 20,
-    fontWeight: 400,
     color: '#454b60',
   },
   helpWrapper: {
@@ -242,8 +290,6 @@ const rstyles = StyleSheet.create({
     marginTop: 100,
   },
   helpText: {
-    fontSize: 16,
-    fontWeight: 400,
     color: '#454b60',
   }
 });

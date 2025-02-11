@@ -129,16 +129,16 @@ export default function AppointmentScreen() {
       </View>
       <View style={styles.infoWrapper}>
         <View style={styles.rowWrapper}>
-          <ThemedText style={styles.normalText}>
+          <ThemedText type="default" style={styles.normalText}>
             {getContactName(data.item.contactId)}
           </ThemedText>
         </View>
         <View style={styles.rowWrapper}>
           <ClockIcon />
-          <ThemedText style={styles.normalText}>{getDateString(data.item.scheduledTime)}</ThemedText>
+          <ThemedText type="default" style={styles.normalText}>{getDateString(data.item.scheduledTime)}</ThemedText>
         </View>
         <View style={styles.rowWrapper}>
-          <ThemedText style={[styles.normalText, { color: '#999' }]}>{data.item.description}</ThemedText>
+          <ThemedText type="default" style={[styles.normalText, { color: '#999' }]}>{data.item.description}</ThemedText>
         </View>          
       </View>
     </ThemedView>
@@ -188,7 +188,7 @@ export default function AppointmentScreen() {
       />
       <ThemedView style={styles.actionWrapper}>
         <CustomButton onPress={handleAddAppointment}>
-          <Text style={styles.addAppointmentButtonText}>+{t('appointment_manage.add_appointment')}</Text>
+          <ThemedText type="button" style={styles.addAppointmentButtonText}>+{t('appointment_manage.add_appointment')}</ThemedText>
         </CustomButton>
       </ThemedView>
     </GestureHandlerRootView>
@@ -228,9 +228,7 @@ const styles = StyleSheet.create({
     columnGap: 5
   },
   normalText: {
-    fontSize: 14,
-    fontWeight: 400,
-    color: '#000'
+    color: '#000',
   },
   rowBack: {
     alignItems: 'center',
@@ -266,7 +264,5 @@ const styles = StyleSheet.create({
   },
   addAppointmentButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 500
   }, 
 });
