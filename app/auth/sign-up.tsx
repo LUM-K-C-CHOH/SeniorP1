@@ -17,7 +17,6 @@ import { Stack, useRouter } from 'expo-router';
 import {
   StyleSheet,
   View,
-  SafeAreaView,
   TouchableOpacity,
   useColorScheme
 } from 'react-native';
