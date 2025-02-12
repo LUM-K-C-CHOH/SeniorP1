@@ -7,9 +7,9 @@
 import React, { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Animated from 'react-native-reanimated';
-import ThemedInput from '@/components/ThemedIntput';
 
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedInput } from '@/components/ThemedIntput';
 import {
   StyleSheet,
   SafeAreaView,

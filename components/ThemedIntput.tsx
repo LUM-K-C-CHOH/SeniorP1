@@ -14,13 +14,13 @@ export type ThemedTextProps = TextInputProps & {
   type?: 'default';
 };
 
-const ThemedInput = ({
+export function ThemedInput({
   style,
   lightColor,
   darkColor,
   type = 'default',
   ...rest
-}: ThemedTextProps): JSX.Element => {
+}: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'defaultControlText');
 
   return (
@@ -42,5 +42,3 @@ const styles = StyleSheet.create({
     fontWeight: 400,
   },
 });
-
-export default ThemedInput;

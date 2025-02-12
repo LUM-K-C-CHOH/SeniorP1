@@ -10,7 +10,6 @@ import { default as AnimatedModal } from 'react-native-modal';
 import Calendar from '@/components/Calendar';
 import dayjs from 'dayjs';
 import Animated from 'react-native-reanimated';
-import ThemedInput from '@/components/ThemedIntput';
 
 import { IAppointment, IContact, TResponse } from '@/@types';
 import {
@@ -25,6 +24,7 @@ import {
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedInput } from '@/components/ThemedIntput';
 import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon, LocationPinIcon } from '@/utils/svgs';

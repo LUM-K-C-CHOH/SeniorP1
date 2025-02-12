@@ -6,7 +6,6 @@
  */
 import React, { useState, useCallback, useContext } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';
-import ThemedInput from '@/components/ThemedIntput';
 import CustomButton from '@/components/CustomButton';
 
 import { Stack, useRouter } from 'expo-router';
@@ -20,8 +19,10 @@ import { login } from '@/services/auth';
 import { TResponse } from '@/@types';
 import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedInput } from '@/components/ThemedIntput';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
+import { validateEmail } from '@/utils';
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -37,6 +38,10 @@ export default function SignInScreen() {
   const handleSignIn = useCallback(async (): Promise<void> => {
     let errors:{[k: string]: string} = {}
     if (email.length === 0) {
+      errors['email'] = t('message.alert_input_email');
+    }
+
+    if (email.length > 0 && !validateEmail(email)) {
       errors['email'] = t('message.alert_input_valid_email');
     }
 
@@ -66,7 +71,9 @@ export default function SignInScreen() {
 
           router.replace('/');
         } else {
-          console.log(res.message);
+          let errors: {[k: string]: string} = {};
+          errors['response_error'] = res.message?? '';
+          setErrors(errors);
         }
       });
   }, [email, password]);
@@ -83,7 +90,7 @@ export default function SignInScreen() {
           lightColor={Colors.light.darkGrayText}
           style={styles.titleText}
         >
-          {t('sign_in')}
+          {t('auth.sign_in')}
         </ThemedText>
         <ThemedText
           type="defaultMedium"
@@ -96,7 +103,7 @@ export default function SignInScreen() {
         <View style={styles.formGroup}>
           <ThemedInput
             type="default"
-            style={styles.formControl}
+            style={[styles.formControl, errors.email&& styles.error]}
             placeholder="Email"
             value={email}
             onChangeText={v => setEmail(v)}
@@ -114,7 +121,7 @@ export default function SignInScreen() {
           }
         </View>
         <ThemedInput
-          style={styles.formControl}
+          style={[styles.formControl, errors.password&& styles.error]}
           placeholder="Password"
           value={password}
           onChangeText={v => setPassword(v)}
@@ -134,7 +141,7 @@ export default function SignInScreen() {
             styles.linkWrapper, { justifyContent: 'flex-end' }
           ]}
         >
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => router.push('/auth/forgot-password')}>
             <ThemedText
               type="defaultMedium"
               darkColor={Colors.dark.darkGrayText}
@@ -155,7 +162,7 @@ export default function SignInScreen() {
               darkColor={Colors.dark.defaultButtonText}
               lightColor={Colors.light.defaultButtonText}
             >
-              {t('login')}
+              {t('auth.login')}
             </ThemedText>
           </CustomButton>
         </View>
@@ -187,7 +194,7 @@ export default function SignInScreen() {
               darkColor={Colors.dark.darkGrayText}
               lightColor={Colors.light.darkGrayText}
             >
-              {t('register')}
+              {t('auth.register')}
             </ThemedText>
           </TouchableOpacity>
         </View>
@@ -250,6 +257,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
     paddingHorizontal: 10
+  },
+  error: {
+    borderColor: 'red',
   },
   errorWrapper: {
     alignItems: 'center',

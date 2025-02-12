@@ -11,7 +11,11 @@ export const getNotificationList = () => {
     '/notification/list'
   )
     .then(response => {
-      return { success: true, data: response.data };
+      if (response.data.code === 0) {
+        return { success: true, data: response.data.data };
+      } else {
+        return { success: false, message: response.data.error };
+      }
     })
     .catch(error => {
       console.log(error);

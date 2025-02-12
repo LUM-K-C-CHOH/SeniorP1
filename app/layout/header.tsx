@@ -36,7 +36,7 @@ export default function Header() {
     {
       id: 'manage_password',
       icon: <KeyIcon width={20} height={20} color={theme === 'light' ? '#666' : '#999'} />,
-      label: t('manage_password')
+      label: t('auth.update_password')
     },
     {
       id: 'logout',
@@ -61,7 +61,8 @@ export default function Header() {
       '/medication/add': t('medication_manage.add_medication'),
       '/medication/edit': t('medication_manage.edit_medication'),
       '/appointment/add': t('appointment_manage.add_appointment'),
-      '/appointment/edit': t('appointment_manage.edit_appointment')
+      '/appointment/edit': t('appointment_manage.edit_appointment'),
+      '/auth/update-password': t('auth.update_password')
     }
 
     return titles[path]?? '';
@@ -73,6 +74,8 @@ export default function Header() {
     if (menuId === 'logout') {
       logout();
       router.replace('/auth/sign-in');
+    } else if (menuId === 'manage_password') {
+      router.push('/auth/update-password');
     }
   }
 

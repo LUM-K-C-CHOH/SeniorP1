@@ -6,12 +6,12 @@
  */
 import React, { useState, useCallback, useContext } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';
-import ThemedInput from '@/components/ThemedIntput';
 import CustomButton from '@/components/CustomButton';
 import PhoneInput, {
   ICountry,
   isValidPhoneNumber,
 } from 'react-native-international-phone-number';
+import Animated from 'react-native-reanimated';
 
 import { Stack, useRouter } from 'expo-router';
 import {
@@ -24,9 +24,10 @@ import { register } from '@/services/auth';
 import { TResponse } from '@/@types';
 import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedInput } from '@/components/ThemedIntput';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
-import Animated from 'react-native-reanimated';
+import { validateEmail } from '@/utils';
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -43,14 +44,6 @@ export default function SignUpScreen() {
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<{[k: string]: string}>({});
 
-  const validateEmail = (email: string): boolean => {
-    return !!String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
-
   const handleSignUp = useCallback(async () => {
     let errors: {[k: string]: string} = {};
     
@@ -62,7 +55,7 @@ export default function SignUpScreen() {
       errors['email'] = t('message.alert_input_email');
     }
 
-    if (!validateEmail(email)) {
+    if (email.length > 0 && !validateEmail(email)) {
       errors['email'] = t('message.alert_input_valid_email');
     }
 
@@ -102,7 +95,9 @@ export default function SignUpScreen() {
         if (res.success) {
 
         } else {
-
+          let errors: {[k: string]: string} = {};
+          errors['response_error'] = res.message?? '';
+          setErrors(errors);
         }
       });
     
@@ -120,7 +115,7 @@ export default function SignUpScreen() {
           lightColor={Colors.light.darkGrayText}
           style={styles.titleText}
         >
-          {t('sign_up')}
+          {t('auth.sign_up')}
         </ThemedText>
         <ThemedText
           type="defaultMedium"
@@ -133,7 +128,7 @@ export default function SignUpScreen() {
         <View style={styles.formGroup}>
           <ThemedInput
             type="default"
-            style={styles.formControl}
+            style={[styles.formControl, errors.name&& styles.error]}
             placeholder="Name"
             value={name}
             onChangeText={v => setName(v)}
@@ -152,7 +147,7 @@ export default function SignUpScreen() {
         <View style={styles.formGroup}>
           <ThemedInput
             type="default"
-            style={styles.formControl}
+            style={[styles.formControl, errors.email&& styles.error]}
             placeholder="Email"
             value={email}
             onChangeText={v => setEmail(v)}
@@ -173,7 +168,7 @@ export default function SignUpScreen() {
           <PhoneInput
             phoneInputStyles={{
               container: {
-                borderColor: '#454b60',
+                borderColor: errors.phone ? 'red' : '#454b60',
                 height: 45,
               },
               input: {
@@ -202,7 +197,7 @@ export default function SignUpScreen() {
         </View>
         <View style={styles.formGroup}>
           <ThemedInput
-            style={styles.formControl}
+            style={[styles.formControl, errors.password&& styles.error]}
             placeholder="Password"
             value={password}
             onChangeText={v => setPassword(v)}
@@ -220,7 +215,7 @@ export default function SignUpScreen() {
         </View>
         <View style={styles.formGroup}>
           <ThemedInput
-            style={styles.formControl}
+            style={[styles.formControl, errors.confirmPassword&& styles.error]}
             placeholder="Confrim Password"
             value={confirmPassword}
             onChangeText={v => setConfirmPassword(v)}
@@ -246,7 +241,7 @@ export default function SignUpScreen() {
               darkColor={Colors.dark.defaultButtonText}
               lightColor={Colors.light.defaultButtonText}
             >
-              {t('join')}
+              {t('auth.join')}
             </ThemedText>
           </CustomButton>
         </View>
@@ -278,7 +273,7 @@ export default function SignUpScreen() {
               darkColor={Colors.dark.darkGrayText}
               lightColor={Colors.light.darkGrayText}
             >
-              {t('sign_in')}
+              {t('auth.sign_in')}
             </ThemedText>
           </TouchableOpacity>
         </View>
@@ -332,6 +327,9 @@ const styles = StyleSheet.create({
   },
   formGroup: {
     marginTop: 20,
+  },
+  error: {
+    borderColor: 'red',
   },
   formControl: {
     height: 45,
