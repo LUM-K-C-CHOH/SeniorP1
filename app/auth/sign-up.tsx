@@ -4,118 +4,355 @@
  * 
  * Created By Thornton at 01/23/2025
  */
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
+import ApplicationContext from '@/context/ApplicationContext';
+import ThemedInput from '@/components/ThemedIntput';
+import CustomButton from '@/components/CustomButton';
+import PhoneInput, {
+  ICountry,
+  isValidPhoneNumber,
+} from 'react-native-international-phone-number';
+
+import { Stack, useRouter } from 'expo-router';
 import {
-  Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
-  Alert
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+  useColorScheme
 } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { register } from '@/services/auth';
+import { TResponse } from '@/@types';
+import { useTranslation } from 'react-i18next';
+import { ThemedText } from '@/components/ThemedText';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/config/constants';
+import Animated from 'react-native-reanimated';
 
 export default function SignUpScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
+  const backgroundColor = useThemeColor({}, 'background');
+  const theme = useColorScheme();
+
+  const { t } = useTranslation();
+
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [country, setCountry] = useState<ICountry>();
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [errors, setErrors] = useState<{[k: string]: string}>({});
+
+  const validateEmail = (email: string): boolean => {
+    return !!String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
 
   const handleSignUp = useCallback(async () => {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert('Error', 'All fields are required.');
-      return;
+    let errors: {[k: string]: string} = {};
+    
+    if (name.length === 0) {
+      errors['name'] = t('message.alert_input_name');
     }
 
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
+    if (email.length === 0) {
+      errors['email'] = t('message.alert_input_email');
     }
 
-    Alert.alert('Success', 'Account created successfully!', [
-      { text: 'OK', onPress: () => router.replace('/auth/sign-in') },
-    ]);
+    if (!validateEmail(email)) {
+      errors['email'] = t('message.alert_input_valid_email');
+    }
+
+    if (!country || phone.length === 0) {
+      errors['phone'] = t('message.alert_input_phone');
+    } 
+    
+    if (country) {
+      let valid = isValidPhoneNumber(phone, country);
+      if (!valid) {
+        errors['phone'] = t('message.alert_input_valid_phone');
+      }
+    } else {
+      errors['phone'] = t('message.alert_select_country');
+    }
+
+    if (password.length === 0) {
+      errors['password'] = t('message.alert_input_password');
+    }
+
+    if (confirmPassword.length === 0) {
+      errors['confirmPassword'] = t('message.alert_input_confirm_password');
+    }
+
+    if (confirmPassword !== password) {
+      errors['confirmPassword'] = t('message.alert_not_match_password');
+    }
+    
+    setErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    let phoneNumber = phone.replaceAll(' ', '');
+    let countryCode = country?.callingCode?? '+1';
+    
+    register(name, email, countryCode, phoneNumber, password)
+      .then((res: TResponse) => {
+        if (res.success) {
+
+        } else {
+
+        }
+      });
+    
   }, [email, password, confirmPassword]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Animated.ScrollView style={[styles.container, { backgroundColor }]}>
       <Stack.Screen
         options={{ headerShown: false }}
       />
-
-      <Text style={styles.title}>Sign Up</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.replace('/auth/sign-in')}>
-        <Text style={styles.link}>Already have an account? Sign In</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+      <View style={styles.mainWrapper}>
+        <ThemedText
+          type="bigTitle"
+          darkColor={Colors.dark.darkGrayText}
+          lightColor={Colors.light.darkGrayText}
+          style={styles.titleText}
+        >
+          {t('sign_up')}
+        </ThemedText>
+        <ThemedText
+          type="defaultMedium"
+          darkColor={Colors.dark.darkGrayText}
+          lightColor={Colors.light.darkGrayText}
+          style={styles.descriptionText}
+        >
+          {t('auth.text_2')}
+        </ThemedText>
+        <View style={styles.formGroup}>
+          <ThemedInput
+            type="default"
+            style={styles.formControl}
+            placeholder="Name"
+            value={name}
+            onChangeText={v => setName(v)}
+            autoCapitalize="none"
+          />
+          {errors.name&& 
+            <ThemedText
+              type="small"
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
+            >
+              {errors.name}
+            </ThemedText>
+          }
+        </View>
+        <View style={styles.formGroup}>
+          <ThemedInput
+            type="default"
+            style={styles.formControl}
+            placeholder="Email"
+            value={email}
+            onChangeText={v => setEmail(v)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          {errors.email&& 
+            <ThemedText
+              type="small"
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
+            >
+              {errors.email}
+            </ThemedText>
+          }
+        </View>
+        <View style={styles.formGroup}>
+          <PhoneInput
+            phoneInputStyles={{
+              container: {
+                borderColor: '#454b60',
+                height: 45,
+              },
+              input: {
+                color: theme === 'light' ? Colors.dark.defaultControlText : Colors.dark.defaultControlText,
+                fontSize: 16,
+                fontWeight: 400,
+              },
+            }}
+            defaultCountry={'US'}
+            value={phone}
+            onChangePhoneNumber={v => setPhone(v)}
+            selectedCountry={country}
+            onChangeSelectedCountry={v => setCountry(v)}
+            placeholder="Phone number"
+            placeholderTextColor="#999"
+          />
+          {errors.phone&& 
+            <ThemedText
+              type="small"
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
+            >
+              {errors.phone}
+            </ThemedText>
+          }
+        </View>
+        <View style={styles.formGroup}>
+          <ThemedInput
+            style={styles.formControl}
+            placeholder="Password"
+            value={password}
+            onChangeText={v => setPassword(v)}
+            secureTextEntry
+          />
+          {errors.password&& 
+            <ThemedText
+              type="small"
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
+            >
+              {errors.password}
+            </ThemedText>
+          }
+        </View>
+        <View style={styles.formGroup}>
+          <ThemedInput
+            style={styles.formControl}
+            placeholder="Confrim Password"
+            value={confirmPassword}
+            onChangeText={v => setConfirmPassword(v)}
+            secureTextEntry
+          />
+          {errors.confirmPassword&& 
+            <ThemedText
+              type="small"
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
+            >
+              {errors.confirmPassword}
+            </ThemedText>
+          }
+        </View>
+        <View style={styles.buttonWrapper}>
+          <CustomButton
+            onPress={handleSignUp}
+            bgColor={'#fa9800'}
+          >
+            <ThemedText
+              type="button"
+              darkColor={Colors.dark.defaultButtonText}
+              lightColor={Colors.light.defaultButtonText}
+            >
+              {t('join')}
+            </ThemedText>
+          </CustomButton>
+        </View>
+        {errors.response_error&& 
+          <View style={styles.errorWrapper}>
+            <ThemedText
+              type="small"
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
+            >
+              {errors.response_error}
+            </ThemedText>
+          </View>
+        }
+      </View>
+      <View style={{ paddingVertical: 30 }}>
+        <View style={styles.linkWrapper}>
+          <ThemedText
+            type="defaultMedium"
+            darkColor={Colors.dark.darkGrayText}
+            lightColor={Colors.light.darkGrayText}
+            style={{ fontWeight: 400 }}
+          >
+            {t('auth.already_have_account')}{'? '}
+          </ThemedText>
+          <TouchableOpacity onPress={() => router.replace('/auth/sign-in')}> 
+            <ThemedText
+              type="defaultMedium"
+              darkColor={Colors.dark.darkGrayText}
+              lightColor={Colors.light.darkGrayText}
+            >
+              {t('sign_in')}
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.linkWrapper}>
+          <ThemedText
+            type="defaultMedium"
+            darkColor={Colors.dark.darkGrayText}
+            lightColor={Colors.dark.darkGrayText}
+            style={{ fontWeight: 400 }}
+          >
+            {t('need_help')}?
+          </ThemedText>
+          <ThemedText
+            type="defaultMedium"
+            darkColor={Colors.dark.darkGrayText}
+            lightColor={Colors.dark.darkGrayText}
+            style={{ fontWeight: 400 }}
+          >
+            {t('check')}
+          </ThemedText>
+          <TouchableOpacity onPress={() => {}}>
+            <ThemedText
+              type="defaultMedium"
+              darkColor={Colors.dark.darkGrayText}
+              lightColor={Colors.dark.darkGrayText}
+              style={{ fontWeight: 600 }}
+            >
+              {t('support')}
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Animated.ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
+    paddingHorizontal: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  mainWrapper: {
+    paddingTop: 50
   },
-  input: {
-    width: '100%',
-    height: 50,
-    borderColor: '#ccc',
+  titleText: {
+    textAlign: 'center'
+  },
+  descriptionText: {
+    textAlign: 'center',
+    marginTop: 30,
+  },
+  formGroup: {
+    marginTop: 20,
+  },
+  formControl: {
+    height: 45,
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-    fontSize: 16,
+    borderColor: '#454b60',
+    borderRadius: 10,
+    
+    paddingHorizontal: 10
   },
-  button: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#007bff',
-    justifyContent: 'center',
+  errorWrapper: {
     alignItems: 'center',
-    borderRadius: 8,
-    marginBottom: 15,
+    marginTop: 10
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  linkWrapper: {
+    flexDirection: 'row',
+    columnGap: 5,
+    justifyContent: 'center',
+    marginTop: 10
   },
-  link: {
-    color: '#007bff',
-    fontSize: 14,
-    marginTop: 10,
-  },
+  buttonWrapper: {
+    marginTop: 20
+  }
 });

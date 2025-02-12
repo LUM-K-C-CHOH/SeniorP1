@@ -93,29 +93,31 @@ export default function SignInScreen() {
         >
           {t('auth.text_1')}
         </ThemedText>
-        <ThemedInput
-          type="default"
-          style={styles.formControl}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        {errors.email&& 
-          <ThemedText
-            type="small"
-            darkColor={Colors.dark.redText}
-            lightColor={Colors.light.redText}
-          >
-            {errors.email}
-          </ThemedText>
-        }
+        <View style={styles.formGroup}>
+          <ThemedInput
+            type="default"
+            style={styles.formControl}
+            placeholder="Email"
+            value={email}
+            onChangeText={v => setEmail(v)}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          {errors.email&& 
+            <ThemedText
+              type="small"
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
+            >
+              {errors.email}
+            </ThemedText>
+          }
+        </View>
         <ThemedInput
           style={styles.formControl}
           placeholder="Password"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={v => setPassword(v)}
           secureTextEntry
         />
         {errors.password&& 
@@ -177,7 +179,7 @@ export default function SignInScreen() {
             lightColor={Colors.light.darkGrayText}
             style={{ fontWeight: 400 }}
           >
-            {t('auth.already_have_account')}{'? '}
+            {t('auth.no_account')}{'? '}
           </ThemedText>
           <TouchableOpacity onPress={() => router.replace('/auth/sign-up')}> 
             <ThemedText
@@ -237,6 +239,9 @@ const styles = StyleSheet.create({
   descriptionText: {
     textAlign: 'center',
     marginTop: 30,
+  },
+  formGroup: {
+
   },
   formControl: {
     height: 45,

@@ -22,3 +22,29 @@ export const login = (email: string, password: string) => {
       return { success: false, message: error.message };
     });
 }
+
+export const register = (
+  name: string,
+  email: string,
+  countryCode: string,
+  phone: string,
+  password: string
+) => {
+  return axiosInstance.post(
+    '/auth/register',
+    {
+      name,
+      email,
+      password,
+      countryCode,
+      phone
+    },
+  )
+    .then(response => {
+      return { success: true, data: response.data };
+    })
+    .catch(error => {
+      console.log(error);
+      return { success: false, message: error.message };
+    });
+}

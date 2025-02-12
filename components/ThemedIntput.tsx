@@ -21,10 +21,11 @@ const ThemedInput = ({
   type = 'default',
   ...rest
 }: ThemedTextProps): JSX.Element => {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'defaultControlText');
 
   return (
     <TextInput
+      placeholderTextColor="#999"
       style={[
         { color },
         type === 'default' ? styles.default : undefined,

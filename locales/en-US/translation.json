@@ -39,7 +39,9 @@
   "support": "Support",
   "auth": {
     "text_1": "Enter your email and password to sign in",
+    "text_2": "Enter your details to Sign Up",
     "already_have_account": "Already have an account",
+    "no_account": "Don't have an account",
     "forgot_password": "Forgot Password"
   },
   "message": {
@@ -51,6 +53,13 @@
     "alert_input_description": "Please enter a description.",
     "alert_input_valid_email": "Please enter a valid email.",
     "alert_input_password": "Please enter a password.",
+    "alert_input_name": "Please enter a name.",
+    "alert_input_email": "Please enter an email.",
+    "alert_input_phone": "Please enter a phone number.",
+    "alert_input_valid_phone": "Please enter a valid phone number.",
+    "alert_select_country": "Please select a country.",
+    "alert_input_confirm_password": "Please enter a confirm password.",
+    "alert_not_match_password": "Please enter a correct confirm password.",
     "deleted_successfully": "Deleted successfully."
   },
   "dashboard": {
