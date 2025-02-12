@@ -74,7 +74,7 @@ export default function EmergencyScreen() {
       {callResultVisible&&
         <View style={[rstyles.container, { backgroundColor }]}>
           <ThemedText
-            type="bigTitle"
+            type="mediumTitle"
             style={rstyles.titleText}
           >
             {t('emergency_control.emergency_alert_released')}!
@@ -122,14 +122,14 @@ export default function EmergencyScreen() {
               darkColor={Colors.dark.darkGrayText}
               lightColor={Colors.dark.darkGrayText}
             >
-              {t('emergency_control.need_help')}?
+              {t('need_help')}?
             </ThemedText>
             <ThemedText
               type="default"
               darkColor={Colors.dark.darkGrayText}
               lightColor={Colors.dark.darkGrayText}
             >
-              {t('emergency_control.check')}
+              {t('check')}
             </ThemedText>
             <TouchableOpacity onPress={() => {}}>
               <ThemedText
@@ -138,7 +138,7 @@ export default function EmergencyScreen() {
                 lightColor={Colors.dark.darkGrayText}
                 style={{ fontWeight: 600 }}
               >
-                {t('emergency_control.support')}
+                {t('support')}
               </ThemedText>
             </TouchableOpacity>
           </View>

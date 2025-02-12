@@ -22,6 +22,26 @@
   "select_all": "Select All",
   "refill_now": "Refill Now",
   "snooze": "Snooze",
+  "name": "Name",
+  "dosage": "Dosage",
+  "frequency": "Frequency",
+  "stock": "Stock",
+  "stock_limitation": "Stock Limitation",
+  "start_date": "Start Date",
+  "end_date": "End Date",
+  "sign_in": "Sign In",
+  "sign_up": "Sign Up",
+  "register": "Register",
+  "login": "Login",
+  "join": "Join",
+  "need_help": "Need help",
+  "check": "Check",
+  "support": "Support",
+  "auth": {
+    "text_1": "Enter your email and password to sign in",
+    "already_have_account": "Already have an account",
+    "forgot_password": "Forgot Password"
+  },
   "message": {
     "confirm_delete": "Are you sure to delete it?",
     "alert_threshold": "Threshold must be value in range ${range}.",
@@ -29,6 +49,8 @@
     "alert_select_provider": "Please select a provider",
     "alert_input_schedule_time": "Please enter a scheduled time.",
     "alert_input_description": "Please enter a description.",
+    "alert_input_valid_email": "Please enter a valid email.",
+    "alert_input_password": "Please enter a password.",
     "deleted_successfully": "Deleted successfully."
   },
   "dashboard": {
@@ -71,9 +93,6 @@
     "call_confirm_text": "All emergency contacts will receive the urgent notification from you. Are you sure to call for help?",
     "emergency_alert_released": "Emergency Alert Released",
     "text_3": "Your emergency contacts have been alerted from you.",
-    "need_help": "Need help",
-    "check": "Check",
-    "support": "Support",
     "add_from_contact": "Add from Contact",
     "confirm_delete": "Are you sure to delete ${count} emergency contacts?"
   },
