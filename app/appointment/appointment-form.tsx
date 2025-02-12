@@ -10,6 +10,7 @@ import { default as AnimatedModal } from 'react-native-modal';
 import Calendar from '@/components/Calendar';
 import dayjs from 'dayjs';
 import Animated from 'react-native-reanimated';
+import ThemedInput from '@/components/ThemedIntput';
 
 import { IAppointment, IContact, TResponse } from '@/@types';
 import {
@@ -20,6 +21,7 @@ import {
   StyleSheet,
   View,
   TouchableHighlight,
+  useColorScheme,
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -27,8 +29,8 @@ import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName } fr
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon, LocationPinIcon } from '@/utils/svgs';
 import { getContactList } from '@/services/contact';
-import ThemedInput from '@/components/ThemedIntput';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/config/constants';
 
 type TAppointmentFormProps = {
   appointment?: IAppointment
@@ -42,6 +44,7 @@ const TimeType = {
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
   const initiatedRef = useRef<boolean>(false);
   const backgroundColor = useThemeColor({}, 'background');
+  const theme = useColorScheme();
 
   const { t } = useTranslation();
 
@@ -166,10 +169,12 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     return (
       <TouchableHighlight onPress={() => onSelectedContact(id)}>
         <ThemedView style={cstyles.contactNameWrapper}>
-          <LocationPinIcon />
+          <LocationPinIcon color={theme === 'light' ? '#1e75e5' : '#eee'} />
           <ThemedText
             type="small"
-            style={[cstyles.contactNameText, { fontWeight: 500 }]}
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
+            style={{ fontWeight: 500 }}
           >
             {name}
           </ThemedText>
@@ -209,6 +214,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         <View style={styles.providerWrapper}>
           <ThemedText
             type="defaultMedium"
+            darkColor={'#333'}
+            lightColor={'#999'}
             style={styles.labelText}
           >
             {t('appointment_manage.provider')}{' : '}
@@ -222,14 +229,18 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             <View>
               <ThemedText
                 type="default"
-                style={[styles.nameText, { fontWeight: 500 }]}
+                darkColor={Colors.dark.grayText}
+                lightColor={Colors.light.grayText}
+                style={{ fontWeight: 500 }}
               >
                 {selectedContactInfo ? selectedContactInfo.name : t('no_selected')}
               </ThemedText>
               {selectedContactInfo&&
                 <ThemedText
                   type="default"
-                  style={[styles.nameText, { fontWeight: 500 }]}
+                  darkColor={Colors.dark.grayText}
+                  lightColor={Colors.light.grayText}
+                  style={{ fontWeight: 500 }}
                 >
                   {selectedContactInfo.phone}
                 </ThemedText>
@@ -241,10 +252,11 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             onPress={() => setContactPopupVisible(true)}
           >
             <View style={styles.providerPickButton}>
-              <LocationIcon />
+              <LocationIcon color={theme === 'light' ? '#87b5f2' : '#87b5f2'} />
               <ThemedText
                 type="defaultMedium"
-                style={styles.providerPickButtonText}
+                darkColor={'#87b5f2'}
+                lightColor={'#87b5f2'}
               >
                 {t('appointment_manage.choose_from_contact')}
               </ThemedText>
@@ -253,7 +265,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           {errors.contact&&
             <ThemedText
               type="small"
-              style={styles.errorText}
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
             >
               {errors.contact}
             </ThemedText>
@@ -274,17 +287,20 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               <ThemedView style={styles.dateControl}>
                 <ThemedText
                   type="defaultMedium"
-                  style={[styles.dateText, { fontWeight: 400 }]}
+                  darkColor={Colors.dark.defaultControlText}
+                  lightColor={Colors.light.defaultControlText}
+                  style={{ fontWeight: 400 }}
                 >
                   {selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}
                 </ThemedText>
-                <CalendarIcon />
+                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
               </ThemedView>
             </TouchableHighlight>
             {errors.date&&
               <ThemedText
                 type="small"
-                style={styles.errorText}
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
               >
                 {errors.date}
               </ThemedText>
@@ -292,8 +308,10 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           </View>
           <View style={styles.timeWrapper}>
             <ThemedInput
-              style={styles.minuteInputControl}
               type="default"
+              style={styles.minuteInputControl}
+              darkColor={Colors.dark.defaultControlText}
+              lightColor={Colors.light.defaultControlText}
               placeholder="00"
               value={hour}
               onChangeText={(v) => handleTimeChange('hour', v)}
@@ -302,6 +320,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             <ThemedInput
               style={styles.minuteInputControl}
               type="default"
+              darkColor={Colors.dark.defaultControlText}
+              lightColor={Colors.light.defaultControlText}              
               placeholder="00"
               value={minute}
               onChangeText={(v) => handleTimeChange('minute', v)}
@@ -310,7 +330,9 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             <View style={styles.secondPlaceholderWrapper}>
               <ThemedText
                 type="defaultMedium"
-                style={[styles.secondPlaceholderText, { fontWeight: 400 }]}
+                darkColor={Colors.dark.defaultControlText}
+                lightColor={Colors.light.defaultControlText}
+                style={{ fontWeight: 400 }}
               >
                 00
               </ThemedText>
@@ -319,6 +341,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               <Pressable onPress={() => setTimeType(TimeType.AM)}>
                 <ThemedText
                   type="defaultMedium"
+                  darkColor={Colors.dark.defaultControlText}
+                  lightColor={Colors.light.defaultControlText}
                   style={[
                     styles.amText, timeType === TimeType.AM&& styles.amActive,
                     { fontWeight: 400, borderBottomLeftRadius: 5, borderTopLeftRadius: 5 }
@@ -330,6 +354,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               <Pressable onPress={() => setTimeType(TimeType.PM)}>
                 <ThemedText
                   type="defaultMedium"
+                  darkColor={Colors.dark.defaultControlText}
+                  lightColor={Colors.light.defaultControlText}
                   style={[
                     styles.amText, timeType === TimeType.PM&& styles.amActive,
                     { fontWeight: 400, borderBottomRightRadius: 5, borderTopRightRadius: 5 }
@@ -343,7 +369,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           {errors.time&&
             <ThemedText
               type="small"
-              style={styles.errorText}
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
             >
               {errors.time}
             </ThemedText>
@@ -358,6 +385,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           </ThemedText>
           <ThemedInput
             style={styles.descriptionInputControl}
+            darkColor={Colors.dark.defaultControlText}
+            lightColor={Colors.light.defaultControlText}
             type="default"
             multiline={true}
             autoCapitalize="none"
@@ -368,7 +397,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           {errors.description&&
             <ThemedText
               type="small"
-              style={styles.errorText}
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
             >
               {errors.description}
             </ThemedText>
@@ -379,7 +409,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         <CustomButton onPress={handleSchedule}>
           <ThemedText
             type="button"
-            style={styles.scheduleButtonText}
+            darkColor={Colors.dark.defaultButtonText}
+            lightColor={Colors.light.defaultButtonText}
           >
             {t('appointment_manage.schedule')}
           </ThemedText>
@@ -413,12 +444,8 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   labelText: {
-    color: '#333',
     textDecorationColor: '#0066ff',
     textDecorationLine: 'underline',
-  },
-  nameText: {
-    color: '#777',
   },
   providerPickButton: {
     backgroundColor: '#eff6ff',
@@ -428,9 +455,6 @@ const styles = StyleSheet.create({
     columnGap: 10,
     borderRadius: 5,
     justifyContent: 'center',
-  },
-  providerPickButtonText: {
-    color: '#87b5f2',
   },
   scheduledTimeWrapper: {
     marginTop: 20
@@ -447,9 +471,6 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 10,
     borderRadius: 5,
-  }, 
-  dateText: {
-    color: '#222',
   },
   timeWrapper: {
     flexDirection: 'row',
@@ -464,14 +485,12 @@ const styles = StyleSheet.create({
     width: 50,
     paddingVertical: 6,
     textAlign: 'center',
-    color: '#222',
   },
   amWrapper: {
     flexDirection: 'row',
     alignItems: 'center'
   },
   amText: {
-    color: '#222',
     paddingVertical: 6,
     paddingHorizontal: 8,
     borderWidth: 1,
@@ -490,9 +509,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 5,
   },
-  secondPlaceholderText: {
-    color: '#222',
-  },
   descriptionWrapper: {
     marginTop: 20,
   },
@@ -503,20 +519,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     height: 100,
     textAlignVertical: 'top',
-    color: '#222',
     paddingHorizontal: 13
   },
   actionWrapper: {
     alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 10
+    paddingTop: 15,
+    paddingBottom: 5
   },
-  scheduleButtonText: {
-    color: '#fff',
-  }, 
-  errorText: {
-    color: 'red'
-  }
 });
 
 const cstyles = StyleSheet.create({
@@ -543,7 +552,4 @@ const cstyles = StyleSheet.create({
     paddingLeft: 10,
     columnGap: 10
   },
-  contactNameText: {
-    color: '#666'
-  }
 });

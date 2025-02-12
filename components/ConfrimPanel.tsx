@@ -58,12 +58,12 @@ const ConfirmPanel = ({
       {!resultVisible&&
         <ThemedView style={styles.container}>
           <View style={styles.header}>
-            <ThemedText type="subtitle" style={styles.titleText}>{titleText}</ThemedText>            
+            <ThemedText type="subtitle">{titleText}</ThemedText>            
           </View>
           <View style={styles.body}>
             {bodyElement&& <>{bodyElement}</>}
             {bodyText&&
-              <ThemedText type="default" style={styles.text}>{bodyText}</ThemedText>
+              <ThemedText type="default">{bodyText}</ThemedText>
             }
           </View>
           <View style={styles.actions}>
@@ -72,7 +72,7 @@ const ConfirmPanel = ({
                 style={styles.button}
               >
                 <ThemedView style={[styles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
-                  <ThemedText type="default" style={styles.buttonText}>{negativeButtonText}</ThemedText>
+                  <ThemedText type="default">{negativeButtonText}</ThemedText>
                 </ThemedView>
               </TouchableHighlight>
               <TouchableHighlight
@@ -80,7 +80,7 @@ const ConfirmPanel = ({
                 style={styles.button}
               >
                 <ThemedView style={styles.buttonTextWrapper}>
-                  <ThemedText type="default" style={styles.buttonText}>{positiveButtonText}</ThemedText>
+                  <ThemedText type="default">{positiveButtonText}</ThemedText>
                 </ThemedView>
               </TouchableHighlight>
           </View>
@@ -101,9 +101,6 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center'
   },
-  titleText: {
-    color: '#000'
-  },
   body: {
     width: 238,
     paddingBottom: 30,
@@ -111,7 +108,6 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   text: {
-    color: '#000',
     textAlign: 'center'
   },
   actions: {
@@ -130,9 +126,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonText: {
-    color: '#000'
-  }
 });
 
 export const ConfirmResultStyle = StyleSheet.create({

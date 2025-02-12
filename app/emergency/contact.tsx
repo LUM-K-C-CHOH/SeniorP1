@@ -16,7 +16,8 @@ import {
   StyleSheet,
   View,
   TouchableHighlight,
-  TouchableOpacity
+  TouchableOpacity,
+  useColorScheme
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
@@ -27,10 +28,12 @@ import { IEmergencyContact, TResponse } from '@/@types';
 import { getContactList } from '@/services/emergency';
 import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/config/constants';
 
 export default function EmergencyContactScreen() {
   const initiatedRef = useRef<boolean>(false);
   const backgroundColor = useThemeColor({}, 'background');
+  const theme = useColorScheme();
 
   const { t } = useTranslation();
 
@@ -111,19 +114,13 @@ export default function EmergencyContactScreen() {
           </View>
           <View style={cstyles.infoWrapper}>
             <View style={cstyles.rowWrapper}>
-              <ThemedText
-                type="default"
-                style={cstyles.normalText}
-              >
+              <ThemedText type="default">
                 {name}
               </ThemedText>
             </View>
             <View style={cstyles.rowWrapper}>
-              <PhoneIcon />
-              <ThemedText
-                type="default"
-                style={cstyles.normalText}
-              >
+              <PhoneIcon color={theme === 'light' ? '#000' : '#fff'} />
+              <ThemedText type="default">
                 {phone}
               </ThemedText>
             </View>
@@ -131,8 +128,8 @@ export default function EmergencyContactScreen() {
           {selectableVisible&&
             <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
               {checkedStatus
-                ? <CheckboxFilledIcon />
-                : <CheckboxBlankIcon />
+                ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
               }
             </TouchableOpacity>
           }
@@ -178,32 +175,29 @@ export default function EmergencyContactScreen() {
         {selectableVisible&&
           <View style={styles.toolbarWrapper}>
             <TouchableOpacity onPress={handleSelectAll}>
-              <View style={{ flexDirection: 'row', columnGap: 5, alignItems: 'center' }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  columnGap: 5,
+                  alignItems: 'center'
+                }}
+              >
                 {checkedIdList.length === contactList.length
-                  ? <CheckboxFilledIcon />
-                  : <CheckboxBlankIcon />
+                  ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                  : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
                 }                
-                <ThemedText
-                  type="default"
-                  style={styles.toobarText}
-                >
+                <ThemedText type="default">
                   {t('select_all')}
                 </ThemedText>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setDeleteConfirmVisible(true)}>
-              <ThemedText
-                type="default"
-                style={styles.toobarText}
-              >
+              <ThemedText type="default">
                 {t('delete')}({checkedIdList.length})
               </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setSelectableVisible(false)}>
-              <ThemedText
-                type="default"
-                style={styles.toobarText}
-              >
+              <ThemedText type="default">
                 {t('cancel')}
               </ThemedText>
             </TouchableOpacity>
@@ -225,7 +219,8 @@ export default function EmergencyContactScreen() {
           <CustomButton onPress={() => {}}>
             <ThemedText
               type="button"
-              style={styles.addContactButtonText}
+              darkColor={Colors.dark.defaultButtonText}
+              lightColor={Colors.light.defaultButtonText}
             >
               + {t('emergency_control.add_from_contact')}
             </ThemedText>
@@ -245,18 +240,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15
   },
-  addContactButtonText: {
-    color: '#fff',    
-  },
   toolbarWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 15,
     marginTop: 10
   },
-  toobarText: {
-    color: '#000'
-  }
 });
 
 const cstyles = StyleSheet.create({
@@ -284,9 +273,6 @@ const cstyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     columnGap: 5
-  },
-  normalText: {
-    color: '#000'
   },
 });
 

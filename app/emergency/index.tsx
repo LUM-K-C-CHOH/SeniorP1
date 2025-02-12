@@ -17,7 +17,8 @@ import {
   Text,
   View,
   TouchableHighlight,
-  Image
+  Image,
+  useColorScheme
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -28,10 +29,12 @@ import { PhonebookIcon } from '@/utils/svgs';
 import { Images } from '@/utils/assets';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/config/constants';
 
 export default function EmergencyScreen() {
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
+  const theme = useColorScheme();
 
   const { t } = useTranslation();
   
@@ -81,28 +84,34 @@ export default function EmergencyScreen() {
           </View>
           <ThemedText
             type="title"
-            style={rstyles.resultText}
+            darkColor={Colors.dark.darkGrayText}
+            lightColor={Colors.dark.darkGrayText}
           >
             {t('emergency_control.text_3')}
           </ThemedText>
           <View style={rstyles.backWrapper}>
             <ThemedText
               type="subtitle"
-              style={[rstyles.backText, { fontWeight: 400 }]}
+              darkColor={Colors.dark.darkGrayText}
+              lightColor={Colors.dark.darkGrayText}
+              style={{ fontWeight: 400 }}
             >
               {t('click')}
             </ThemedText>
             <TouchableOpacity onPress={handleBack}>
               <ThemedText
                 type="subtitle"
-                style={rstyles.backText}
+                darkColor={Colors.dark.darkGrayText}
+                lightColor={Colors.dark.darkGrayText}
               >
                 {t('here')}
               </ThemedText>
             </TouchableOpacity>
             <ThemedText
               type="subtitle"
-              style={[rstyles.backText, { fontWeight: 400 }]}
+              darkColor={Colors.dark.darkGrayText}
+              lightColor={Colors.dark.darkGrayText}
+              style={{ fontWeight: 400 }}
             >
               {t('to_back')}
             </ThemedText>
@@ -110,20 +119,24 @@ export default function EmergencyScreen() {
           <View style={rstyles.helpWrapper}>
             <ThemedText
               type="default"
-              style={rstyles.helpText}
+              darkColor={Colors.dark.darkGrayText}
+              lightColor={Colors.dark.darkGrayText}
             >
               {t('emergency_control.need_help')}?
             </ThemedText>
             <ThemedText
               type="default"
-              style={rstyles.helpText}
+              darkColor={Colors.dark.darkGrayText}
+              lightColor={Colors.dark.darkGrayText}
             >
               {t('emergency_control.check')}
             </ThemedText>
             <TouchableOpacity onPress={() => {}}>
               <ThemedText
                 type="default"
-                style={[rstyles.helpText, { fontWeight: 600 }]}
+                darkColor={Colors.dark.darkGrayText}
+                lightColor={Colors.dark.darkGrayText}
+                style={{ fontWeight: 600 }}
               >
                 {t('emergency_control.support')}
               </ThemedText>
@@ -136,7 +149,8 @@ export default function EmergencyScreen() {
           <View style={styles.shareLocationWrapper}>
             <ThemedText
               type="defaultMedium"
-              style={styles.shareLocationText}
+              darkColor={'#3f3f3f'}
+              lightColor={'#3f3f3f'}
             >
               {t('emergency_control.share_my_location')}:
             </ThemedText>
@@ -175,9 +189,11 @@ export default function EmergencyScreen() {
           </View>
           <TouchableHighlight style={styles.contactButtonWrapper} onPress={() => router.push('/emergency/contact')}>
             <ThemedView style={styles.contactButton}>
-              <PhonebookIcon />
+              <PhonebookIcon color={theme === 'light' ? '#356ade' : '#356ade'} />
               <ThemedText
                 type="default"
+                darkColor={'#236ad3'}
+                lightColor={'#236ad3'}
                 style={styles.contactButtonText}
               >
                 {t('emergency_control.emergency_contact')}
@@ -201,9 +217,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: -50
 
-  },
-  shareLocationText: {
-    color: '#3f3f3f',
   },
   callButtonWrapper: {
     alignItems: 'center',
@@ -248,7 +261,6 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   contactButtonText: {
-    color: '#236ad3',
     fontWeight: 600,
   }
 });
@@ -267,7 +279,6 @@ const rstyles = StyleSheet.create({
     alignItems: 'center',
   },
   resultText: {
-    color: '#454b60',
     width: 300,
     alignSelf: 'center',
     textAlign: 'center',
@@ -279,16 +290,10 @@ const rstyles = StyleSheet.create({
     columnGap: 5,
     marginTop: 20,
   },
-  backText: {
-    color: '#454b60',
-  },
   helpWrapper: {
     flexDirection: 'row',
     justifyContent: 'center',
     columnGap: 5,
     marginTop: 100,
   },
-  helpText: {
-    color: '#454b60',
-  }
 });

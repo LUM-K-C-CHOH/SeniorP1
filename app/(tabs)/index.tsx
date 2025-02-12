@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
-    marginTop: 20
   },
   emergencyButton: {
     backgroundColor: '#da1d1d',

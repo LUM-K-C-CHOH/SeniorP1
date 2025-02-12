@@ -10,7 +10,7 @@ import ApplicationContext from '@/context/ApplicationContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-import { Modal, Pressable, StyleSheet, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, TouchableHighlight, TouchableOpacity, useColorScheme, View } from 'react-native';
 import { generateBoxShadowStyle } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { useRouter, usePathname } from 'expo-router';
@@ -24,6 +24,7 @@ import {
 export default function Header() {
   const router = useRouter();
   const path = usePathname();
+  const theme = useColorScheme();
 
   const { t } = useTranslation();
   const { logout } = useContext(ApplicationContext);
@@ -34,12 +35,12 @@ export default function Header() {
   const menuList = [
     {
       id: 'manage_password',
-      icon: <KeyIcon width={20} height={20} />,
+      icon: <KeyIcon width={20} height={20} color={theme === 'light' ? '#666' : '#999'} />,
       label: t('manage_password')
     },
     {
       id: 'logout',
-      icon: <LogoutIcon width={20} height={20} />,
+      icon: <LogoutIcon width={20} height={20} color={theme === 'light' ? '#666' : '#999'} />,
       label: t('logout')
     },
     
@@ -84,14 +85,19 @@ export default function Header() {
       <View style={{ marginLeft: 10, width: 36 }}>
         {isBackable&&
           <TouchableOpacity onPress={() => router.back()}>
-            <BackIcon />
+            <BackIcon color={theme ? '#666' : '#999'} />
           </TouchableOpacity>
         }
       </View>
-      <ThemedText type="title" style={styles.headerTitle}>{getTitle()}</ThemedText>
+      <ThemedText
+        type="title"
+        style={styles.headerTitle}
+      >
+        {getTitle()}
+      </ThemedText>
       <View style={{ marginRight: 10, position: 'relative' }}>
         <TouchableOpacity onPress={() => setPopupMenuVisible(!popupMenuVisible)}>
-          <ThreeDotIcon color="#666" />
+          <ThreeDotIcon color={theme === 'light' ? '#666' : '#999'}  />
         </TouchableOpacity>
         <Modal
           style={{ position: 'absolute' }}
@@ -113,7 +119,7 @@ export default function Header() {
               <TouchableHighlight key={index} onPress={() => handlePopupMenuItemTap(v.id)}>
                 <ThemedView style={styles.popupMenuItem}>
                   {v.icon}
-                  <ThemedText type="default" style={styles.popupMenuText}>{v.label}</ThemedText>
+                  <ThemedText type="default">{v.label}</ThemedText>
                 </ThemedView>
               </TouchableHighlight>
             )}
@@ -156,7 +162,4 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 10
   },
-  popupMenuText: {
-    color: '#000'
-  }
 });

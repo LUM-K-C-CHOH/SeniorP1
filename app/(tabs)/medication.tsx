@@ -17,7 +17,8 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   Switch,
-  View
+  View,
+  useColorScheme
 } from 'react-native';
 
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
@@ -39,12 +40,14 @@ import { useTranslation } from 'react-i18next';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/config/constants';
 
 export default function MedicationScreen() {
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
   const params = useLocalSearchParams();
   const backgroundColor = useThemeColor({}, 'background');
+  const theme = useColorScheme()?? 'light';
 
   const { t } = useTranslation();
 
@@ -180,18 +183,24 @@ export default function MedicationScreen() {
       <Image source={{ uri: data.item.image }} width={60} height={60}/>
       <View style={styles.infoWrapper}>
         <View style={{ flexGrow: 1 }}>
-          <ThemedText type="defaultMedium" style={styles.itemTitle}>{data.item.name}</ThemedText>
+          <ThemedText
+            type="defaultMedium"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.dark.grayText}
+          >
+            {data.item.name}
+          </ThemedText>
           <View style={styles.itemTextWrapper}>
-            <PillIcon />
-            <ThemedText type="default" style={styles.normalText}>{data.item.dosage}</ThemedText>
+            <PillIcon color={theme === 'light' ? Colors.light.defaultIcon : Colors.light.defaultIcon}/>
+            <ThemedText type="default">{data.item.dosage}</ThemedText>
             <ThemedText>{'•'}</ThemedText>
-            <ThemedText type="default" style={styles.normalText}>{data.item.frequency}</ThemedText>
+            <ThemedText type="default">{data.item.frequency}</ThemedText>
           </View>
           <View style={styles.itemTextWrapper}>
             <StockIcon color={getColorByLevel(data.item.stock)} />
             <ThemedText
               type="default"
-              style={[styles.normalText, { color: getColorByLevel(data.item.stock) }]}
+              style={{ color: getColorByLevel(data.item.stock) }}
             >
               {`${data.item.stock} Tablets`}
             </ThemedText>
@@ -199,12 +208,12 @@ export default function MedicationScreen() {
         </View>
         <View style={{ rowGap: 5 }}>
           <View style={{ flexDirection: 'row', columnGap: 5 }}>
-            <BellIcon />
-            <FlyIcon />
+            <BellIcon color={theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
+            <FlyIcon color={theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
           </View>
           <View>
             <TouchableOpacity onPress={() => handleReminderSettingVisible(true, data.item.id)}>
-              <SettingIcon />
+              <SettingIcon color={theme === 'light' ? '#0066ff' : '#0066ff'} />
             </TouchableOpacity>
           </View>
         </View>
@@ -263,16 +272,13 @@ export default function MedicationScreen() {
           >
             <ThemedText
               type="subtitle"
-              style={[
-                rstyles.titleText,
-                {
-                  textAlign: 'center'
-                }
-              ]}
+              style={{ textAlign: 'center' }}
             >
               {t('refill_reminder_preference.refill_reminder_updated')}
             </ThemedText>
-            <View style={{ alignItems: 'center' }}><CircleCheckIcon /></View>
+            <View style={{ alignItems: 'center' }}>
+              <CircleCheckIcon />
+            </View>
             <View
               style={{
                 flexDirection: 'row',
@@ -280,11 +286,11 @@ export default function MedicationScreen() {
                 justifyContent: 'center'
               }}
             >
-              <ThemedText type="default" style={rstyles.labelText}>{t('click')}</ThemedText>
+              <ThemedText type="default">{t('click')}</ThemedText>
               <TouchableOpacity onPress={() => handleReminderSettingVisible(false)}>
-                <ThemedText type="default" style={[rstyles.labelText, { fontWeight: 600 }]}>{t('here')}</ThemedText>
+                <ThemedText type="default" style={{ fontWeight: 600 }}>{t('here')}</ThemedText>
               </TouchableOpacity>
-              <ThemedText type="default" style={rstyles.labelText}>{t('to_continue')}</ThemedText>
+              <ThemedText type="default">{t('to_continue')}</ThemedText>
             </View>
           </ThemedView>
         }
@@ -293,7 +299,6 @@ export default function MedicationScreen() {
             <View style={rstyles.header}>
               <ThemedText
                 type="subtitle"
-                style={rstyles.titleText}
               >
                 {t('refill_reminder_preference.refill_reminder_preference')}
               </ThemedText>
@@ -305,7 +310,7 @@ export default function MedicationScreen() {
               </ThemedText>
             </View>
             <View style={[rstyles.rowWrapper, rstyles.thretholdWrapper]}>
-              <ThemedText type="default" style={rstyles.labelText}>{t('refill_reminder_preference.threshold')}:</ThemedText>
+              <ThemedText type="default">{t('refill_reminder_preference.threshold')}:</ThemedText>
               <View style={{ flex: 1 }}>
                 <TextInput
                   style={{ textAlign: 'right', height: 50 }}
@@ -321,7 +326,7 @@ export default function MedicationScreen() {
               </View>
             }
             <View style={[rstyles.rowWrapper]}>
-              <ThemedText type="default" style={rstyles.labelText}>{t('refill_reminder_preference.push_notification')}:</ThemedText>
+              <ThemedText type="default">{t('refill_reminder_preference.push_notification')}:</ThemedText>
               <View>
                 <Switch
                   trackColor={{ false: '#eee', true: '#0066ff' }}
@@ -333,7 +338,7 @@ export default function MedicationScreen() {
               </View>
             </View>
             <View style={[rstyles.rowWrapper]}>
-              <ThemedText type="default" style={rstyles.labelText}>{t('refill_reminder_preference.email_alert')}:</ThemedText>
+              <ThemedText type="default">{t('refill_reminder_preference.email_alert')}:</ThemedText>
               <View>
                 <Switch
                   trackColor={{ false: '#eee', true: '#0066ff' }}
@@ -399,7 +404,13 @@ export default function MedicationScreen() {
       />
       <View style={styles.actionWrapper}>
         <CustomButton onPress={handleAddMedication}>
-          <ThemedText type="button" style={styles.addMedicationButtonText}>+{t('medication_manage.add_medication')}</ThemedText>
+          <ThemedText
+            type="button"
+            darkColor={Colors.dark.defaultButtonText}
+            lightColor={Colors.light.defaultButtonText}
+          >
+            +{t('medication_manage.add_medication')}
+          </ThemedText>
         </CustomButton>
       </View>
     </GestureHandlerRootView>
@@ -431,17 +442,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center'
   },
-  itemTitle: {
-    color: '#777',    
-  },
   itemTextWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    color: '#000',
     columnGap: 5,
-  },
-  normalText: {
-    color: '#000'
   },
   rowBack: {
     alignItems: 'center',
@@ -467,12 +471,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fb4420',
     right: 0,
   },
-  backTextWhite: {
-    color: '#fff',
-  },
-  addMedicationButtonText: {
-    color: '#fff',
-  },
   actionWrapper: {
     alignItems: 'center',
     paddingVertical: 15,
@@ -491,9 +489,6 @@ const rstyles = StyleSheet.create({
   header: {
     alignItems: 'center'
   },
-  titleText: {
-    color: '#000'
-  },
   rowWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -509,9 +504,6 @@ const rstyles = StyleSheet.create({
   thretholdWrapper: {
     borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1
-  },
-  labelText: {
-    color: '#000'
   },
   action: {
     flexDirection: 'row',

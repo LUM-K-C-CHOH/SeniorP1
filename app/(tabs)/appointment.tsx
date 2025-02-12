@@ -26,6 +26,7 @@ import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-han
 import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { getContactList } from '@/services/contact';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/config/constants';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
@@ -123,23 +124,27 @@ export default function AppointmentScreen() {
         ]}
       >
         <ThemedText
-          style={[{ color: getMarkColorFromName(getContactName(data.item.contactId)).textColor }]}            
+          style={[{ color: getMarkColorFromName(getContactName(data.item.contactId)).textColor }]}
         >
           {getMarkLabelFromName(getContactName(data.item.contactId))}
         </ThemedText>
       </View>
       <View style={styles.infoWrapper}>
         <View style={styles.rowWrapper}>
-          <ThemedText type="default" style={styles.normalText}>
-            {getContactName(data.item.contactId)}
-          </ThemedText>
+          <ThemedText type="default">{getContactName(data.item.contactId)}</ThemedText>
         </View>
         <View style={styles.rowWrapper}>
           <ClockIcon />
-          <ThemedText type="default" style={styles.normalText}>{getDateString(data.item.scheduledTime)}</ThemedText>
+          <ThemedText type="default">{getDateString(data.item.scheduledTime)}</ThemedText>
         </View>
         <View style={styles.rowWrapper}>
-          <ThemedText type="default" style={[styles.normalText, { color: '#999' }]}>{data.item.description}</ThemedText>
+          <ThemedText
+            type="default"
+            lightColor='#999'
+            darkColor='#333'
+          >
+            {data.item.description}
+          </ThemedText>
         </View>          
       </View>
     </ThemedView>
@@ -189,7 +194,13 @@ export default function AppointmentScreen() {
       />
       <View style={styles.actionWrapper}>
         <CustomButton onPress={handleAddAppointment}>
-          <ThemedText type="button" style={styles.addAppointmentButtonText}>+{t('appointment_manage.add_appointment')}</ThemedText>
+          <ThemedText
+            type="button"
+            darkColor={Colors.dark.defaultButtonText}
+            lightColor={Colors.light.defaultButtonText}
+          >
+            +{t('appointment_manage.add_appointment')}
+          </ThemedText>
         </CustomButton>
       </View>
     </GestureHandlerRootView>
@@ -227,9 +238,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     columnGap: 5
   },
-  normalText: {
-    color: '#000',
-  },
   rowBack: {
     alignItems: 'center',
     backgroundColor: '#ddd',
@@ -254,15 +262,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fb4420',
     right: 0,
   },
-  backTextWhite: {
-    color: '#fff',
-  },
   actionWrapper: {
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 15
   },
-  addAppointmentButtonText: {
-    color: '#fff',
-  }, 
 });

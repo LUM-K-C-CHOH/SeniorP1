@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Animated from 'react-native-reanimated';
+import ThemedInput from '@/components/ThemedIntput';
 
 import { ThemedText } from '@/components/ThemedText';
 import {
@@ -16,8 +17,8 @@ import {
 } from 'react-native';
 import { IMedication } from '@/@types';
 import { useTranslation } from 'react-i18next';
-import ThemedInput from '@/components/ThemedIntput';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Colors } from '@/config/constants';
 
 type TMedicationFormProps = {
   medication?: IMedication
@@ -174,9 +175,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         <View style={styles.formGroup}>
           <ThemedText
             type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            Name:
+            {t('name')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <ThemedInput
@@ -189,16 +192,24 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('name', v)}
             />
             {errors.name&&
-              <ThemedText type="small" style={styles.errorText}>{errors.name}</ThemedText>
+              <ThemedText
+                type="small"
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
+              >
+                {errors.name}
+              </ThemedText>
             }
           </View>
         </View>
         <View style={styles.formGroup}>
           <ThemedText
             type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            Dosage:
+            {t('dosage')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <ThemedInput
@@ -211,16 +222,24 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('dosage', v)}
             />
             {errors.dosage&&
-              <ThemedText type="small" style={styles.errorText}>{errors.dosage}</ThemedText>
+              <ThemedText
+                type="small"
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
+              >
+                {errors.dosage}
+              </ThemedText>
             }
           </View>
         </View>
         <View style={styles.formGroup}>
           <ThemedText
             type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            Frequency:
+            {t('frequency')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <ThemedInput
@@ -233,16 +252,24 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('frequency', v)}
             />
             {errors.frequency&&
-              <ThemedText type="small" style={styles.errorText}>{errors.frequency}</ThemedText>
+              <ThemedText
+                type="small"
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
+              >
+                {errors.frequency}
+              </ThemedText>
             }
           </View>
         </View>
         <View style={styles.formGroup}>
           <ThemedText
             type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            Stock:
+            {t('stock')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <ThemedInput
@@ -255,16 +282,24 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('stock', v)}
             />
             {errors.stock&&
-              <ThemedText type="small" style={styles.errorText}>{errors.stock}</ThemedText>
+              <ThemedText
+                type="small"
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
+              >
+                {errors.stock}
+              </ThemedText>
             }
           </View>
         </View>
         <View style={styles.formGroup}>
           <ThemedText
             type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            Stock Limitation:
+            {t('stock_limitation')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <ThemedInput
@@ -277,16 +312,24 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('miniStock', v)}
             />
             {errors.miniStock&&
-              <ThemedText type="small" style={styles.errorText}>{errors.miniStock}</ThemedText>
+              <ThemedText
+                type="small"
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
+              >
+                {errors.miniStock}
+              </ThemedText>
             }
           </View>
         </View>
         <View style={styles.formGroup}>
           <ThemedText
             type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            Start Date:
+            {t('start_date')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <ThemedInput
@@ -299,16 +342,24 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('startDate', v)}
             />
             {errors.startDate&&
-              <ThemedText type="small" style={styles.errorText}>{errors.startDate}</ThemedText>
+              <ThemedText
+                type="small"
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
+              >
+                {errors.startDate}
+              </ThemedText>
             }
           </View>
         </View>
         <View style={styles.formGroup}>
           <ThemedText
             type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            End Date:
+            {t('end_date')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <ThemedInput
@@ -321,7 +372,13 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               onChangeText={(v) => changeFormValue('endDate', v)}
             />
             {errors.endDate&&
-              <ThemedText type="small" style={styles.errorText}>{errors.endDate}</ThemedText>
+              <ThemedText
+                type="small"
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
+              >
+                {errors.endDate}
+              </ThemedText>
             }
           </View>
         </View>
@@ -330,7 +387,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         <CustomButton onPress={handleAddMedication}>
           <ThemedText
             type="button"
-            style={styles.addMedicationButtonText}
+            darkColor={Colors.dark.defaultButtonText}
+            lightColor={Colors.light.defaultButtonText}
           >
             {t('save')}
           </ThemedText>
@@ -353,7 +411,6 @@ const styles = StyleSheet.create({
   },
   controlLabel: {
     width: 70,
-    color: '#666',
     marginTop: 12
   },
   formControlWrapper: {
@@ -366,13 +423,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   actionWrapper: {
-    paddingTop: 10,
-    paddingBottom: 10
+    paddingTop: 15,
+    paddingBottom: 5
   },
-  addMedicationButtonText: {
-    color: '#fff',
-  },
-  errorText: {
-    color: 'red',
-  }
 });

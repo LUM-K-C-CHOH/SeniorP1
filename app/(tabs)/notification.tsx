@@ -13,7 +13,8 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  TouchableHighlight
+  TouchableHighlight,
+  useColorScheme
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -30,6 +31,7 @@ export default function NotificationScreen() {
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
+  const theme = useColorScheme();
 
   const { t } = useTranslation();
 
@@ -157,8 +159,8 @@ export default function NotificationScreen() {
           {selectableVisible&&
             <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
               {checkedStatus
-                ? <CheckboxFilledIcon />
-                : <CheckboxBlankIcon />
+                ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
               }
             </TouchableOpacity>
           }
@@ -182,10 +184,7 @@ export default function NotificationScreen() {
       >
         <ThemedView style={pstyles.mainWrapper}>
           <View style={pstyles.titleWrapper}>
-            <ThemedText
-              type="subtitle"
-              style={pstyles.titleText}
-            >
+            <ThemedText type="subtitle">
               {getNotificationTypeText(notificationPopupOptions.notification)}
             </ThemedText>
           </View>
@@ -203,10 +202,7 @@ export default function NotificationScreen() {
               style={pstyles.button}
             >
               <ThemedView style={[pstyles.buttonTextWrapper, { borderRightColor: '#e2e2e2', borderRightWidth: 1 }]}>
-                <ThemedText
-                  type="default"
-                  style={pstyles.buttonText}
-                >
+                <ThemedText type="default">
                   {t('refill_now')
                 }</ThemedText>
               </ThemedView>
@@ -216,10 +212,7 @@ export default function NotificationScreen() {
               style={pstyles.button}
             >
               <ThemedView style={pstyles.buttonTextWrapper}>
-                <ThemedText
-                  type="default"
-                  style={pstyles.buttonText}
-                >
+                <ThemedText type="default">
                   {t('snooze')}
                 </ThemedText>
               </ThemedView>
@@ -239,15 +232,23 @@ export default function NotificationScreen() {
             <ThemedText style={ConfirmResultStyle.titleText}>
               {t('message.deleted_successfully')}
             </ThemedText>
-            <View style={ConfirmResultStyle.iconWrapper}><CircleCheckIcon /></View>
+            <View style={ConfirmResultStyle.iconWrapper}>
+              <CircleCheckIcon />
+            </View>
             <View style={ConfirmResultStyle.actionsWrapper}>
               <ThemedText style={ConfirmResultStyle.labelText}>{t('click')}</ThemedText>
-              <TouchableOpacity
-                onPress={handleDeleteConfirmResult}
-              >
-                <ThemedText style={[ConfirmResultStyle.labelText, ConfirmResultStyle.linkText]}>{t('here')}</ThemedText>
+              <TouchableOpacity onPress={handleDeleteConfirmResult}>
+                <ThemedText
+                  style={[
+                    ConfirmResultStyle.labelText, ConfirmResultStyle.linkText
+                  ]}
+                >
+                  {t('here')}
+                </ThemedText>
               </TouchableOpacity>
-              <ThemedText style={ConfirmResultStyle.labelText}>{t('to_continue')}</ThemedText>
+              <ThemedText style={ConfirmResultStyle.labelText}>
+                {t('to_continue')}
+              </ThemedText>
             </View>
           </ThemedView>
         }
@@ -258,19 +259,31 @@ export default function NotificationScreen() {
         {selectableVisible&&
           <View style={styles.toolbarWrapper}>
             <TouchableOpacity onPress={handleSelectAll}>
-              <View style={{ flexDirection: 'row', columnGap: 5, alignItems: 'center' }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  columnGap: 5,
+                  alignItems: 'center'
+                }}
+              >
                 {checkedIdList.length === notificationList.length
-                  ? <CheckboxFilledIcon />
-                  : <CheckboxBlankIcon />
-                }                
-                <ThemedText type="default" style={styles.toolbarText}>{t('select_all')}</ThemedText>
+                  ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                  : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                }
+                <ThemedText type="default">
+                  {t('select_all')}
+                </ThemedText>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setDeleteConfirmVisible(true)}>
-              <ThemedText type="default" style={styles.toolbarText}>{t('delete')}({checkedIdList.length})</ThemedText>
+              <ThemedText type="default">
+                {t('delete')}({checkedIdList.length})
+              </ThemedText>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setSelectableVisible(false)}>
-              <ThemedText type="default" style={styles.toolbarText}>{t('cancel')}</ThemedText>
+              <ThemedText type="default">
+                {t('cancel')}
+              </ThemedText>
             </TouchableOpacity>
           </View>
         }
@@ -305,9 +318,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginTop: 10
   },
-  toolbarText: {
-    color: '#000',
-  }
 });
 
 const nstyles = StyleSheet.create({
@@ -348,16 +358,12 @@ const pstyles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 15
   },
-  titleText: {
-    color: '#000'
-  },
   textWrapper: {
     marginHorizontal: 20,
     marginTop: 10,
     marginBottom: 15,
   },
   normalText: {
-    color: '#000',
     textAlign: 'center'
   },
   actionsWrapper: {
@@ -379,7 +385,4 @@ const pstyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonText: {
-    color: '#000'
-  }
 });
