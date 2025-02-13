@@ -2,7 +2,7 @@
  * Utility Definition
  * RTHA
  * 
- * Created By Thornton at 01/23/2025
+ * Created by Thornton on 01/23/2025
  */
 import dayjs from "dayjs";
 import { Platform } from "react-native";

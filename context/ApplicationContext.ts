@@ -2,7 +2,7 @@
  * Global State Definition
  * RTHA
  * 
- * Created By Thornton at 01/23/2025
+ * Created by Thornton on 01/23/2025
  */
 import React from 'react';
 

@@ -2,7 +2,7 @@
  * Notification List Screen
  * RTHA
  * 
- * Created By Thornton at 01/28/2025
+ * Created by Thornton on 01/28/2025
  */
 import React, { useState, useEffect, useRef } from 'react';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';

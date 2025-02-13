@@ -2,7 +2,7 @@
  * CustomButton Component
  * RTHA
  * 
- * Created By Thornton at 01/28/2025
+ * Created by Thornton on 01/28/2025
  */
 import React from 'react'
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native'

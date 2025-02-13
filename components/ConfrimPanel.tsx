@@ -2,7 +2,7 @@
  * Delete Confrim Panel
  * RTHA
  * 
- * Created By Thornton at 02/10/2025
+ * Created by Thornton on 02/10/2025
  */
 import React from 'react';
 import Modal from 'react-native-modal';

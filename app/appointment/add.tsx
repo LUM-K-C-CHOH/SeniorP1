@@ -2,7 +2,7 @@
  * Add Appointment Screen
  * RTHA
  * 
- * Created By Thornton at 02/07/2025
+ * Created by Thornton on 02/07/2025
  */
 import React from 'react';
 import Header from '@/app/layout/header';

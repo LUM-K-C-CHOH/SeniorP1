@@ -2,7 +2,7 @@
  * Internationalization Configuration
  * RTHA
  * 
- * Created By Thornton at 01/23/2025
+ * Created by Thornton on 01/23/2025
  */
 import i18n from 'i18next';
 import * as Localization from 'expo-localization';

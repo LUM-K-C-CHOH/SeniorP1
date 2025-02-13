@@ -2,7 +2,7 @@
  * Medication List Screen
  * RTHA
  * 
- * Created By Thornton at 01/28/2025
+ * Created by Thornton on 01/28/2025
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import CustomButton from '@/components/CustomButton';

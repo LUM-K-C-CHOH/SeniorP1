@@ -2,7 +2,7 @@
  * Themed Input Control Component
  * RTHA
  * 
- * Created By Thornton at 02/11/2025
+ * Created by Thornton on 02/11/2025
  */
 import React from 'react';
 import { TextInput, StyleSheet, type TextInputProps } from 'react-native';
