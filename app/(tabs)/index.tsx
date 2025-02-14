@@ -9,11 +9,19 @@ import Animated from 'react-native-reanimated';
 import ApplicationContext from '@/context/ApplicationContext';
 
 import {
+  LineChart,
+  BarChart,
+  PieChart,
+  ProgressChart,
+  ContributionGraph,
+  StackedBarChart
+} from 'react-native-chart-kit';
+import {
   StyleSheet,
   SafeAreaView,
   View,
   TouchableOpacity,
-  useColorScheme
+  useColorScheme,
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +40,7 @@ import { getTodayAppointmentList } from '@/services/appointment';
 import { IAppointment, IContact, IMedication, TResponse } from '@/@types';
 import { getContactList } from '@/services/contact';
 import { getRefillMedicationList, getTodayMedicationList, getMedicationSufficient } from '@/services/medication';
+import dayjs from 'dayjs';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -93,6 +102,10 @@ export default function DashboardScreen() {
     return find ? find.name : '';
   }
 
+  const getTime = (datetimeStr: string): string => {
+    return dayjs(datetimeStr).format('hh:mm A');
+  }
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <Animated.ScrollView>
@@ -134,14 +147,38 @@ export default function DashboardScreen() {
               </ThemedText>
             </View>
             <View style={cstyles.sufficientWrapper}>
-              <ThemedText
-                type="default"
-                darkColor={Colors.dark.darkGrayText}
-                lightColor={Colors.light.darkGrayText}
-              >
-                {t('sufficient')}
-              </ThemedText>
-              <ThemedText type="bigTitle">{medicationSufficient}%</ThemedText>
+              <ProgressChart
+                data={{
+                  labels: [""],
+                  data: [0.88]
+                }}
+                width={160}
+                height={160}
+                strokeWidth={16}
+                radius={55}
+                chartConfig={{
+                  backgroundGradientFrom: "#fff",
+                  backgroundGradientFromOpacity: 0,
+                  backgroundGradientTo: "#fff",
+                  backgroundGradientToOpacity: 0.5,
+                  color: (opacity = 1) => `rgba(7, 181, 7, ${opacity})`,
+                  strokeWidth: 2, // optional, default 3
+                  barPercentage: 0.5,
+                  useShadowColorFromDataset: false,
+                }}
+                center={[10, 0]}
+                hideLegend={true}
+              />
+              <View style={{ position: 'absolute' }}>
+                <ThemedText
+                  type="default"
+                  darkColor={Colors.dark.grayText}
+                  lightColor={Colors.light.grayText}
+                >
+                  {t('sufficient')}
+                </ThemedText>
+                <ThemedText type="bigTitle">{medicationSufficient}%</ThemedText>
+              </View>
             </View>
           </ThemedView>
           <ThemedView
@@ -180,12 +217,12 @@ export default function DashboardScreen() {
                   <ThemedText
                     type="default"
                   >
-                    {data.scheduledTime.split(' ')[1]}
+                    {getTime(data.scheduledTime)}
                   </ThemedText>
                   <ThemedText
                     type="small"
-                    darkColor={Colors.dark.darkGrayText}
-                    lightColor={Colors.light.darkGrayText}
+                    darkColor={Colors.dark.grayText}
+                    lightColor={Colors.light.grayText}
                   >
                     {getContactName(data.contactId)}
                   </ThemedText>
@@ -228,11 +265,11 @@ export default function DashboardScreen() {
             <Animated.ScrollView style={{ marginTop: 5 }}>
               {medicationList.map((data: IMedication, index: number) =>
                 <View key={index} style={cstyles.medicationItemWrapper}>
-                  <ThemedText type="default">{data.frequency.times[0]}</ThemedText>
+                  <ThemedText type="default">{getTime(`${dayjs().format('YYYY-MM-DD')} ${data.frequency.times[0]}:00`)}</ThemedText>
                   <ThemedText
                     type="small"
-                    darkColor={Colors.dark.darkGrayText}
-                    lightColor={Colors.light.darkGrayText}
+                    darkColor={Colors.dark.grayText}
+                    lightColor={Colors.light.grayText}
                   >
                     {data.name}
                   </ThemedText>
@@ -273,8 +310,8 @@ export default function DashboardScreen() {
                 <View key={index} style={cstyles.refillItemWrapper}>
                   <ThemedText
                     type="small"
-                    darkColor={Colors.dark.darkGrayText}
-                    lightColor={Colors.light.darkGrayText}
+                    darkColor={Colors.dark.grayText}
+                    lightColor={Colors.light.grayText}
                   >
                     {data.name}
                   </ThemedText>
