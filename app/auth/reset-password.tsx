@@ -170,6 +170,7 @@ export default function VerifyCodeScreen() {
                     onChangeText={v => handleCodeChange(index, v)}
                     keyboardType="number-pad"
                     autoCapitalize="none"
+                    maxLength={1}
                   />
                 )}
               </View>

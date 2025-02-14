@@ -315,6 +315,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               darkColor={Colors.dark.defaultControlText}
               lightColor={Colors.light.defaultControlText}
               placeholder="00"
+              keyboardType="number-pad"
+              maxLength={2}
               value={hour}
               onChangeText={(v) => handleTimeChange('hour', v)}
             />
@@ -325,6 +327,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               darkColor={Colors.dark.defaultControlText}
               lightColor={Colors.light.defaultControlText}              
               placeholder="00"
+              keyboardType="number-pad"
+              maxLength={2}
               value={minute}
               onChangeText={(v) => handleTimeChange('minute', v)}
             />

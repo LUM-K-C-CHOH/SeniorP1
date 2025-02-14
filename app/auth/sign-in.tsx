@@ -120,22 +120,24 @@ export default function SignInScreen() {
             </ThemedText>
           }
         </View>
-        <ThemedInput
-          style={[errors.password&& styles.error]}
-          placeholder="Password"
-          value={password}
-          onChangeText={v => setPassword(v)}
-          secureTextEntry
-        />
-        {errors.password&& 
-          <ThemedText
-            type="small"
-            darkColor={Colors.dark.redText}
-            lightColor={Colors.light.redText}
-          >
-            {errors.password}
-          </ThemedText>
-        }
+        <View style={styles.formGroup}>
+          <ThemedInput
+            style={[errors.password&& styles.error]}
+            placeholder="Password"
+            value={password}
+            onChangeText={v => setPassword(v)}
+            secureTextEntry
+          />
+          {errors.password&& 
+            <ThemedText
+              type="small"
+              darkColor={Colors.dark.redText}
+              lightColor={Colors.light.redText}
+            >
+              {errors.password}
+            </ThemedText>
+          }
+        </View>
         <View
           style={[
             styles.linkWrapper, { justifyContent: 'flex-end' }
