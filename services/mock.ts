@@ -9,6 +9,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import axiosInstance from './instance';
 import { NotificationType, DosageUnitType } from '@/config/constants';
+import dayjs from 'dayjs';
 
 const mock = new MockAdapter(axiosInstance);
 
@@ -347,6 +348,11 @@ mock.onGet('/medication/list').reply(200, {
 mock.onGet('/appointment/list').reply(200, {
   code: 0,
   data: appointmentData
+});
+
+mock.onGet(`/appointment/list?date=${dayjs().format('YYYY-MM-DD')}`).reply(200, {
+  code: 0,
+  data: appointmentData.filter((_, index) => index % 2 === 0)
 });
 
 mock.onGet('/contact/list').reply(200, {

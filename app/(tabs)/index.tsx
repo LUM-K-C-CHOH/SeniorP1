@@ -4,20 +4,34 @@
  * 
  * Created by Thornton on 01/23/2025
  */
-import React, { useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import Animated from 'react-native-reanimated';
 import ApplicationContext from '@/context/ApplicationContext';
 
-import { StyleSheet, SafeAreaView, View, TouchableOpacity, useColorScheme } from 'react-native';
-
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  TouchableOpacity,
+  useColorScheme
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors } from '@/config/constants';
 import { ThemedView } from '@/components/ThemedView';
 import { generateBoxShadowStyle } from '@/utils';
-import { AppointmentIcon, MedicationIcon, ReminderOutlineIcon, StoreIcon, WalkIcon } from '@/utils/svgs';
+import {
+  AppointmentIcon,
+  MedicationIcon,
+  ReminderOutlineIcon,
+  StoreIcon
+} from '@/utils/svgs';
+import { getTodayAppointmentList } from '@/services/appointment';
+import { IAppointment, IContact, IMedication, TResponse } from '@/@types';
+import { getContactList } from '@/services/contact';
+import { getRefillMedicationList, getTodayMedicationList, getMedicationSufficient } from '@/services/medication';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -26,6 +40,58 @@ export default function DashboardScreen() {
   
   const { t } = useTranslation();
   const { appState } = useContext(ApplicationContext);
+
+  const [initiated, setInitiated] = useState<boolean>(false);
+  const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);
+  const [medicationList, setMedicationList] = useState<IMedication[]>([]);
+  const [refillMedicationList, setRefillMedicationList] = useState<IMedication[]>([]);
+  const [contactList, setContactList] = useState<IContact[]>([]);
+  const [medicationSufficient, setMedicationSufficient] = useState<number>(0);
+
+  useFocusEffect(   
+    useCallback(() => {
+      setInitiated(false);
+    }, [])
+  );
+
+  useEffect(() => {
+    if (initiated) return;
+
+    setInitiated(true);
+
+    Promise.all([
+      getTodayAppointmentList(),
+      getContactList(),
+      getTodayMedicationList(),
+      getRefillMedicationList(),
+      getMedicationSufficient()
+    ]).then((results: TResponse[]) => {
+      if (results[0].success) {
+        setAppointmentList(results[0].data);
+      }
+
+      if (results[1].success) {
+        setContactList(results[1].data);
+      }
+
+      if (results[2].success) {
+        setMedicationList(results[2].data);
+      }
+
+      if (results[3].success) {
+        setRefillMedicationList(results[2].data);
+      }
+
+      if (results[4].success) {
+        setMedicationSufficient(results[4].data.sufficient);
+      }
+    });
+  }, []);
+
+  const getContactName = (id: number): string => {
+    const find = contactList.find(v => v.id === id);
+    return find ? find.name : '';
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
@@ -67,6 +133,16 @@ export default function DashboardScreen() {
                 {t('dashboard.medication_store')}
               </ThemedText>
             </View>
+            <View style={cstyles.sufficientWrapper}>
+              <ThemedText
+                type="default"
+                darkColor={Colors.dark.darkGrayText}
+                lightColor={Colors.light.darkGrayText}
+              >
+                {t('sufficient')}
+              </ThemedText>
+              <ThemedText type="bigTitle">{medicationSufficient}%</ThemedText>
+            </View>
           </ThemedView>
           <ThemedView
             darkColor={'#fff'}
@@ -98,6 +174,24 @@ export default function DashboardScreen() {
                 {t('dashboard.todays_appointments')}
               </ThemedText>
             </View>
+            <Animated.ScrollView style={{ marginTop: 5 }}>
+              {appointmentList.map((data: IAppointment, index: number) =>
+                <View key={index} style={cstyles.appointmentItemWrapper}>
+                  <ThemedText
+                    type="default"
+                  >
+                    {data.scheduledTime.split(' ')[1]}
+                  </ThemedText>
+                  <ThemedText
+                    type="small"
+                    darkColor={Colors.dark.darkGrayText}
+                    lightColor={Colors.light.darkGrayText}
+                  >
+                    {getContactName(data.contactId)}
+                  </ThemedText>
+                </View>
+              )}
+            </Animated.ScrollView>
           </ThemedView>
         </View>
         <View style={styles.rowWrapper}>
@@ -131,6 +225,20 @@ export default function DashboardScreen() {
                 {t('dashboard.todays_medications')}
               </ThemedText>
             </View>
+            <Animated.ScrollView style={{ marginTop: 5 }}>
+              {medicationList.map((data: IMedication, index: number) =>
+                <View key={index} style={cstyles.medicationItemWrapper}>
+                  <ThemedText type="default">{data.frequency.times[0]}</ThemedText>
+                  <ThemedText
+                    type="small"
+                    darkColor={Colors.dark.darkGrayText}
+                    lightColor={Colors.light.darkGrayText}
+                  >
+                    {data.name}
+                  </ThemedText>
+                </View>
+              )}
+            </Animated.ScrollView>
           </ThemedView>
           <ThemedView
             darkColor={'#fff'}
@@ -160,6 +268,31 @@ export default function DashboardScreen() {
                 {t('dashboard.refill_reminders')}
               </ThemedText>
             </View>
+            <Animated.ScrollView style={{ marginTop: 5 }}>
+              {refillMedicationList.map((data: IMedication, index: number) =>
+                <View key={index} style={cstyles.refillItemWrapper}>
+                  <ThemedText
+                    type="small"
+                    darkColor={Colors.dark.darkGrayText}
+                    lightColor={Colors.light.darkGrayText}
+                  >
+                    {data.name}
+                  </ThemedText>
+                  <ThemedText
+                    type="default"
+                    darkColor={'red'}
+                    lightColor={'red'}
+                    style={{ fontWeight: 600 }}
+                  >
+                    {data.stock}
+                  </ThemedText>
+                  <ThemedText type="default">/</ThemedText>
+                  <ThemedText type="default">
+                    {data.miniStock}
+                  </ThemedText>
+                </View>
+              )}
+            </Animated.ScrollView>
           </ThemedView>
         </View>
       </Animated.ScrollView>
@@ -210,14 +343,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 15
-  }
+  },
+  
 });
 
 const cstyles = StyleSheet.create({
   container: {
     width: '46%',
-    height: 210,
-    marginLeft: 10
+    height: 211,
+    marginLeft: 10,
+    paddingTop: 5,
+    paddingBottom: 10
   },
   topWrapper: {
     flexDirection: 'row',
@@ -235,6 +371,31 @@ const cstyles = StyleSheet.create({
   },
   titleText: {
     width: 100
+  },
+  medicationItemWrapper: {
+    flexDirection: 'row',
+    columnGap: 5,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  appointmentItemWrapper: {
+    flexDirection: 'row',
+    columnGap: 5,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  refillItemWrapper: {
+    flexDirection: 'row',
+    columnGap: 5,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  sufficientWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
-  
 });

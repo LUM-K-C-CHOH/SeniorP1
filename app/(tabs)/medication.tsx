@@ -40,7 +40,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors, DosageUnitType } from '@/config/constants';
+import { Colors } from '@/config/constants';
 import { getDosageUnitString } from '@/utils';
 
 export default function MedicationScreen() {

@@ -50,7 +50,6 @@ export default function AppointmentScreen() {
         getContactList()
       ]
     ).then((res: TResponse[]) => {
-      console.log(res)
       if (res[0].success) {
         setAppointmentList(res[0].data?? []);
       } else {

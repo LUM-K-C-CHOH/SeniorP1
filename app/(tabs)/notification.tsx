@@ -225,7 +225,7 @@ export default function NotificationScreen() {
         titleText={t('confirmation')}
         positiveButtonText={t('yes')}
         negativeButtonText={t('no')}
-        bodyText={t('emergency_control.confirm_delete').replace('${count}', `${checkedIdList.length}`)}
+        bodyText={t('message.confirm_delete')}
         resultVisible={deleteConfirmResultVisible}
         resultElement={
           <ThemedView style={ConfirmResultStyle.container}>
