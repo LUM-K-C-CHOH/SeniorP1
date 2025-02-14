@@ -78,6 +78,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   }, [medication]);
 
   const handleFormValueChange = (type: string, value: string): void => {
+    
     if (type === 'name') {
       setName(value);  
       if (value.length > 0) {
@@ -104,7 +105,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 
     if (type === 'dosageUnit') {
       setDosageUnit(value);
-      if (value.length > 0) {
+      if (`${value}`.length > 0) {
         const { dosageUnit, ...rest } = errors;
         setErrors(rest);
       } else {
@@ -116,7 +117,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 
     if (type === 'cycle') {
       setCycle(value);
-      if (value.length > 0) {
+      if (`${value}`.length > 0) {
         const { cycle, ...rest } = errors;
         setErrors(rest);
       } else {
@@ -349,23 +350,23 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <SelectList
-              setSelected={(v: string) => setDosageUnit(v)}
+              setSelected={(v: string) => handleFormValueChange('dosageUnit', v)}
               data={dosageUnitList}
               save="key"
               placeholder="--Select--"
               defaultOption={dosageUnitList.find(v => v.key === parseInt(dosageUnit, 10))}
               boxStyles={{
-                borderColor: '#e2e2e2',
+                borderColor: errors.dosageUnit ? 'red' : '#e2e2e2',
                 paddingHorizontal: 10,
               }}
               inputStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
               dropdownStyles={{
                 borderColor: '#e2e2e2',
               }}
               dropdownTextStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
             />
             {errors.dosageUnit&&
@@ -390,23 +391,23 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <SelectList
-              setSelected={(v: string) => setCycle(v)}
+              setSelected={(v: string) => handleFormValueChange('cycle', v)}
               data={cycleList}
               save="key"
               placeholder="--Select--"
               defaultOption={cycleList.find(v => v.key === parseInt(cycle, 10))}
               boxStyles={{
-                borderColor: '#e2e2e2',
+                borderColor: errors.cycle ? 'red' : '#e2e2e2',
                 paddingHorizontal: 10,
               }}
               inputStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
               dropdownStyles={{
                 borderColor: '#e2e2e2',
               }}
               dropdownTextStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
             />
             {errors.cycle&&
@@ -440,19 +441,19 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                     placeholder="HH"
                     defaultOption={hourList.find(v => v.key === parseInt(times[index].split(':')[0], 10))}
                     boxStyles={{
-                      borderColor: '#e2e2e2',
+                      borderColor: timeErrors[index].length > 0 ? 'red' : '#e2e2e2',
                       paddingHorizontal: 10,
                       width: 70
                     }}
                     inputStyles={{
-                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
                     }}
                     dropdownStyles={{
                       borderColor: '#e2e2e2',
                       width: 70
                     }}
                     dropdownTextStyles={{
-                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
                     }}
                   />
                   <ThemedText type="default">:</ThemedText>
@@ -480,7 +481,6 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                       </ThemedView>
                     </TouchableHighlight>
                   }
-                 
                 </View>
                 {timeErrors[index].length > 0&&
                   <ThemedText
@@ -647,13 +647,12 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
   },
   formGroup: {
     flexDirection: 'row',
     columnGap: 15,
-    marginTop: 10
+    marginTop: 10,
+    paddingHorizontal: 10,
   },
   controlLabel: {
     width: 70,
@@ -663,8 +662,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionWrapper: {
-    paddingTop: 15,
-    paddingBottom: 5
+    padding: 15
   },
   timeWrapper: {
     flexDirection: 'row',
