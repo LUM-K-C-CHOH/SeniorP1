@@ -7,55 +7,84 @@
 import React, { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Animated from 'react-native-reanimated';
+import Modal from 'react-native-modal';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedInput } from '@/components/ThemedIntput';
 import {
   StyleSheet,
   SafeAreaView,
-  View
+  View,
+  useColorScheme,
+  TouchableHighlight
 } from 'react-native';
 import { IMedication } from '@/@types';
 import { useTranslation } from 'react-i18next';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors } from '@/config/constants';
+import { Colors, DosageUnitType } from '@/config/constants';
+import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list'
+import { ThemedView } from '@/components/ThemedView';
+import { CalendarIcon, MinusIcon, PlusIcon } from '@/utils/svgs';
+import dayjs from 'dayjs';
+import Calendar from '@/components/Calendar';
 
 type TMedicationFormProps = {
   medication?: IMedication
 };
 
+const dosageUnitList = [
+  { key: DosageUnitType.PL, value: 'Pill' },
+  { key: DosageUnitType.MG, value: 'Milligram' },
+  { key: DosageUnitType.ML, value: 'Milliliter' },
+];
+const hourList = Array.from(new Array(24), (_, index: number) => new String(index) .padStart(2, '0')).map((v, index) => ({ key: index, value: v }));
+const cycleList = [
+  { key: 1, value: '1 Day', selected: true },
+  { key: 2, value: '2 Days' },
+  { key: 3, value: '3 Days' },
+]
 export default function MedicationForm({ medication }: TMedicationFormProps) {
   const backgroundColor = useThemeColor({}, 'background');
+  const theme = useColorScheme();
 
   const { t } = useTranslation();
 
   const [errors, setErrors] = useState<{[k: string]: string}>({});
+  const [timeErrors, setTimeErrors] = useState<string[]>(medication ? Array.from(new Array(medication.frequency.times.length), () => '') : ['']);
   const [name, setName] = useState<string>(medication ? medication.name : '');
-  const [dosage, setDosage] = useState<string>(medication ? medication.dosage : '');
-  const [frequency, setFrequency] = useState<string>(medication ? medication.frequency : '');
-  const [startDate, setStartDate] = useState<string>(medication ? medication.startDate : '');
-  const [endDate, setEndDate] = useState<string>(medication ? medication.endDate : '');
+  const [dosage, setDosage] = useState<string>(medication ? `${medication.frequency.dosage}` : '');
+  const [dosageUnit, setDosageUnit] = useState<string>(medication ? `${medication.frequency.dosageUnit}` : '');
+  const [cycle, setCycle] = useState<string>(medication ? `${medication.frequency.cycle}` : '');
+  const [times, setTimes] = useState<string[]>(medication ? medication.frequency.times : ['00:00']);
+  const [startDate, setStartDate] = useState<string>(medication ? medication.startDate : dayjs().format('YYYY-MM-DD'));
+  const [endDate, setEndDate] = useState<string>(medication ? medication.endDate : dayjs().format('YYYY-MM-DD'));
   const [stock, setStock] = useState<string>(medication ? `${medication.stock}` : '');
   const [miniStock, setMiniStock] = useState<string>(medication ? `${medication.miniStock}` : '');
+  const [calendarPopupOptions, setCalendarPopupOptions] = useState({ opened: false, type: 0 });
 
   useEffect(() => {
+    if (!medication) return;
+    
     setName(medication?.name?? '');
-    setDosage(medication?.dosage?? '');
-    setFrequency(medication?.frequency?? '');
+    setDosage(medication?.frequency.dosage ? `${medication.frequency.dosage}` : '');
+    setDosageUnit(medication?.frequency.dosageUnit ? `${medication.frequency.dosageUnit}` : '');
+    setCycle(medication?.frequency.cycle ? `${medication.frequency.cycle}` : '');
+    setTimes(medication?.frequency.times ? medication?.frequency.times : ['00:00']);
     setStock(medication?.stock ? `${medication.stock}` : '');
     setStock(medication?.miniStock ? `${medication.miniStock}` : '');
     setStartDate(medication?.startDate?? '');
     setEndDate(medication?.endDate?? '');
+    setTimeErrors(medication?.frequency.times ? Array.from(new Array(medication.frequency.times.length), () => '') : ['']);
   }, [medication]);
 
-  const changeFormValue = (type: string, value: string): void => {
+  const handleFormValueChange = (type: string, value: string): void => {
     if (type === 'name') {
       setName(value);  
       if (value.length > 0) {
         const { name, ...rest } = errors;
         setErrors(rest);
       } else {
-        errors['name'] = 'Invalid name.'
+        errors['name'] = t('message.alert_input_name');
       }
 
       return;
@@ -67,19 +96,31 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         const { dosage, ...rest } = errors;
         setErrors(rest);
       } else {
-        errors['dosage'] = 'Invalid dosage.'
+        errors['dosage'] = t('message.alert_input_dosage');
       }
 
       return;
     }
 
-    if (type === 'frequency') {
-      setFrequency(value);
+    if (type === 'dosageUnit') {
+      setDosageUnit(value);
       if (value.length > 0) {
-        const { frequency, ...rest } = errors;
+        const { dosageUnit, ...rest } = errors;
         setErrors(rest);
       } else {
-        errors['frequency'] = 'Invalid frequency.'
+        errors['dosageUnit'] = t('message.alert_select_dosage_unit');
+      }
+
+      return;
+    }
+
+    if (type === 'cycle') {
+      setCycle(value);
+      if (value.length > 0) {
+        const { cycle, ...rest } = errors;
+        setErrors(rest);
+      } else {
+        errors['cycle'] = t('message.alert_select_cycle');
       }
 
       return;
@@ -91,7 +132,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         const { stock, ...rest } = errors;
         setErrors(rest);
       } else {
-        errors['stock'] = 'Invalid Stock.'
+        errors['stock'] = t('message.alert_input_stock');
       }
 
       return;
@@ -103,7 +144,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         const { miniStock, ...rest } = errors;
         setErrors(rest);
       } else {
-        errors['miniStock'] = 'Invalid minimum stock.'
+        errors['miniStock'] = t('message.alert_mini_input_stock');
       }
 
       return;
@@ -115,7 +156,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         const { startDate, ...rest } = errors;
         setErrors(rest);
       } else {
-        errors['startDate'] = 'Invalid date.'
+        errors['startDate'] = t('message.alert_select_start_date');
       }
 
       return;
@@ -127,50 +168,114 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         const { endDate, ...rest } = errors;
         setErrors(rest);
       } else {
-        errors['endDate'] = 'Invalid date.'
+        errors['endDate'] = t('message.alert_select_end_date');
       }
 
       return;
     }
   }
 
-  const handleAddMedication = (): void => {
+  const handleMedicationAdd = (): void => {
     let errors: {[k: string]: string} = {};
     if (name.length === 0) {
-      errors['name'] = 'Invalid name.'
+      errors['name'] = t('message.alert_input_name');
     }
 
     if (dosage.length === 0) {
-      errors['dosage'] = 'Invalid dosage.';
+      errors['dosage'] = t('message.alert_input_dosage');
     }
 
-    if (frequency.length === 0) {
-      errors['frequency'] = 'Invalid frequency.';
+    if (dosageUnit.length === 0) {
+      errors['dosageUnit'] = t('message.alert_select_dosage_unit');
+    }
+
+    if (cycle.length === 0) {
+      errors['cycle'] = t('message.alert_select_cycle');
+    }
+
+    if (times.length === 0) {
+      errors['times'] = t('message.alert_add_time');
+    }
+
+    let tes = Array.from(new Array(times.length), () => '');
+    for (let i = 0; i < times.length; i++) {
+      const time = times[i];
+      const filter = times.filter(v => v === time);
+      if (filter.length > 1) {
+        tes[i] = t('message.alert_select_unique_time');
+      }
     }
 
     if (miniStock.length === 0) {
-      errors['miniStock'] = 'Invalid minimum stock.';
+      errors['miniStock'] = t('message.alert_mini_input_stock');
     }
 
     if (stock.length === 0) {
-      errors['stock'] = 'Invalid stock.';
+      errors['stock'] = t('message.alert_input_stock');
     }
 
     if (startDate.length === 0) {
-      errors['startDate'] = 'Invalid date.';
+      errors['startDate'] = t('message.alert_select_start_date');
     }
 
     if (endDate.length === 0) {
-      errors['endDate'] = 'Invalid date.';
+      errors['endDate'] = t('message.alert_select_end_date');
     }
 
     setErrors(errors);
-
+    setTimeErrors(tes);
     if (Object.keys(errors).length > 0) return;
+    if (tes.filter(v => v.length > 0).length > 0) return;
+  }
+
+  const handleTimeAdd = (): void => {
+    setTimes([...times, '00:00']);
+    setTimeErrors([...timeErrors, '']);
+  }
+
+  const handleTimeRemove = (index: number): void => {
+    times.splice(index, 1);
+    setTimes([...times]);
+  }
+
+  const handleTimeChange = (index: number, hour: string): void => {
+    const ts = [...times];
+    const tes = [...timeErrors];
+    const tt = `${new String(hour).padStart(2, '0')}:00`;
+    ts[index] = tt;
+    if (ts.filter(v => v === tt).length > 1) {
+      tes[index] = t('message.alert_select_unique_time');
+    } else {
+      tes[index] = '';
+    }
+    setTimes(ts);
+    setTimeErrors(tes);
+  }
+
+  const handleCalendarPopupOpstions = (option: {opened: boolean, type: number}): void => {
+    setCalendarPopupOptions(option);
+  }
+
+  const handleDateSelect = (date: Date): void => {
+    if (calendarPopupOptions.type === 1) {
+      setStartDate(dayjs(date).format('YYYY-MM-DD'));
+    } else if (calendarPopupOptions.type === 2) {
+      setEndDate(dayjs(date).format('YYYY-MM-DD'));
+    }
   }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <Modal
+        isVisible={calendarPopupOptions.opened}
+        onBackdropPress={() => handleCalendarPopupOpstions({ opened: false, type: 0 })}
+        onBackButtonPress={() => handleCalendarPopupOpstions({ opened: false, type: 0 })}
+      >
+        <Calendar
+          date={calendarPopupOptions.type === 1 ? new Date(startDate) : calendarPopupOptions.type === 2 ? new Date(endDate) : new Date()}
+          onSelectedDate={handleDateSelect}
+        />
+      </Modal>
       <Animated.ScrollView>
         <View style={styles.formGroup}>
           <ThemedText
@@ -184,12 +289,13 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
           <View style={styles.formControlWrapper}>
             <ThemedInput
               style={[
-                styles.formControl,
                 errors.name ? { borderColor: 'red' } : {}
               ]}
               type="default"
               value={name}
-              onChangeText={(v) => changeFormValue('name', v)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              onChangeText={(v) => handleFormValueChange('name', v)}
             />
             {errors.name&&
               <ThemedText
@@ -215,11 +321,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             <ThemedInput
               type="default"
               style={[
-                styles.formControl,
                 errors.dosage ? { borderColor: 'red' } : {}
               ]}
               value={dosage}
-              onChangeText={(v) => changeFormValue('dosage', v)}
+              keyboardType="number-pad"
+              onChangeText={(v) => handleFormValueChange('dosage', v)}
             />
             {errors.dosage&&
               <ThemedText
@@ -239,27 +345,155 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            {t('frequency')}{':'}
+            {t('dosage_unit')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <ThemedInput
-              type="default"
-              style={[
-                styles.formControl,
-                errors.frequency ? { borderColor: 'red' } : {}
-              ]}
-              value={frequency}
-              onChangeText={(v) => changeFormValue('frequency', v)}
+            <SelectList
+              setSelected={(v: string) => setDosageUnit(v)}
+              data={dosageUnitList}
+              save="key"
+              placeholder="--Select--"
+              defaultOption={dosageUnitList.find(v => v.key === parseInt(dosageUnit, 10))}
+              boxStyles={{
+                borderColor: '#e2e2e2',
+                paddingHorizontal: 10,
+              }}
+              inputStyles={{
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+              }}
+              dropdownStyles={{
+                borderColor: '#e2e2e2',
+              }}
+              dropdownTextStyles={{
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+              }}
             />
-            {errors.frequency&&
+            {errors.dosageUnit&&
               <ThemedText
                 type="small"
                 darkColor={Colors.dark.redText}
                 lightColor={Colors.light.redText}
               >
-                {errors.frequency}
+                {errors.dosageUnit}
               </ThemedText>
             }
+          </View>
+        </View>
+        <View style={styles.formGroup}>
+          <ThemedText
+            type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
+            style={styles.controlLabel}
+          >
+            {t('cycle')}{':'}
+          </ThemedText>
+          <View style={styles.formControlWrapper}>
+            <SelectList
+              setSelected={(v: string) => setCycle(v)}
+              data={cycleList}
+              save="key"
+              placeholder="--Select--"
+              defaultOption={cycleList.find(v => v.key === parseInt(cycle, 10))}
+              boxStyles={{
+                borderColor: '#e2e2e2',
+                paddingHorizontal: 10,
+              }}
+              inputStyles={{
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+              }}
+              dropdownStyles={{
+                borderColor: '#e2e2e2',
+              }}
+              dropdownTextStyles={{
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+              }}
+            />
+            {errors.cycle&&
+              <ThemedText
+                type="small"
+                darkColor={Colors.dark.redText}
+                lightColor={Colors.light.redText}
+              >
+                {errors.cycle}
+              </ThemedText>
+            }
+          </View>
+        </View>
+        <View style={styles.formGroup}>
+          <ThemedText
+            type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
+            style={styles.controlLabel}
+          >
+            {t('times')}{':'}
+          </ThemedText>
+          <View style={[styles.formControlWrapper, { rowGap: 5 }]}>
+            {times.map((v, index) => 
+              <View key={index}>
+                <View style={styles.timeWrapper}>
+                  <SelectList
+                    setSelected={(v: string) => handleTimeChange(index, v)}
+                    data={hourList}
+                    save="key"
+                    placeholder="HH"
+                    defaultOption={hourList.find(v => v.key === parseInt(times[index].split(':')[0], 10))}
+                    boxStyles={{
+                      borderColor: '#e2e2e2',
+                      paddingHorizontal: 10,
+                      width: 70
+                    }}
+                    inputStyles={{
+                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+                    }}
+                    dropdownStyles={{
+                      borderColor: '#e2e2e2',
+                      width: 70
+                    }}
+                    dropdownTextStyles={{
+                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.light.defaultControlText
+                    }}
+                  />
+                  <ThemedText type="default">:</ThemedText>
+                  <View style={styles.secondPlaceholderWrapper}>
+                    <ThemedText
+                      type="defaultMedium"
+                      darkColor={Colors.dark.defaultControlText}
+                      lightColor={Colors.light.defaultControlText}
+                      style={{ fontWeight: 400 }}
+                    >
+                      00
+                    </ThemedText>
+                  </View>
+                  {index === times.length - 1&&
+                    <TouchableHighlight onPress={() => handleTimeAdd()}>
+                      <ThemedView style={styles.iconButtonWrapper}>
+                        <PlusIcon color={theme === 'light' ? '#454b60' : '#fff'} />
+                      </ThemedView>
+                    </TouchableHighlight>
+                  }
+                  {index < times.length - 1&&
+                    <TouchableHighlight onPress={() => handleTimeRemove(index)}>
+                      <ThemedView style={styles.iconButtonWrapper}>
+                        <MinusIcon color={theme === 'light' ? '#454b60' : '#fff'} />
+                      </ThemedView>
+                    </TouchableHighlight>
+                  }
+                 
+                </View>
+                {timeErrors[index].length > 0&&
+                  <ThemedText
+                    type="small"
+                    darkColor={Colors.dark.redText}
+                    lightColor={Colors.light.redText}
+                  >
+                    {timeErrors[index]}
+                  </ThemedText>
+                }
+              </View>
+            )}
+            
           </View>
         </View>
         <View style={styles.formGroup}>
@@ -275,11 +509,10 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             <ThemedInput
               type="default"
               style={[
-                styles.formControl,
                 errors.stock ? { borderColor: 'red' } : {}
               ]}
               value={stock}
-              onChangeText={(v) => changeFormValue('stock', v)}
+              onChangeText={(v) => handleFormValueChange('stock', v)}
             />
             {errors.stock&&
               <ThemedText
@@ -305,11 +538,10 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             <ThemedInput
               type="default"
               style={[
-                styles.formControl,
                 errors.miniStock ? { borderColor: 'red' } : {}
               ]}
               value={miniStock}
-              onChangeText={(v) => changeFormValue('miniStock', v)}
+              onChangeText={(v) => handleFormValueChange('miniStock', v)}
             />
             {errors.miniStock&&
               <ThemedText
@@ -332,15 +564,22 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {t('start_date')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <ThemedInput
-              type="default"
-              style={[
-                styles.formControl,
-                errors.startDate ? { borderColor: 'red' } : {}
-              ]}
-              value={startDate}
-              onChangeText={(v) => changeFormValue('startDate', v)}
-            />
+            <TouchableHighlight
+              style={{ borderRadius: 10 }}
+              onPress={() => handleCalendarPopupOpstions({ opened: true, type: 1 })}
+            >
+              <ThemedView style={styles.dateControl}>
+                <ThemedText
+                  type="defaultMedium"
+                  darkColor={Colors.dark.defaultControlText}
+                  lightColor={Colors.light.defaultControlText}
+                  style={{ fontWeight: 400 }}
+                >
+                  {startDate ? dayjs(startDate).format('YYYY-MM-DD') : ''}
+                </ThemedText>
+                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
+              </ThemedView>
+            </TouchableHighlight>
             {errors.startDate&&
               <ThemedText
                 type="small"
@@ -362,15 +601,22 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             {t('end_date')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
-            <ThemedInput
-              type="default"
-              style={[
-                styles.formControl,
-                errors.endDate ? { borderColor: 'red' } : {}
-              ]}
-              value={endDate}
-              onChangeText={(v) => changeFormValue('endDate', v)}
-            />
+            <TouchableHighlight
+              style={{ borderRadius: 10 }}
+              onPress={() => handleCalendarPopupOpstions({ opened: true, type: 1 })}
+            >
+              <ThemedView style={styles.dateControl}>
+                <ThemedText
+                  type="defaultMedium"
+                  darkColor={Colors.dark.defaultControlText}
+                  lightColor={Colors.light.defaultControlText}
+                  style={{ fontWeight: 400 }}
+                >
+                  {endDate ? dayjs(endDate).format('YYYY-MM-DD') : ''}
+                </ThemedText>
+                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
+              </ThemedView>
+            </TouchableHighlight>
             {errors.endDate&&
               <ThemedText
                 type="small"
@@ -384,7 +630,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         </View>
       </Animated.ScrollView>
       <View style={styles.actionWrapper}>
-        <CustomButton onPress={handleAddMedication}>
+        <CustomButton onPress={handleMedicationAdd}>
           <ThemedText
             type="button"
             darkColor={Colors.dark.defaultButtonText}
@@ -416,14 +662,39 @@ const styles = StyleSheet.create({
   formControlWrapper: {
     flex: 1,
   },
-  formControl: {
-    flex: 1,
-    borderColor: '#e2e2e2',
-    borderWidth: 1,
-    borderRadius: 5,
-  },
   actionWrapper: {
     paddingTop: 15,
     paddingBottom: 5
+  },
+  timeWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 10
+  },
+  secondPlaceholderWrapper: {
+    backgroundColor: '#eee',
+    width: 60,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+  },
+  iconButtonWrapper: {
+    width: 45,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  dateControl: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',    
+    fontSize: 16,
+    fontWeight: 400,
+    height: 45,
+    borderWidth: 1,
+    borderColor: '#e2e2e2',
+    borderRadius: 10,
+    paddingHorizontal: 10
   },
 });

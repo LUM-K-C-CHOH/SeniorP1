@@ -40,5 +40,10 @@ const styles = StyleSheet.create({
   default: {
     fontSize: 16,
     fontWeight: 400,
+    height: 45,
+    borderWidth: 1,
+    borderColor: '#e2e2e2',
+    borderRadius: 10,
+    paddingHorizontal: 10
   },
 });

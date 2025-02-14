@@ -103,7 +103,7 @@ export default function SignInScreen() {
         <View style={styles.formGroup}>
           <ThemedInput
             type="default"
-            style={[styles.formControl, errors.email&& styles.error]}
+            style={[errors.email&& styles.error]}
             placeholder="Email"
             value={email}
             onChangeText={v => setEmail(v)}
@@ -121,7 +121,7 @@ export default function SignInScreen() {
           }
         </View>
         <ThemedInput
-          style={[styles.formControl, errors.password&& styles.error]}
+          style={[errors.password&& styles.error]}
           placeholder="Password"
           value={password}
           onChangeText={v => setPassword(v)}
@@ -248,15 +248,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   formGroup: {
-
-  },
-  formControl: {
-    height: 45,
-    borderWidth: 1,
-    borderColor: '#454b60',
-    borderRadius: 10,
     marginTop: 20,
-    paddingHorizontal: 10
   },
   error: {
     borderColor: 'red',

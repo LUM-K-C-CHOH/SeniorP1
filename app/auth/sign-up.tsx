@@ -147,7 +147,7 @@ export default function SignUpScreen() {
         <View style={styles.formGroup}>
           <ThemedInput
             type="default"
-            style={[styles.formControl, errors.email&& styles.error]}
+            style={[errors.email&& styles.error]}
             placeholder="Email"
             value={email}
             onChangeText={v => setEmail(v)}
@@ -330,14 +330,6 @@ const styles = StyleSheet.create({
   },
   error: {
     borderColor: 'red',
-  },
-  formControl: {
-    height: 45,
-    borderWidth: 1,
-    borderColor: '#454b60',
-    borderRadius: 10,
-    
-    paddingHorizontal: 10
   },
   errorWrapper: {
     alignItems: 'center',

@@ -54,7 +54,7 @@ export default function UpdatePasswordScreen() {
       <View style={[styles.container, { backgroundColor }]}>
         <View style={styles.formGroup}>
           <ThemedInput
-            style={[styles.formControl, errors.currentPassword&& styles.error]}
+            style={[errors.currentPassword&& styles.error]}
             placeholder="Current Password"
             value={currentPassword}
             onChangeText={v => setNewPassword(v)}
@@ -72,7 +72,7 @@ export default function UpdatePasswordScreen() {
         </View>
         <View style={styles.formGroup}>
           <ThemedInput
-            style={[styles.formControl, errors.newPassword&& styles.error]}
+            style={[errors.newPassword&& styles.error]}
             placeholder="New Password"
             value={newPassword}
             onChangeText={v => setNewPassword(v)}
@@ -90,7 +90,7 @@ export default function UpdatePasswordScreen() {
         </View>
         <View style={styles.formGroup}>
           <ThemedInput
-            style={[styles.formControl, errors.confirmPassword&& styles.error]}
+            style={[errors.confirmPassword&& styles.error]}
             placeholder="Confrim Password"
             value={confirmPassword}
             onChangeText={v => setConfirmPassword(v)}
@@ -153,15 +153,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   formGroup: {
-
-  },
-  formControl: {
-    height: 45,
-    borderWidth: 1,
-    borderColor: '#454b60',
-    borderRadius: 10,
     marginTop: 20,
-    paddingHorizontal: 10,
   },
   error: {
     borderColor: 'red',

@@ -60,3 +60,9 @@ export const NotificationStatus = {
   PENDING: 1,
   SENT: 2
 }
+
+export const DosageUnitType = {
+  PL: 1,
+  MG: 2,
+  ML: 3,
+}

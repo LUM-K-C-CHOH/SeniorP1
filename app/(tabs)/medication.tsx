@@ -40,7 +40,8 @@ import { useTranslation } from 'react-i18next';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors } from '@/config/constants';
+import { Colors, DosageUnitType } from '@/config/constants';
+import { getDosageUnitString } from '@/utils';
 
 export default function MedicationScreen() {
   const initiatedRef = useRef<boolean>(false);
@@ -176,7 +177,7 @@ export default function MedicationScreen() {
 
     setReminderSettingErrors({});
     setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, saved: true })
-  } 
+  }
 
   const renderItem = (data: ListRenderItemInfo<IMedication>) => (
     <ThemedView style={styles.itemWrapper}>
@@ -192,9 +193,9 @@ export default function MedicationScreen() {
           </ThemedText>
           <View style={styles.itemTextWrapper}>
             <PillIcon color={theme === 'light' ? Colors.light.defaultIcon : Colors.light.defaultIcon}/>
-            <ThemedText type="default">{data.item.dosage}</ThemedText>
+            <ThemedText type="default">{data.item.frequency.dosage}{getDosageUnitString(data.item.frequency.dosageUnit)}</ThemedText>
             <ThemedText>{'•'}</ThemedText>
-            <ThemedText type="default">{data.item.frequency}</ThemedText>
+            <ThemedText type="default">{`${data.item.frequency.times.length} / ${data.item.frequency.cycle}d`}</ThemedText>
           </View>
           <View style={styles.itemTextWrapper}>
             <StockIcon color={getColorByLevel(data.item.stock)} />

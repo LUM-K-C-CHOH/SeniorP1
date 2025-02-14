@@ -19,14 +19,19 @@ export interface IAppState {
   lockScreen: boolean;
 }
 
+export type TFrequency = {
+  dosage: number,
+  dosageUnit: number,
+  cycle: number,
+  times: string[]
+}
 export interface IMedication {
   id: number,
   image: string,
   name: string,
-  dosage: string,
   stock: number,
   miniStock: number,
-  frequency: string,
+  frequency: TFrequency,
   notifications: number,
   startDate: string,
   endDate: string,

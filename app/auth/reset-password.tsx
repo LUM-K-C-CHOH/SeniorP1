@@ -217,7 +217,7 @@ export default function VerifyCodeScreen() {
             </ThemedText>
             <View style={styles.formGroup}>
               <ThemedInput
-                style={[styles.formControl1, errors.newPassword&& styles.error]}
+                style={[errors.newPassword&& styles.error]}
                 placeholder="Password"
                 value={newPassword}
                 onChangeText={v => setNewPassword(v)}
@@ -235,7 +235,7 @@ export default function VerifyCodeScreen() {
             </View>
             <View style={styles.formGroup}>
               <ThemedInput
-                style={[styles.formControl1, errors.confirmPassword&& styles.error]}
+                style={[errors.confirmPassword&& styles.error]}
                 placeholder="Confrim Password"
                 value={confirmPassword}
                 onChangeText={v => setConfirmPassword(v)}
@@ -304,30 +304,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   formGroup: {
-
+    marginTop: 20,
   },
   controlWrapper: {
     flexDirection: 'row',
     columnGap: 30,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginTop: 20,
   },
   formControl: {
     height: 45,
     width: 45,
-    borderWidth: 1,
-    borderColor: '#454b60',
-    borderRadius: 10,
-    marginTop: 20,
-    paddingHorizontal: 10,
     textAlign: 'center'
-  },
-  formControl1: {
-    height: 45,
-    borderWidth: 1,
-    borderColor: '#454b60',
-    borderRadius: 10,
-    marginTop: 20,
-    paddingHorizontal: 10,
   },
   error: {
     borderColor: 'red',

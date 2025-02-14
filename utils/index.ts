@@ -4,6 +4,7 @@
  * 
  * Created by Thornton on 01/23/2025
  */
+import { DosageUnitType } from "@/config/constants";
 import dayjs from "dayjs";
 import { Platform } from "react-native";
 
@@ -77,3 +78,16 @@ export const validateEmail = (email: string): boolean => {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 };
+
+export const getDosageUnitString = (dosageUnit: number) => {
+    switch (dosageUnit) {
+      case DosageUnitType.PL:
+        return 'pill';
+      case DosageUnitType.MG:
+        return 'mg';
+      case DosageUnitType.ML:
+        return 'ml'
+    }
+
+    return 'pill';
+  }

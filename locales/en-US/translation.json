@@ -24,7 +24,9 @@
   "snooze": "Snooze",
   "name": "Name",
   "dosage": "Dosage",
-  "frequency": "Frequency",
+  "dosage_unit": "Dosage Unit",
+  "cycle": "Cycle",
+  "times": "Times",
   "stock": "Stock",
   "stock_limitation": "Stock Limitation",
   "start_date": "Start Date",
@@ -74,11 +76,25 @@
     "alert_select_country": "Please select a country.",
     "alert_input_confirm_password": "Please enter confirm password.",
     "alert_not_match_password": "Please enter correct confirm password.",
-    "deleted_successfully": "Deleted successfully."
+    "deleted_successfully": "Deleted successfully.",
+    "alert_input_dosage": "Please enter the dosage.",
+    "alert_select_dosage_unit": "Please select the dosage unit.",
+    "alert_select_cycle": "Please select the cycle.",
+    "alert_input_stock": "Please enter the stock.",
+    "alert_mini_input_stock": "Please enter the minium stock.",
+    "alert_select_start_date": "Please select the start date.",
+    "alert_select_end_date": "Please select the end date.",
+    "alert_add_time": "Please add the time.",
+    "alert_select_unique_time": "Please select the time not overlapped."
   },
   "dashboard": {
-    "dashboard": "Dashboard",
-    "alert_emergency": "Alert Emergency"
+    "welcome_back": "Welcome Back",
+    "alert_emergency": "Alert Emergency",
+    "hi": "Hi",
+    "medication_store": "Medication Store",
+    "todays_appointments": "Today's Appointments",
+    "todays_medications": "Today's Medications",
+    "refill_reminders": "Refill Reminders"
   },
   "medication_manage": {
     "item": "ITEM",

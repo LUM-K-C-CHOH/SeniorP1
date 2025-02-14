@@ -275,6 +275,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         <View style={styles.scheduledTimeWrapper}>
           <ThemedText
             type="defaultMedium"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.labelText}
           >
             {t('appointment_manage.scheduled_time')}{' : '}
@@ -326,7 +328,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               value={minute}
               onChangeText={(v) => handleTimeChange('minute', v)}
             />
-            <ThemedText>:</ThemedText>
+            <ThemedText type="default">:</ThemedText>
             <View style={styles.secondPlaceholderWrapper}>
               <ThemedText
                 type="defaultMedium"
@@ -336,7 +338,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               >
                 00
               </ThemedText>
-            </View>   
+            </View>
             <View style={styles.amWrapper}>
               <Pressable onPress={() => setTimeType(TimeType.AM)}>
                 <ThemedText
@@ -379,6 +381,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         <View style={styles.descriptionWrapper}>
           <ThemedText
             type="defaultMedium"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.labelText}
           >
             {t('appointment_manage.description')}{' : '}
