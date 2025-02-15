@@ -4,17 +4,17 @@
  * 
  * Created by Thornton on 01/28/2025
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 import Modal from 'react-native-modal';
+import ApplicationContext from '@/context/ApplicationContext';
 
 import {
   SafeAreaView,
   StyleSheet,
   View,
   TouchableOpacity,
-  TouchableHighlight,
-  useColorScheme
+  TouchableHighlight
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -31,8 +31,8 @@ export default function NotificationScreen() {
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
 
+  const { appState } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
   const [notificationList, setNotificationList] = useState<INotification[]>([]);
@@ -151,7 +151,6 @@ export default function NotificationScreen() {
           <View style={nstyles.infoWrapper}>
             <ThemedText
               type="default"
-              style={nstyles.normalText}
             >
               {getNotificationMessage(notification)}
             </ThemedText>
@@ -159,8 +158,8 @@ export default function NotificationScreen() {
           {selectableVisible&&
             <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
               {checkedStatus
-                ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
-                : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                ? <CheckboxFilledIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
+                : <CheckboxBlankIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
               }
             </TouchableOpacity>
           }
@@ -267,8 +266,8 @@ export default function NotificationScreen() {
                 }}
               >
                 {checkedIdList.length === notificationList.length
-                  ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
-                  : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                  ? <CheckboxFilledIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
+                  : <CheckboxBlankIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
                 }
                 <ThemedText type="default">
                   {t('select_all')}
@@ -333,15 +332,11 @@ const nstyles = StyleSheet.create({
   typeWrapper: {
     width: 80,
   },
-  typeText: {
-    color: '#000',    
+  typeText: {  
     textTransform: 'uppercase'
   },
   infoWrapper: {
     flex: 1,
-  },
-  normalText: {
-    color: '#000'
   },
 });
 

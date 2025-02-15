@@ -9,19 +9,13 @@ import Animated from 'react-native-reanimated';
 import ApplicationContext from '@/context/ApplicationContext';
 
 import {
-  LineChart,
-  BarChart,
-  PieChart,
   ProgressChart,
-  ContributionGraph,
-  StackedBarChart
 } from 'react-native-chart-kit';
 import {
   StyleSheet,
   SafeAreaView,
   View,
   TouchableOpacity,
-  useColorScheme,
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +39,6 @@ import dayjs from 'dayjs';
 export default function DashboardScreen() {
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
   
   const { t } = useTranslation();
   const { appState } = useContext(ApplicationContext);
@@ -121,7 +114,7 @@ export default function DashboardScreen() {
         </View>
         <View style={styles.rowWrapper}>
           <ThemedView
-            darkColor={'#fff'}
+            darkColor={'#222'}
             lightColor={'#fff'}
             style={[
               cstyles.container,
@@ -130,14 +123,14 @@ export default function DashboardScreen() {
           >
             <View style={cstyles.topWrapper}>
               <ThemedView 
-                darkColor={'#fafafa'}
+                darkColor={'#666'}
                 lightColor={'#fafafa'}
                 style={[
                   cstyles.iconWrapper,
                   generateBoxShadowStyle(-2, 4, '#171717', 0.2, 3, 4, '#171717')
                 ]}
               >
-                <StoreIcon color={theme === 'light' ? '#8a8a8a' : '#8a8a8a'} />
+                <StoreIcon color={appState.setting.theme === 'light' ? '#8a8a8a' : '#8a8a8a'} />
               </ThemedView>
               <ThemedText
                 type="default"
@@ -157,9 +150,9 @@ export default function DashboardScreen() {
                 strokeWidth={16}
                 radius={55}
                 chartConfig={{
-                  backgroundGradientFrom: "#fff",
                   backgroundGradientFromOpacity: 0,
-                  backgroundGradientTo: "#fff",
+                  backgroundGradientFrom: appState.setting.theme === 'light' ? '#fff' : '#222',
+                  backgroundGradientTo: appState.setting.theme === 'light' ? '#fff' : '#222',
                   backgroundGradientToOpacity: 0.5,
                   color: (opacity = 1) => `rgba(7, 181, 7, ${opacity})`,
                   strokeWidth: 2, // optional, default 3
@@ -182,7 +175,7 @@ export default function DashboardScreen() {
             </View>
           </ThemedView>
           <ThemedView
-            darkColor={'#fff'}
+            darkColor={'#222'}
             lightColor={'#fff'}
             style={[
               cstyles.container,
@@ -201,7 +194,7 @@ export default function DashboardScreen() {
                 <AppointmentIcon
                   width={14}
                   height={14}
-                  color={theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
+                  color={appState.setting.theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
                 />
               </ThemedView>
               <ThemedText
@@ -233,7 +226,7 @@ export default function DashboardScreen() {
         </View>
         <View style={styles.rowWrapper}>
           <ThemedView
-            darkColor={'#fff'}
+            darkColor={'#222'}
             lightColor={'#fff'}
             style={[
               cstyles.container,
@@ -252,7 +245,7 @@ export default function DashboardScreen() {
                 <MedicationIcon
                   width={23}
                   height={23}
-                  color={theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
+                  color={appState.setting.theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
                 />
               </ThemedView>
               <ThemedText
@@ -278,7 +271,7 @@ export default function DashboardScreen() {
             </Animated.ScrollView>
           </ThemedView>
           <ThemedView
-            darkColor={'#fff'}
+            darkColor={'#222'}
             lightColor={'#fff'}
             style={[
               cstyles.container,
@@ -295,7 +288,7 @@ export default function DashboardScreen() {
                 ]}
               >
                 <ReminderOutlineIcon
-                  color={theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
+                  color={appState.setting.theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
                 />
               </ThemedView>
               <ThemedText

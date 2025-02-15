@@ -4,7 +4,7 @@
  * 
  * Created by Thornton on 01/23/2025
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as globalState from '@/config/global';
 
@@ -21,8 +21,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { useColorScheme } from '@/hooks/useColorScheme';
+// import { useColorScheme } from '@/hooks/useColorScheme';
 import { ApplicationContextProvider, IAppContext } from '@/context/ApplicationContext';
 import { IAppState } from '@/@types';
 import { InitialAppState, KEY_ACCESS_TOKEN } from '@/config/constants';
@@ -38,7 +37,7 @@ SplashScreen.preventAutoHideAsync();
 globalState.loadAppState();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
   const router = useRouter();
   const path = usePathname();
   
@@ -110,27 +109,25 @@ export default function RootLayout() {
 
   return (
     <ApplicationContextProvider value={appContext}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        {appContext.appState.lockScreen&&
-          <View
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              justifyContent: 'center',
-              backgroundColor: '#00000030',
-              zIndex: 100,
-            }}
-          >
-            <ActivityIndicator size="large" color="#fe5603" />
-          </View>
-        }
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      {appContext.appState.lockScreen&&
+        <View
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            justifyContent: 'center',
+            backgroundColor: '#00000030',
+            zIndex: 100,
+          }}
+        >
+          <ActivityIndicator size="large" color="#fe5603" />
+        </View>
+      }
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      <StatusBar style="auto" />
     </ApplicationContextProvider>
   );
 }

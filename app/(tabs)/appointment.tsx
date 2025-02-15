@@ -4,7 +4,8 @@
  * 
  * Created by Thornton on 01/28/2025
  */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
+import ApplicationContext from '@/context/ApplicationContext';
 import CustomButton from '@/components/CustomButton';
 import ConfirmPanel from '@/components/ConfrimPanel';
 
@@ -30,6 +31,7 @@ import { Colors } from '@/config/constants';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
+  const { appState } = useContext(ApplicationContext);
 
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
@@ -134,14 +136,14 @@ export default function AppointmentScreen() {
           <ThemedText type="default">{getContactName(data.item.contactId)}</ThemedText>
         </View>
         <View style={styles.rowWrapper}>
-          <ClockIcon />
+          <ClockIcon color={appState.setting.theme === 'light' ? '#1e1e1e' : '#fff'} />
           <ThemedText type="default">{getDateString(data.item.scheduledTime)}</ThemedText>
         </View>
         <View style={styles.rowWrapper}>
           <ThemedText
             type="default"
-            lightColor='#999'
-            darkColor='#333'
+            lightColor='#888'
+            darkColor='#777'
           >
             {data.item.description}
           </ThemedText>

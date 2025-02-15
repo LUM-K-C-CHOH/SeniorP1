@@ -4,12 +4,13 @@
  * 
  * Created by Thornton on 02/07/2025
  */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import CustomButton from '@/components/CustomButton';
 import { default as AnimatedModal } from 'react-native-modal';
 import Calendar from '@/components/Calendar';
 import dayjs from 'dayjs';
 import Animated from 'react-native-reanimated';
+import ApplicationContext from '@/context/ApplicationContext';
 
 import { IAppointment, IContact, TResponse } from '@/@types';
 import {
@@ -20,7 +21,6 @@ import {
   StyleSheet,
   View,
   TouchableHighlight,
-  useColorScheme,
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -44,9 +44,9 @@ const TimeType = {
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
   const initiatedRef = useRef<boolean>(false);
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
 
   const { t } = useTranslation();
+  const { appState } = useContext(ApplicationContext);
 
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [calendarPopupVisible, setCalendarPopupVisible] = useState<boolean>(false);
@@ -169,7 +169,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     return (
       <TouchableHighlight onPress={() => onSelectedContact(id)}>
         <ThemedView style={cstyles.contactNameWrapper}>
-          <LocationPinIcon color={theme === 'light' ? '#1e75e5' : '#eee'} />
+          <LocationPinIcon color={appState.setting.theme === 'light' ? '#1e75e5' : '#aaa'} />
           <ThemedText
             type="small"
             darkColor={Colors.dark.grayText}
@@ -214,8 +214,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         <View style={styles.providerWrapper}>
           <ThemedText
             type="defaultMedium"
-            darkColor={'#333'}
-            lightColor={'#999'}
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.labelText}
           >
             {t('appointment_manage.provider')}{' : '}
@@ -252,7 +252,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             onPress={() => setContactPopupVisible(true)}
           >
             <View style={styles.providerPickButton}>
-              <LocationIcon color={theme === 'light' ? '#87b5f2' : '#87b5f2'} />
+              <LocationIcon color={appState.setting.theme === 'light' ? '#87b5f2' : '#87b5f2'} />
               <ThemedText
                 type="defaultMedium"
                 darkColor={'#87b5f2'}
@@ -295,7 +295,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
                 >
                   {selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}
                 </ThemedText>
-                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
+                <CalendarIcon color={appState.setting.theme === 'light' ? '#494e50' : '#aaa'} />
               </ThemedView>
             </TouchableHighlight>
             {errors.date&&

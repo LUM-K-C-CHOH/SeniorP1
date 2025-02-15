@@ -5,7 +5,8 @@
  * 
  * Created by Thornton on 02/10/2025
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import ApplicationContext from '@/context/ApplicationContext';
 import Header from '@/app/layout/header';
 import CustomButton from '@/components/CustomButton';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
@@ -17,7 +18,6 @@ import {
   View,
   TouchableHighlight,
   TouchableOpacity,
-  useColorScheme
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
@@ -33,9 +33,9 @@ import { Colors } from '@/config/constants';
 export default function EmergencyContactScreen() {
   const initiatedRef = useRef<boolean>(false);
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
 
   const { t } = useTranslation();
+  const { appState } = useContext(ApplicationContext);
 
   const [contactList, setContactList] = useState<IEmergencyContact[]>([]);
   const [selectableVisible, setSelectableVisible] = useState<boolean>(false);
@@ -119,7 +119,7 @@ export default function EmergencyContactScreen() {
               </ThemedText>
             </View>
             <View style={cstyles.rowWrapper}>
-              <PhoneIcon color={theme === 'light' ? '#000' : '#fff'} />
+              <PhoneIcon color={appState.setting.theme === 'light' ? '#000' : '#fff'} />
               <ThemedText type="default">
                 {phone}
               </ThemedText>
@@ -128,8 +128,8 @@ export default function EmergencyContactScreen() {
           {selectableVisible&&
             <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
               {checkedStatus
-                ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
-                : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                ? <CheckboxFilledIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
+                : <CheckboxBlankIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
               }
             </TouchableOpacity>
           }
@@ -183,8 +183,8 @@ export default function EmergencyContactScreen() {
                 }}
               >
                 {checkedIdList.length === contactList.length
-                  ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
-                  : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                  ? <CheckboxFilledIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
+                  : <CheckboxBlankIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
                 }                
                 <ThemedText type="default">
                   {t('select_all')}

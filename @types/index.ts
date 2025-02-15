@@ -12,11 +12,18 @@ export interface IUser {
   email: string;
 }
 
+export interface ISetting {
+  theme: 'dark'|'light',
+  font: 'small'|'normal'|'large',
+  push: 'yes'|'no'
+}
+
 export interface IAppState {
   authenticated: boolean;
   user: IUser|null;
   currentPath: string;
   lockScreen: boolean;
+  setting: ISetting
 }
 
 export type TFrequency = {

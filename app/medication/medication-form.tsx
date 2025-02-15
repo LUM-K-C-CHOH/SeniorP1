@@ -4,10 +4,13 @@
  * 
  * Created by Thornton on 01/28/2025
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Animated from 'react-native-reanimated';
 import Modal from 'react-native-modal';
+import dayjs from 'dayjs';
+import Calendar from '@/components/Calendar';
+import ApplicationContext from '@/context/ApplicationContext';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedInput } from '@/components/ThemedIntput';
@@ -15,18 +18,15 @@ import {
   StyleSheet,
   SafeAreaView,
   View,
-  useColorScheme,
   TouchableHighlight
 } from 'react-native';
 import { IMedication } from '@/@types';
 import { useTranslation } from 'react-i18next';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors, DosageUnitType } from '@/config/constants';
-import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list'
+import { SelectList } from 'react-native-dropdown-select-list'
 import { ThemedView } from '@/components/ThemedView';
 import { CalendarIcon, MinusIcon, PlusIcon } from '@/utils/svgs';
-import dayjs from 'dayjs';
-import Calendar from '@/components/Calendar';
 
 type TMedicationFormProps = {
   medication?: IMedication
@@ -45,9 +45,9 @@ const cycleList = [
 ]
 export default function MedicationForm({ medication }: TMedicationFormProps) {
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
 
   const { t } = useTranslation();
+  const { appState } = useContext(ApplicationContext);
 
   const [errors, setErrors] = useState<{[k: string]: string}>({});
   const [timeErrors, setTimeErrors] = useState<string[]>(medication ? Array.from(new Array(medication.frequency.times.length), () => '') : ['']);
@@ -360,13 +360,13 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                 paddingHorizontal: 10,
               }}
               inputStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
               dropdownStyles={{
                 borderColor: '#e2e2e2',
               }}
               dropdownTextStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
             />
             {errors.dosageUnit&&
@@ -401,13 +401,13 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                 paddingHorizontal: 10,
               }}
               inputStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
               dropdownStyles={{
                 borderColor: '#e2e2e2',
               }}
               dropdownTextStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
             />
             {errors.cycle&&
@@ -446,14 +446,14 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                       width: 70
                     }}
                     inputStyles={{
-                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                      color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
                     }}
                     dropdownStyles={{
                       borderColor: '#e2e2e2',
                       width: 70
                     }}
                     dropdownTextStyles={{
-                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                      color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
                     }}
                   />
                   <ThemedText type="default">:</ThemedText>
@@ -470,14 +470,14 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                   {index === times.length - 1&&
                     <TouchableHighlight onPress={() => handleTimeAdd()}>
                       <ThemedView style={styles.iconButtonWrapper}>
-                        <PlusIcon color={theme === 'light' ? '#454b60' : '#fff'} />
+                        <PlusIcon color={appState.setting.theme === 'light' ? '#454b60' : '#fff'} />
                       </ThemedView>
                     </TouchableHighlight>
                   }
                   {index < times.length - 1&&
                     <TouchableHighlight onPress={() => handleTimeRemove(index)}>
                       <ThemedView style={styles.iconButtonWrapper}>
-                        <MinusIcon color={theme === 'light' ? '#454b60' : '#fff'} />
+                        <MinusIcon color={appState.setting.theme === 'light' ? '#454b60' : '#fff'} />
                       </ThemedView>
                     </TouchableHighlight>
                   }
@@ -577,7 +577,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                 >
                   {startDate ? dayjs(startDate).format('YYYY-MM-DD') : ''}
                 </ThemedText>
-                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
+                <CalendarIcon color={appState.setting.theme === 'light' ? '#494e50' : '#aaa'} />
               </ThemedView>
             </TouchableHighlight>
             {errors.startDate&&
@@ -614,7 +614,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                 >
                   {endDate ? dayjs(endDate).format('YYYY-MM-DD') : ''}
                 </ThemedText>
-                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
+                <CalendarIcon color={appState.setting.theme === 'light' ? '#494e50' : '#aaa'} />
               </ThemedView>
             </TouchableHighlight>
             {errors.endDate&&

@@ -26,7 +26,7 @@ export const Colors = {
   },
   dark: {
     defaultText: '#fff',
-    grayText: '#777',
+    grayText: '#aaa',
     darkGrayText: '#454b60',
     redText: 'red',
     defaultControlText: '#222',
@@ -48,6 +48,11 @@ export const InitialAppState: IAppState = {
   user: null,
   currentPath: '/login',
   lockScreen: false,
+  setting: {
+    theme: 'light',
+    font: 'normal',
+    push: 'yes'
+  }
 }
 
 export const NotificationType = {

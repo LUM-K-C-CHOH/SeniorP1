@@ -10,7 +10,14 @@ import ApplicationContext from '@/context/ApplicationContext';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-import { Modal, Pressable, StyleSheet, TouchableHighlight, TouchableOpacity, useColorScheme, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  TouchableHighlight,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { generateBoxShadowStyle } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { useRouter, usePathname } from 'expo-router';
@@ -18,29 +25,34 @@ import {
   ThreeDotIcon,
   LogoutIcon,
   KeyIcon,
-  BackIcon
+  BackIcon,
+  SettingOutlineIcon
 } from '@/utils/svgs';
 
 export default function Header() {
   const router = useRouter();
   const path = usePathname();
-  const theme = useColorScheme();
 
   const { t } = useTranslation();
-  const { logout } = useContext(ApplicationContext);
+  const { appState, logout } = useContext(ApplicationContext);
   
   const [isBackable, setIsBackable] = useState(router.canGoBack());
   const [popupMenuVisible, setPopupMenuVisible] = useState<boolean>(false);
   
   const menuList = [
     {
+      id: 'setting',
+      icon: <SettingOutlineIcon width={20} height={20} color={appState.setting.theme === 'light' ? '#666' : '#999'} />,
+      label: t('setting')
+    },
+    {
       id: 'manage_password',
-      icon: <KeyIcon width={20} height={20} color={theme === 'light' ? '#666' : '#999'} />,
+      icon: <KeyIcon width={20} height={20} color={appState.setting.theme === 'light' ? '#666' : '#999'} />,
       label: t('auth.update_password')
     },
     {
       id: 'logout',
-      icon: <LogoutIcon width={20} height={20} color={theme === 'light' ? '#666' : '#999'} />,
+      icon: <LogoutIcon width={20} height={20} color={appState.setting.theme === 'light' ? '#666' : '#999'} />,
       label: t('logout')
     },
     
@@ -62,7 +74,8 @@ export default function Header() {
       '/medication/edit': t('medication_manage.edit_medication'),
       '/appointment/add': t('appointment_manage.add_appointment'),
       '/appointment/edit': t('appointment_manage.edit_appointment'),
-      '/auth/update-password': t('auth.update_password')
+      '/auth/update-password': t('auth.update_password'),
+      '/setting': t('setting')
     }
 
     return titles[path]?? '';
@@ -76,6 +89,8 @@ export default function Header() {
       router.replace('/auth/sign-in');
     } else if (menuId === 'manage_password') {
       router.push('/auth/update-password');
+    } else if (menuId === 'setting') {
+      router.push('/setting');
     }
   }
 
@@ -88,19 +103,18 @@ export default function Header() {
       <View style={{ marginLeft: 10, width: 36 }}>
         {isBackable&&
           <TouchableOpacity onPress={() => router.back()}>
-            <BackIcon color={theme ? '#666' : '#999'} />
+            <BackIcon color={appState.setting.theme ? '#666' : '#999'} />
           </TouchableOpacity>
         }
       </View>
       <ThemedText
         type="title"
-        style={styles.headerTitle}
       >
         {getTitle()}
       </ThemedText>
       <View style={{ marginRight: 10, position: 'relative' }}>
         <TouchableOpacity onPress={() => setPopupMenuVisible(!popupMenuVisible)}>
-          <ThreeDotIcon color={theme === 'light' ? '#666' : '#999'}  />
+          <ThreeDotIcon color={appState.setting.theme === 'light' ? '#666' : '#999'}  />
         </TouchableOpacity>
         <Modal
           style={{ position: 'absolute' }}
@@ -142,9 +156,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e2e2e2',
     paddingTop: 30,
     paddingBottom: 10
-  },
-  headerTitle: {
-    color: '#000'
   },
   popupMenuOverlay: {
     position: 'absolute',

@@ -38,6 +38,10 @@
   "back": "Back",
   "next": "Next",
   "update": "Update",
+  "setting": "Setting",
+  "dark": "Dark",
+  "light": "Light",
+  "appearance": "Appearance",
   "auth": {
     "sign_in": "Sign In",
     "sign_up": "Sign Up",

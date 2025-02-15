@@ -4,10 +4,11 @@
  * 
  * Created by Thornton on 01/28/2025
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Modal from 'react-native-modal';
 import ConfirmPanel from '@/components/ConfrimPanel';
+import ApplicationContext from '@/context/ApplicationContext';
 
 import {
   Image,
@@ -18,7 +19,6 @@ import {
   TouchableHighlight,
   Switch,
   View,
-  useColorScheme
 } from 'react-native';
 
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
@@ -48,9 +48,9 @@ export default function MedicationScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme()?? 'light';
 
   const { t } = useTranslation();
+  const { appState } = useContext(ApplicationContext);
 
   const [initiatedParam, setInitiatedParam] = useState<boolean>(false);
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
@@ -187,12 +187,12 @@ export default function MedicationScreen() {
           <ThemedText
             type="defaultMedium"
             darkColor={Colors.dark.grayText}
-            lightColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
           >
             {data.item.name}
           </ThemedText>
           <View style={styles.itemTextWrapper}>
-            <PillIcon color={theme === 'light' ? Colors.light.defaultIcon : Colors.light.defaultIcon}/>
+            <PillIcon color={appState.setting.theme === 'light' ? Colors.light.defaultIcon : Colors.light.defaultIcon}/>
             <ThemedText type="default">{data.item.frequency.dosage}{getDosageUnitString(data.item.frequency.dosageUnit)}</ThemedText>
             <ThemedText>{'•'}</ThemedText>
             <ThemedText type="default">{`${data.item.frequency.times.length} / ${data.item.frequency.cycle}d`}</ThemedText>
@@ -209,12 +209,12 @@ export default function MedicationScreen() {
         </View>
         <View style={{ rowGap: 5 }}>
           <View style={{ flexDirection: 'row', columnGap: 5 }}>
-            <BellIcon color={theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
-            <FlyIcon color={theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
+            <BellIcon color={appState.setting.theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
+            <FlyIcon color={appState.setting.theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
           </View>
           <View>
             <TouchableOpacity onPress={() => handleReminderSettingVisible(true, data.item.id)}>
-              <SettingIcon color={theme === 'light' ? '#0066ff' : '#0066ff'} />
+              <SettingIcon color={appState.setting.theme === 'light' ? '#0066ff' : '#0066ff'} />
             </TouchableOpacity>
           </View>
         </View>
