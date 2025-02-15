@@ -15,7 +15,7 @@ export interface IUser {
 export interface ISetting {
   theme: 'dark'|'light',
   font: 'small'|'normal'|'large',
-  push: 'yes'|'no'
+  push: 'on'|'off'
 }
 
 export interface IAppState {

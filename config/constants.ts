@@ -57,7 +57,7 @@ export const InitialAppState: IAppState = {
   setting: {
     theme: 'light',
     font: 'normal',
-    push: 'yes'
+    push: 'on'
   }
 }
 
