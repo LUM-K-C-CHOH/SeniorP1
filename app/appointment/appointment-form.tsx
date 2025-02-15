@@ -333,7 +333,14 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               onChangeText={(v) => handleTimeChange('minute', v)}
             />
             <ThemedText type="default">:</ThemedText>
-            <View style={styles.secondPlaceholderWrapper}>
+            <View
+              style={[
+                styles.secondPlaceholderWrapper,
+                {
+                  backgroundColor: appState.setting.theme === 'light' ? '#eee' : '#666'
+                }
+              ]}
+            >
               <ThemedText
                 type="defaultMedium"
                 darkColor={Colors.dark.defaultControlText}
@@ -393,8 +400,6 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           </ThemedText>
           <ThemedInput
             style={styles.descriptionInputControl}
-            darkColor={Colors.dark.defaultControlText}
-            lightColor={Colors.light.defaultControlText}
             type="default"
             multiline={true}
             autoCapitalize="none"
@@ -510,7 +515,6 @@ const styles = StyleSheet.create({
     borderColor: '#2196f3'
   },
   secondPlaceholderWrapper: {
-    backgroundColor: '#eee',
     width: 50,
     height: 40,
     alignItems: 'center',
@@ -522,7 +526,6 @@ const styles = StyleSheet.create({
   },
   descriptionInputControl: {
     borderWidth: 1,
-    borderColor: '#e2e2e2', 
     borderRadius: 5,
     marginTop: 10,
     height: 100,

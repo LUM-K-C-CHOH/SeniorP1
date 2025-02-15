@@ -23,7 +23,7 @@ import { getNotificationList } from '@/services/notification';
 import { INotification, TResponse } from '@/@types';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon } from '@/utils/svgs';
-import { NotificationType } from '@/config/constants';
+import { Colors, NotificationType } from '@/config/constants';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
@@ -137,7 +137,14 @@ export default function NotificationScreen() {
         onLongPress={handleLongPress}
         onPress={() => setNotificationPopupOptions({ opened: true, notification })}
       >
-        <ThemedView style={nstyles.itemWrapper}>
+        <ThemedView
+          style={[
+            nstyles.itemWrapper,
+            {
+              borderBottomColor: appState.setting.theme === 'light' ? Colors.light.defaultSplitter : Colors.dark.defaultSplitter
+            }
+          ]}
+        >
           <View
             style={nstyles.typeWrapper}
           >
@@ -325,7 +332,6 @@ const nstyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 15,
-    borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,
   },

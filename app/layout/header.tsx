@@ -97,7 +97,7 @@ export default function Header() {
   return (
     <ThemedView
       style={[
-        styles.headerWrapper
+        styles.headerWrapper,
       ]}
     >
       <View style={{ marginLeft: 10, width: 36 }}>
@@ -134,7 +134,10 @@ export default function Header() {
           >
             {menuList.map((v, index) =>
               <TouchableHighlight key={index} onPress={() => handlePopupMenuItemTap(v.id)}>
-                <ThemedView style={styles.popupMenuItem}>
+                <ThemedView
+                  darkColor={'#222'}
+                  style={styles.popupMenuItem}
+                >
                   {v.icon}
                   <ThemedText type="default">{v.label}</ThemedText>
                 </ThemedView>

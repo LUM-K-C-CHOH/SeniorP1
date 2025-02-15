@@ -118,7 +118,14 @@ export default function AppointmentScreen() {
   }
 
   const renderItem = (data: ListRenderItemInfo<IAppointment>) => (
-    <ThemedView style={styles.itemWrapper}>
+    <ThemedView
+      style={[
+        styles.itemWrapper,
+        {
+          borderBottomColor: appState.setting.theme === 'light' ? Colors.light.defaultSplitter : Colors.dark.defaultSplitter
+        }
+      ]}
+    >
       <View
         style={[
           styles.logoWrapper,
@@ -220,7 +227,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
-    borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,
   },

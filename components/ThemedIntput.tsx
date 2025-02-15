@@ -11,6 +11,8 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 export type ThemedTextProps = TextInputProps & {
   lightColor?: string;
   darkColor?: string;
+  borderLightColor?: string;
+  borderDarkColor?: string;
   type?: 'default';
 };
 
@@ -18,16 +20,20 @@ export function ThemedInput({
   style,
   lightColor,
   darkColor,
+  borderLightColor,
+  borderDarkColor,
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'defaultControlText');
+  const textColor = useThemeColor({ light: lightColor, dark: darkColor }, 'defaultControlText');
+  const borderColor = useThemeColor({ light: borderLightColor, dark: borderDarkColor }, 'defaultControlBorder');
 
   return (
     <TextInput
       placeholderTextColor="#999"
       style={[
-        { color },
+        { color: textColor },
+        { borderColor: borderColor },
         type === 'default' ? styles.default : undefined,
         style,
       ]}
@@ -42,7 +48,6 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     height: 45,
     borderWidth: 1,
-    borderColor: '#e2e2e2',
     borderRadius: 10,
     paddingHorizontal: 10
   },

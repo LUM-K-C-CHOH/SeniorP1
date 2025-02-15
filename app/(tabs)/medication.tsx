@@ -180,7 +180,14 @@ export default function MedicationScreen() {
   }
 
   const renderItem = (data: ListRenderItemInfo<IMedication>) => (
-    <ThemedView style={styles.itemWrapper}>
+    <ThemedView
+      style={[
+        styles.itemWrapper,
+        {
+          borderBottomColor: appState.setting.theme === 'light' ? Colors.light.defaultSplitter : Colors.dark.defaultSplitter
+        }
+      ]}
+    >
       <Image source={{ uri: data.item.image }} width={60} height={60}/>
       <View style={styles.infoWrapper}>
         <View style={{ flexGrow: 1 }}>
@@ -434,7 +441,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
-    borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,
   },

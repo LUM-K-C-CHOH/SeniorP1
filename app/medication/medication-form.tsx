@@ -26,7 +26,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors, DosageUnitType } from '@/config/constants';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { ThemedView } from '@/components/ThemedView';
-import { CalendarIcon, MinusIcon, PlusIcon } from '@/utils/svgs';
+import { CalendarIcon, CloseIcon, MinusIcon, PlusIcon, SearchIcon } from '@/utils/svgs';
 
 type TMedicationFormProps = {
   medication?: IMedication
@@ -354,16 +354,19 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               data={dosageUnitList}
               save="key"
               placeholder="--Select--"
+              searchPlaceholder=""
+              searchicon={<SearchIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
+              closeicon={<CloseIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
               defaultOption={dosageUnitList.find(v => v.key === parseInt(dosageUnit, 10))}
               boxStyles={{
-                borderColor: errors.dosageUnit ? 'red' : '#e2e2e2',
+                borderColor: errors.dosageUnit ? 'red' : appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                 paddingHorizontal: 10,
               }}
               inputStyles={{
-                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText,
               }}
               dropdownStyles={{
-                borderColor: '#e2e2e2',
+                borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
               }}
               dropdownTextStyles={{
                 color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
@@ -395,16 +398,19 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               data={cycleList}
               save="key"
               placeholder="--Select--"
+              searchPlaceholder=""
+              searchicon={<SearchIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
+              closeicon={<CloseIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
               defaultOption={cycleList.find(v => v.key === parseInt(cycle, 10))}
               boxStyles={{
-                borderColor: errors.cycle ? 'red' : '#e2e2e2',
+                borderColor: errors.cycle ? 'red' : appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                 paddingHorizontal: 10,
               }}
               inputStyles={{
                 color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
               dropdownStyles={{
-                borderColor: '#e2e2e2',
+                borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
               }}
               dropdownTextStyles={{
                 color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
@@ -439,9 +445,12 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                     data={hourList}
                     save="key"
                     placeholder="HH"
+                    searchPlaceholder=""
+                    searchicon={<SearchIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
+                    closeicon={<CloseIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
                     defaultOption={hourList.find(v => v.key === parseInt(times[index].split(':')[0], 10))}
                     boxStyles={{
-                      borderColor: timeErrors[index].length > 0 ? 'red' : '#e2e2e2',
+                      borderColor: timeErrors[index].length > 0 ? 'red' : appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                       paddingHorizontal: 10,
                       width: 70
                     }}
@@ -449,7 +458,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                       color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
                     }}
                     dropdownStyles={{
-                      borderColor: '#e2e2e2',
+                      borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                       width: 70
                     }}
                     dropdownTextStyles={{
@@ -457,7 +466,14 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                     }}
                   />
                   <ThemedText type="default">:</ThemedText>
-                  <View style={styles.secondPlaceholderWrapper}>
+                  <View
+                    style={[
+                      styles.secondPlaceholderWrapper,
+                      {
+                        backgroundColor: appState.setting.theme === 'light' ? '#eee' : '#666',
+                      }
+                    ]}
+                  >
                     <ThemedText
                       type="defaultMedium"
                       darkColor={Colors.dark.defaultControlText}
@@ -568,7 +584,14 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               style={{ borderRadius: 10 }}
               onPress={() => handleCalendarPopupOpstions({ opened: true, type: 1 })}
             >
-              <ThemedView style={styles.dateControl}>
+              <ThemedView
+                style={[
+                  styles.dateControl,
+                  {
+                    borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
+                  }
+                ]}
+              >
                 <ThemedText
                   type="defaultMedium"
                   darkColor={Colors.dark.defaultControlText}
@@ -605,7 +628,14 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               style={{ borderRadius: 10 }}
               onPress={() => handleCalendarPopupOpstions({ opened: true, type: 1 })}
             >
-              <ThemedView style={styles.dateControl}>
+              <ThemedView
+                style={[
+                  styles.dateControl,
+                  {
+                    borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
+                  }
+                ]}
+              >
                 <ThemedText
                   type="defaultMedium"
                   darkColor={Colors.dark.defaultControlText}
@@ -670,7 +700,6 @@ const styles = StyleSheet.create({
     columnGap: 10
   },
   secondPlaceholderWrapper: {
-    backgroundColor: '#eee',
     width: 60,
     height: 45,
     alignItems: 'center',
@@ -691,7 +720,6 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     height: 45,
     borderWidth: 1,
-    borderColor: '#e2e2e2',
     borderRadius: 10,
     paddingHorizontal: 10
   },

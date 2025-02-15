@@ -99,7 +99,14 @@ export default function EmergencyContactScreen() {
   const ContactItem = ({ id, name, phone, checkedStatus }: ContactItemProps): JSX.Element => {
     return (
       <TouchableHighlight onLongPress={handleLongPress}>
-        <ThemedView style={cstyles.itemWrapper}>
+        <ThemedView
+          style={[
+            cstyles.itemWrapper,
+            {
+              borderBottomColor: appState.setting.theme === 'light' ? Colors.light.defaultSplitter : Colors.dark.defaultSplitter
+            }
+          ]}
+        >
           <View
             style={[
               cstyles.logoWrapper,
@@ -254,7 +261,6 @@ const cstyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 15,
-    borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,
   },
