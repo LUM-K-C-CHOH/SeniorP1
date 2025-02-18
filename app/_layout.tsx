@@ -17,11 +17,9 @@ import {
   AppState,
   AppStateStatus
 } from 'react-native';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-// import { useColorScheme } from '@/hooks/useColorScheme';
 import { ApplicationContextProvider, IAppContext } from '@/context/ApplicationContext';
 import { IAppState } from '@/@types';
 import { InitialAppState, KEY_ACCESS_TOKEN } from '@/config/constants';
@@ -83,7 +81,7 @@ export default function RootLayout() {
   const checkAuth = (): void => {
     const state = globalState.getAppState();
     if (!state.authenticated && path.indexOf('auth') < 0) {
-      console.log(path);
+      // console.log(path);
       router.replace('/auth/sign-in');
     }
   }
@@ -109,25 +107,25 @@ export default function RootLayout() {
 
   return (
     <ApplicationContextProvider value={appContext}>
-      {appContext.appState.lockScreen&&
-        <View
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            justifyContent: 'center',
-            backgroundColor: '#00000030',
-            zIndex: 100,
-          }}
-        >
-          <ActivityIndicator size="large" color="#fe5603" />
-        </View>
-      }
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+        {appContext.appState.lockScreen&&
+          <View
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              backgroundColor: '#00000030',
+              zIndex: 100,
+            }}
+          >
+            <ActivityIndicator size="large" color="#fe5603" />
+          </View>
+        }
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
     </ApplicationContextProvider>
   );
 }
