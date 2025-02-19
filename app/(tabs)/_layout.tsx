@@ -7,6 +7,7 @@
 import React, { useContext } from 'react';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import ApplicationContext from '@/context/ApplicationContext';
+import Header from '@/app/layout/header';
 
 import { Tabs } from 'expo-router';
 import {
@@ -24,8 +25,6 @@ import {
   AppointmentIcon,
   MedicationIcon,
 } from '@/utils/svgs';
-
-import Header from '@/app/layout/header';
 
 export default function TabLayout() {
   const { appState } = useContext(ApplicationContext);
@@ -88,5 +87,16 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  
+  popupOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    right: 0,
+  },
+  popupContainer: {
+    position: 'absolute',
+    top: 40,
+    right: 10,
+  },
 });

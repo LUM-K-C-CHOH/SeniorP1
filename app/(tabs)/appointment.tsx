@@ -19,13 +19,12 @@ import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
-import { IAppointment, IContact, TResponse } from '@/@types';
+import { IAppointment, TResponse } from '@/@types';
 import { getAppointmentList } from '@/services/appointment';
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
 import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
-import { getContactList } from '@/services/contact';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
 
@@ -38,7 +37,6 @@ export default function AppointmentScreen() {
   const backgroundColor = useThemeColor({}, 'background');
 
   const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);
-  const [contactList, setContactList] = useState<IContact[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
 
@@ -46,24 +44,14 @@ export default function AppointmentScreen() {
     if (initiatedRef.current) return;
 
     initiatedRef.current = true;
-    Promise.all(
-      [
-        getAppointmentList(),
-        getContactList()
-      ]
-    ).then((res: TResponse[]) => {
-      if (res[0].success) {
-        setAppointmentList(res[0].data?? []);
-      } else {
-
-      }
-      if (res[1].success) {
-        setContactList(res[1].data?? []);
-      } else {
-
-      }
-    });
-      
+    getAppointmentList()
+      .then((res: TResponse) => {
+        if (res.success) {
+          setAppointmentList(res.data?? []);
+        } else {
+  
+        }
+      });
   }, []);
 
   const handleEditRow = (rowMap: RowMap<IAppointment>, id: number): void => {
@@ -112,11 +100,6 @@ export default function AppointmentScreen() {
     router.push('/appointment/add');
   }
 
-  const getContactName = (id: number): string => {
-    const find = contactList.find(v => v.id === id);
-    return find ? find.name : '';
-  }
-
   const renderItem = (data: ListRenderItemInfo<IAppointment>) => (
     <ThemedView
       style={[
@@ -129,18 +112,18 @@ export default function AppointmentScreen() {
       <View
         style={[
           styles.logoWrapper,
-          { backgroundColor: getMarkColorFromName(getContactName(data.item.contactId)).bgColor }
+          { backgroundColor: getMarkColorFromName(data.item.name).bgColor }
         ]}
       >
         <ThemedText
-          style={[{ color: getMarkColorFromName(getContactName(data.item.contactId)).textColor }]}
+          style={[{ color: getMarkColorFromName(data.item.name).textColor }]}
         >
-          {getMarkLabelFromName(getContactName(data.item.contactId))}
+          {getMarkLabelFromName(data.item.name)}
         </ThemedText>
       </View>
       <View style={styles.infoWrapper}>
         <View style={styles.rowWrapper}>
-          <ThemedText type="default">{getContactName(data.item.contactId)}</ThemedText>
+          <ThemedText type="default">{data.item.name}</ThemedText>
         </View>
         <View style={styles.rowWrapper}>
           <ClockIcon color={appState.setting.theme === 'light' ? '#1e1e1e' : '#fff'} />

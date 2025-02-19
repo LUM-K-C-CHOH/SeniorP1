@@ -7,6 +7,7 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import Animated from 'react-native-reanimated';
 import ApplicationContext from '@/context/ApplicationContext';
+import dayjs from 'dayjs';
 
 import {
   ProgressChart,
@@ -31,10 +32,12 @@ import {
   StoreIcon
 } from '@/utils/svgs';
 import { getTodayAppointmentList } from '@/services/appointment';
-import { IAppointment, IContact, IMedication, TResponse } from '@/@types';
-import { getContactList } from '@/services/contact';
-import { getRefillMedicationList, getTodayMedicationList, getMedicationSufficient } from '@/services/medication';
-import dayjs from 'dayjs';
+import { IAppointment, IMedication, TResponse } from '@/@types';
+import {
+  getRefillMedicationList,
+  getTodayMedicationList,
+  getMedicationSufficient
+} from '@/services/medication';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -47,7 +50,6 @@ export default function DashboardScreen() {
   const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
   const [refillMedicationList, setRefillMedicationList] = useState<IMedication[]>([]);
-  const [contactList, setContactList] = useState<IContact[]>([]);
   const [medicationSufficient, setMedicationSufficient] = useState<number>(0);
 
   useFocusEffect(   
@@ -63,7 +65,6 @@ export default function DashboardScreen() {
 
     Promise.all([
       getTodayAppointmentList(),
-      getContactList(),
       getTodayMedicationList(),
       getRefillMedicationList(),
       getMedicationSufficient()
@@ -73,27 +74,18 @@ export default function DashboardScreen() {
       }
 
       if (results[1].success) {
-        setContactList(results[1].data);
+        setMedicationList(results[1].data);
       }
 
       if (results[2].success) {
-        setMedicationList(results[2].data);
-      }
-
-      if (results[3].success) {
         setRefillMedicationList(results[2].data);
       }
 
-      if (results[4].success) {
-        setMedicationSufficient(results[4].data.sufficient);
+      if (results[3].success) {
+        setMedicationSufficient(results[3].data.sufficient);
       }
     });
   }, []);
-
-  const getContactName = (id: number): string => {
-    const find = contactList.find(v => v.id === id);
-    return find ? find.name : '';
-  }
 
   const getTime = (datetimeStr: string): string => {
     return dayjs(datetimeStr).format('hh:mm A');
@@ -217,7 +209,7 @@ export default function DashboardScreen() {
                     darkColor={Colors.dark.grayText}
                     lightColor={Colors.light.grayText}
                   >
-                    {getContactName(data.contactId)}
+                    {data.name}
                   </ThemedText>
                 </View>
               )}

@@ -22,8 +22,13 @@ import { Stack, useRouter, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ApplicationContextProvider, IAppContext } from '@/context/ApplicationContext';
 import { IAppState } from '@/@types';
-import { InitialAppState, KEY_ACCESS_TOKEN } from '@/config/constants';
-import { setStorageItem } from '@/utils/storage';
+import {
+  InitialAppState,
+  KEY_ACCESS_TOKEN,
+  KEY_DB_INITIALIZED,
+} from '@/config/constants';
+import { getStorageItem, setStorageItem } from '@/utils/storage';
+import { setupDatabase } from '@/services/db';
 
 if (__DEV__) {
   require('@/services/mock');
@@ -33,6 +38,19 @@ if (__DEV__) {
 SplashScreen.preventAutoHideAsync();
 
 globalState.loadAppState();
+
+getStorageItem(KEY_DB_INITIALIZED)
+  .then(async (res: string) => {
+    if (res !== 'true') {
+      console.log('db setup start');
+      await setupDatabase();
+      setStorageItem(KEY_DB_INITIALIZED, 'true');
+      console.log('db setup end');
+    }
+  })
+  .catch(error => {
+    console.log('db setup error', error);
+  });
 
 export default function RootLayout() {
   // const colorScheme = useColorScheme();
@@ -78,11 +96,15 @@ export default function RootLayout() {
     globalState.saveAppState(data);
   }
 
-  const checkAuth = (): void => {
+  const checkAuth = async (): Promise<void> => {
     const state = globalState.getAppState();
     if (!state.authenticated && path.indexOf('auth') < 0) {
       // console.log(path);
       router.replace('/auth/sign-in');
+    } else {
+      if (state.authenticated) {
+        
+      }
     }
   }
 

@@ -39,14 +39,15 @@ export interface IMedication {
   stock: number,
   miniStock: number,
   frequency: TFrequency,
-  notifications: number,
   startDate: string,
   endDate: string,
 }
 
 export interface IAppointment {
   id: number,
-  contactId: number,
+  name: string,
+  phone: string,
+  image: string,
   scheduledTime: string,
   description: string,
   location: string,

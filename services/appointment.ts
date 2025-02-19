@@ -7,37 +7,47 @@
 import dayjs from 'dayjs';
 import axiosInstance from './instance';
 
-export const getAppointmentList = () => {
+import { addData, getAllData, Tables } from './db';
+
+export const appointmentSync = async (): Promise<boolean> => {
   return axiosInstance.get(
     '/appointment/list'
   )
     .then(response => {
       if (response.data.code === 0) {
-        return { success: true, data: response.data.data };
+        for (let i = 0; i < response.data.data.length; i++) {
+          const d = response.data.data[i];
+          addData(Tables.APPOINTMENTS, d);
+        }
+        return true;
       } else {
-        return { success: false, message: response.data.error };
+        return false;
       }
     })
     .catch(error => {
       console.log(error);
-      return { success: false, message: error.message };
+      return false;
     });
 }
 
-export const getTodayAppointmentList = () => {
+export const getAppointmentList = async () => {
+  try {
+    const appointmentList = await getAllData(Tables.APPOINTMENTS);
+    return { success: true, data: appointmentList };
+  } catch (error: any) {
+    console.log(error);
+    return { success: false, message: error.message }
+  }
+  
+}
+
+export const getTodayAppointmentList = async () => {
   const todayStr = dayjs().format('YYYY-MM-DD');
-  return axiosInstance.get(
-    `/appointment/list?date=${todayStr}`
-  )
-    .then(response => {
-      if (response.data.code === 0) {
-        return { success: true, data: response.data.data };
-      } else {
-        return { success: false, message: response.data.error };
-      }
-    })
-    .catch(error => {
-      console.log(error);
-      return { success: false, message: error.message };
-    });
+  try {
+    const appointmentList = await getAllData(Tables.APPOINTMENTS);
+    return { success: true, data: appointmentList };
+  } catch (error: any) {
+    console.log(error);
+    return { success: false, message: error.message }
+  }
 }

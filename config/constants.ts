@@ -48,6 +48,14 @@ export const Colors = {
 
 export const KEY_APP_STATE = '__app_state';
 export const KEY_ACCESS_TOKEN = '__access_token';
+export const KEY_DB_INITIALIZED = '__db_initialized';
+export const KEY_DB_SYNCED = '__db_synced';
+export const KEY_DB_SYNCED_SETTING = '__db_synced_setting';
+export const KEY_DB_SYNCED_FREQUENCY = '__db_synced_frequency';
+export const KEY_DB_SYNCED_MEDICATION = '__db_synced_medication';
+export const KEY_DB_SYNCED_APPOINTMENT = '__db_synced_appointment';
+export const KEY_DB_SYNCED_EMERGENCY_CONTACT = '__db_synced_emergency_contact';
+export const KEY_DB_SYNCED_NOTIFICATION = '__db_synced_notification';
 
 export const InitialAppState: IAppState = {
   authenticated: false,

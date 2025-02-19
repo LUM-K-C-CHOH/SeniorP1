@@ -6,19 +6,35 @@
  */
 import axiosInstance from './instance';
 
-export const getContactList = () => {
+import { addData, getAllData, Tables } from './db';
+
+export const emergencyContactSync = async (): Promise<boolean> => {
   return axiosInstance.get(
     '/emergency/contact/list'
   )
     .then(response => {
       if (response.data.code === 0) {
-        return { success: true, data: response.data.data };
+        for (let i = 0; i < response.data.data.length; i++) {
+          const d = response.data.data[i];
+          addData(Tables.EMERGENCY_CONTACTS, d);
+        }
+        return true;
       } else {
-        return { success: false, message: response.data.error };
+        return false;
       }
     })
     .catch(error => {
       console.log(error);
-      return { success: false, message: error.message };
+      return false;
     });
+}
+
+export const getContactList = async () => {
+  try {
+    const contactList = await getAllData(Tables.EMERGENCY_CONTACTS);
+    return { success: true, data: contactList };
+  } catch (error: any) {
+    console.log(error);
+    return { success: false, message: error.message }
+  }
 }
