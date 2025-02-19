@@ -101,40 +101,48 @@ const medicationData = [
     image: 'https://theme635-medical.myshopify.com/cdn/shop/products/first_aid_dual_head_stethoscope_2_170x170_crop_top.png?v=1552665562',
     name: 'Aspirin',
     stock: 32,
-    miniStock: 10,
+    threshold: 10,
     notifications: 0,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 2,
     image: 'https://theme635-medical.myshopify.com/cdn/shop/products/drive_medical_clinical_care_geri_chair_recliner_2_170x170_crop_top.png?v=1552665466',
     name: 'Metoprolol',
     stock: 16,
-    miniStock: 10,
+    threshold: 10,
     notifications: 1,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 3,
     image: 'https://theme635-medical.myshopify.com/cdn/shop/products/drive_medical_deluxe_folding_exercise_peddler_with_electronic_display_2_170x170_crop_top.png?v=1552665478',
     name: 'Lisinoprill',
     stock: 4,
-    miniStock: 10,
+    threshold: 10,
     notifications: 1,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 4,
     image: 'https://theme635-medical.myshopify.com/cdn/shop/files/Gallery-5_370x370_crop_center.png?v=1613531679',
     name: 'Amoxicilin',
     stock: 14,
-    miniStock: 10,
+    threshold: 10,
     notifications: 0,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 5,
@@ -142,10 +150,12 @@ const medicationData = [
     name: 'Clopidogrel',
     dosage: '75mg',
     stock: 206,
-    miniStock: 10,
+    threshold: 10,
     notifications: 0,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 6,
@@ -153,10 +163,12 @@ const medicationData = [
     name: 'Aspirin',
     dosage: '100mg',
     stock: 32,
-    miniStock: 10,
+    threshold: 10,
     notifications: 4,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 7,
@@ -164,10 +176,12 @@ const medicationData = [
     name: 'Metoprolol',
     dosage: '5mg',
     stock: 16,
-    miniStock: 10,
+    threshold: 10,
     notifications: 0,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 8,
@@ -175,10 +189,12 @@ const medicationData = [
     name: 'Lisinoprill',
     dosage: '50mg',
     stock: 4,
-    miniStock: 10,
+    threshold: 10,
     notifications: 0,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 9,
@@ -186,10 +202,12 @@ const medicationData = [
     name: 'Amoxicilin',
     dosage: '500mg',
     stock: 14,
-    miniStock: 10,
+    threshold: 10,
     notifications: 2,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 10,
@@ -197,10 +215,12 @@ const medicationData = [
     name: 'Clopidogrel',
     dosage: '75mg',
     stock: 206,
-    miniStock: 10,
+    threshold: 10,
     notifications: 1,
-    startDate: '2025-02-19 00:23:00',
-    endDate: ''
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   }
 ];
 

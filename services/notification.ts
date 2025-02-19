@@ -33,8 +33,8 @@ export const getNotificationList = async () => {
   try {
     const notificationList = await getAllData(Tables.NOTIFICATIONS);
     return { success: true, data: notificationList };
-  } catch (error: any) {
+  } catch (error) {
     console.log(error);
-    return { success: false, message: error.message }
+    return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }

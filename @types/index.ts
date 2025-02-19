@@ -33,14 +33,16 @@ export type TFrequency = {
   times: string[]
 }
 export interface IMedication {
-  id: number,
+  id?: number,
   image: string,
   name: string,
   stock: number,
-  miniStock: number,
   frequency: TFrequency,
   startDate: string,
   endDate: string,
+  threshold: number,
+  pushAlert: string,
+  emailAlert: string,
 }
 
 export interface IAppointment {

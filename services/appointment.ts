@@ -34,9 +34,9 @@ export const getAppointmentList = async () => {
   try {
     const appointmentList = await getAllData(Tables.APPOINTMENTS);
     return { success: true, data: appointmentList };
-  } catch (error: any) {
+  } catch (error) {
     console.log(error);
-    return { success: false, message: error.message }
+    return { success: true, message: error instanceof Error ? error.message : 'unknown error' };
   }
   
 }
@@ -46,8 +46,8 @@ export const getTodayAppointmentList = async () => {
   try {
     const appointmentList = await getAllData(Tables.APPOINTMENTS);
     return { success: true, data: appointmentList };
-  } catch (error: any) {
+  } catch (error) {
     console.log(error);
-    return { success: false, message: error.message }
+    return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }

@@ -60,7 +60,7 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     if (initiated) return;
-
+    
     setInitiated(true);
 
     Promise.all([
@@ -135,7 +135,7 @@ export default function DashboardScreen() {
               <ProgressChart
                 data={{
                   labels: [""],
-                  data: [0.88]
+                  data: [medicationSufficient / 100]
                 }}
                 width={160}
                 height={160}
@@ -310,7 +310,7 @@ export default function DashboardScreen() {
                   </ThemedText>
                   <ThemedText type="default">/</ThemedText>
                   <ThemedText type="default">
-                    {data.miniStock}
+                    {data.threshold}
                   </ThemedText>
                 </View>
               )}

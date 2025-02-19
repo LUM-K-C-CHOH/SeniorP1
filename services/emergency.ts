@@ -33,8 +33,8 @@ export const getContactList = async () => {
   try {
     const contactList = await getAllData(Tables.EMERGENCY_CONTACTS);
     return { success: true, data: contactList };
-  } catch (error: any) {
+  } catch (error) {
     console.log(error);
-    return { success: false, message: error.message }
+    return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }

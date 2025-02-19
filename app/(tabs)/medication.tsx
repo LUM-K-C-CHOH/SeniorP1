@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Modal from 'react-native-modal';
-import ConfirmPanel from '@/components/ConfrimPanel';
+import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 import ApplicationContext from '@/context/ApplicationContext';
 
 import {
@@ -19,10 +19,11 @@ import {
   TouchableHighlight,
   Switch,
   View,
+  Text,
 } from 'react-native';
 
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
-import { getMedicationList } from '@/services/medication';
+import { deleteMedication, getMedicationList, updateMedication } from '@/services/medication';
 import { IMedication, TResponse } from '@/@types';
 import {
   BellIcon,
@@ -56,7 +57,8 @@ export default function MedicationScreen() {
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
-  const [reminderSettingPanelOptions, setReminderSettingPanelOptions] = useState<{[k: string]: boolean|number|string}>({ opened: false, id: -1, threshold: '', pushNotification: false, emailAlert: false, miniStock: 0, saved: false });
+  const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
+  const [reminderSettingPanelOptions, setReminderSettingPanelOptions] = useState<{[k: string]: boolean|number|string}>({ opened: false, id: -1, name: '', threshold: 0, pushAlert: 'off', emailAlert: 'off', saved: false });
 
   const [reminderSettingErrors, setReminderSettingErrors] = useState<{[k: string]: string}>();
 
@@ -64,7 +66,7 @@ export default function MedicationScreen() {
     if (initiatedRef.current) return;
 
     initiatedRef.current = true;
-    
+    console.log('load data...');
     getMedicationList()
       .then((res: TResponse) => {
         if (res.success) {
@@ -106,7 +108,9 @@ export default function MedicationScreen() {
     }
   }
 
-  const handleEditRow = (rowMap: RowMap<IMedication>, id: number): void => {
+  const handleEditRow = (rowMap: RowMap<IMedication>, id?: number): void => {
+    if (!id) return;
+
     const find = medicationList.find(v => v.id === id);
     
     if (!find) return;
@@ -114,17 +118,28 @@ export default function MedicationScreen() {
     router.push({ pathname: '/medication/edit', params: { id } });
   }
 
-  const handleDeleteRow = (rowMap: RowMap<IMedication>, id: number): void => {
-    console.log('delete', id);
+  const handleDeleteRow = (rowMap: RowMap<IMedication>, id: number|undefined): void => {
+    if (!id) return;
+
     setDeleteConfirmPopupOptions({ opened: true, id });
   }
 
   const handleDeleteConfrim = (): void => {
-    const delteId: number = deleteConfirmPopupOptions.id as number;
+    const deleteId: number = deleteConfirmPopupOptions.id as number;
 
-    if (delteId < 0) return;
+    if (deleteId < 0) return;
     
+    const ret = deleteMedication(deleteId)
+    if (ret) {
+      const filter = medicationList.filter(v => v.id !== deleteId);
+      setMedicationList([...filter]);
+      setDeleteConfirmResultVisible(true);
+    }
+  }
+
+  const handleDeleteConfirmResult = (): void => {
     setDeleteConfirmPopupOptions({ opened: false, id: -1 });
+    setDeleteConfirmResultVisible(false);
   }
 
   const handleOpenedRow = (): void => {
@@ -154,13 +169,33 @@ export default function MedicationScreen() {
   }
 
   const handleReminderSettingVisible = (visible: boolean, id?: number): void => {
+    if (visible && !id) return;
+
     const find = medicationList.find(v => v.id === id);
     
     if (visible && find) {
-      setReminderSettingPanelOptions({ opened: true, id: find.id, miniStock: find.miniStock?? 0, saved: false });
+      if (!find.id) return;
+
+      setReminderSettingPanelOptions({
+        opened: true,
+        id: find.id,
+        name: find.name,
+        threshold: find.threshold?? 0,
+        emailAlert: find.emailAlert,
+        pushAlert: find.pushAlert,
+        saved: false
+      });
     } else if (!visible) {
       setReminderSettingErrors({});
-      setReminderSettingPanelOptions({ opened: false, id: -1, threshold: '', pushNotification: false, emailAlert: false, miniStock: 0, saved: false });
+      setReminderSettingPanelOptions({
+        opened: false,
+        id: -1,
+        name: '',
+        threshold: 0,
+        pushAlert: 'off',
+        emailAlert: 'off',
+        saved: false
+      });
     }
     
   }
@@ -175,8 +210,21 @@ export default function MedicationScreen() {
       return;
     }
 
-    setReminderSettingErrors({});
-    setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, saved: true })
+    const findIndex = medicationList.findIndex(v => v.id === reminderSettingPanelOptions.id);
+    if (findIndex < 0) return;
+
+    const data = { ...medicationList[findIndex] };
+    data.pushAlert = reminderSettingPanelOptions.pushAlert as string;
+    data.emailAlert = reminderSettingPanelOptions.emailAlert as string;
+    data.threshold = reminderSettingPanelOptions.threshold as number;
+    
+    const ret = updateMedication(data);
+    if (ret) {
+      medicationList[findIndex] = data;
+      setMedicationList([...medicationList]);
+      setReminderSettingErrors({});
+      setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, saved: true })
+    }
   }
 
   const renderItem = (data: ListRenderItemInfo<IMedication>) => (
@@ -254,7 +302,25 @@ export default function MedicationScreen() {
         positiveButtonText={t('delete')}
         negativeButtonText={t('cancel')}
         bodyText={t('message.confirm_delete')}
-        onCancel={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+        resultVisible={deleteConfirmResultVisible}
+        resultElement={
+          <ThemedView style={ConfirmResultStyle.container}>
+            <ThemedText style={ConfirmResultStyle.titleText}>
+              {t('message.deleted_successfully')}
+            </ThemedText>
+            <View style={ConfirmResultStyle.iconWrapper}><CircleCheckIcon /></View>
+            <View style={ConfirmResultStyle.actionsWrapper}>
+              <ThemedText style={ConfirmResultStyle.labelText}>{t('click')}</ThemedText>
+              <TouchableOpacity
+                onPress={handleDeleteConfirmResult}
+              >
+                <ThemedText style={[ConfirmResultStyle.labelText, ConfirmResultStyle.linkText]}>{t('here')}</ThemedText>
+              </TouchableOpacity>
+              <ThemedText style={ConfirmResultStyle.labelText}>{t('to_continue')}</ThemedText>
+            </View>
+          </ThemedView>
+        }
+        onCancel={handleDeleteConfirmResult}
         onConfirm={handleDeleteConfrim}
       />
       <Modal
@@ -312,18 +378,24 @@ export default function MedicationScreen() {
               </ThemedText>
               <ThemedText
                 type="default"
-                style={rstyles.descText}
+                darkColor={Colors.dark.grayText}
+                lightColor={Colors.light.darkGrayText}
               >
-                {t('refill_reminder_preference.alert_when_amount_low').replace('${mini}', `${reminderSettingPanelOptions.miniStock?? 1}`)}
+                {t('refill_reminder_preference.alert_when_amount_low').replace('${name}', `${reminderSettingPanelOptions.name?? ''}`)}
               </ThemedText>
             </View>
             <View style={[rstyles.rowWrapper, rstyles.thretholdWrapper]}>
-              <ThemedText type="default">{t('refill_reminder_preference.threshold')}:</ThemedText>
+              <ThemedText type="default">{t('threshold')}:</ThemedText>
               <View style={{ flex: 1 }}>
                 <TextInput
-                  style={{ textAlign: 'right', height: 50 }}
+                  style={{
+                    textAlign: 'right',
+                    height: 50,
+                    color: appState.setting.theme === 'light' ? '#000' : '#fff'
+                  }}
                   placeholder="1-1000"
-                  value={reminderSettingPanelOptions.threshold as string}
+                  keyboardType="number-pad"
+                  value={`${reminderSettingPanelOptions.threshold}`}
                   onChangeText={(v) => setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, threshold: v })}
                 />
               </View>
@@ -334,26 +406,26 @@ export default function MedicationScreen() {
               </View>
             }
             <View style={[rstyles.rowWrapper]}>
-              <ThemedText type="default">{t('refill_reminder_preference.push_notification')}:</ThemedText>
+              <ThemedText type="default">{t('push_notification')}:</ThemedText>
               <View>
                 <Switch
                   trackColor={{ false: '#eee', true: '#0066ff' }}
                   ios_backgroundColor={'#0066ff'}
-                  thumbColor={reminderSettingPanelOptions.pushNotification ? '#fff' : '#999'}
-                  value={reminderSettingPanelOptions.pushNotification as boolean}
-                  onValueChange={(v) => setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, pushNotification: v })}
+                  thumbColor={reminderSettingPanelOptions.pushAlert === 'on' ? '#fff' : '#999'}
+                  value={reminderSettingPanelOptions.pushAlert === 'on'}
+                  onValueChange={(v) => setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, pushAlert: v ? 'on' : 'off' })}
                 />
               </View>
             </View>
             <View style={[rstyles.rowWrapper]}>
-              <ThemedText type="default">{t('refill_reminder_preference.email_alert')}:</ThemedText>
+              <ThemedText type="default">{t('email_alert')}:</ThemedText>
               <View>
                 <Switch
                   trackColor={{ false: '#eee', true: '#0066ff' }}
                   ios_backgroundColor={'#0066ff'}
-                  thumbColor={reminderSettingPanelOptions.emailAlert ? '#fff' : '#999'}
-                  value={reminderSettingPanelOptions.emailAlert as boolean}
-                  onValueChange={(v) => setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, emailAlert: v })}
+                  thumbColor={reminderSettingPanelOptions.emailAlert === 'on' ? '#fff' : '#999'}
+                  value={reminderSettingPanelOptions.emailAlert === 'on'}
+                  onValueChange={(v) => setReminderSettingPanelOptions({ ...reminderSettingPanelOptions, emailAlert: v ? 'on' : 'off' })}
                 />
               </View>
             </View>
@@ -504,9 +576,6 @@ const rstyles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-  },
-  descText: {
-    color: '#000'
   },
   thretholdWrapper: {
     borderBottomColor: '#e2e2e2',

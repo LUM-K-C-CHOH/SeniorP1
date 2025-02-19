@@ -64,8 +64,9 @@ export const setupDatabase = async () => {
         image VARCHAR(255),
         name VARCHAR(50) NOT NULL,
         stock INTEGER NOT NULL,
-        mini_stock INTEGER NOT NULL,
-        notifications INTEGER,
+        threshold INTEGER NOT NULL,
+        email_alert VARCHAR(10) NOT NULL,
+        push_alert VARCHAR(10) NOT NULL,
         start_date VARCHAR(20) NOT NULL,
         end_date VARCHAR(20) NOT NULL,
         created_at DATETIME,
@@ -115,7 +116,7 @@ export const setupDatabase = async () => {
   });  
 };
 
-export const addData = (table: string, data: any) => {
+export const addData = (table: string, data: any): number => {
   let fieldNames: string[] = [];
   let bindValues: string[] = [];
   let dataValues: any[] = [];
@@ -137,13 +138,14 @@ export const addData = (table: string, data: any) => {
       data.push
     ];
   } else if (table === Tables.MEDICATIONS) {
-    fieldNames = ['name', 'image', 'stock', 'mini_stock', 'notifications', 'start_date', 'end_date', 'created_at', 'updated_at'];
+    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date', 'created_at', 'updated_at'];
     dataValues = [
       data.name,
       data.image,
       data.stock,
-      data.miniStock,
-      data.notifications,
+      data.threshold,
+      data.emailAlert,
+      data.pushAlert,
       data.startDate,
       data.endDate
     ];
@@ -217,7 +219,7 @@ export const addData = (table: string, data: any) => {
   }
   
   if (fieldNames.length === 0 || dataValues.length === 0) {
-    return false;
+    return -1;
   }
 
   bindValues = Array.from(new Array(fieldNames.length), (_, index) => index < fieldNames.length - 2 ? '?' : 'DATETIME(\'now\')');
@@ -226,7 +228,7 @@ export const addData = (table: string, data: any) => {
     VALUES (${bindValues.join(',')})`,
     dataValues
   );
-  return ret;
+  return ret.lastInsertRowId;
 };
 
 export const getAllData = async (table: string): Promise<any> => {
@@ -245,7 +247,7 @@ export const getRowData = async (table: string, id: number): Promise<any> => {
   return one;
 };
 
-export const updateData = (table: string, id: number, data: any) => {
+export const updateData = (table: string, id: number, data: any, whereField: string = 'id') => {
   let fieldNames: string[] = [];
   let dataValues: any[] = [];
   let bindValues: string[] = [];
@@ -267,25 +269,25 @@ export const updateData = (table: string, id: number, data: any) => {
       id
     ];
   } else if (table === Tables.MEDICATIONS) {
-    fieldNames = ['name', 'image', 'stock', 'mini_stock', 'notifications', 'start_date', 'end_date', 'updated_at'];
+    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date', 'updated_at'];
     dataValues = [
       data.name,
       data.image,
       data.stock,
-      data.miniStock,
-      data.notifications,
+      data.threshold,
+      data.emailAlert,
+      data.pushAlert,
       data.startDate,
       data.endDate,
       id
     ];
   } else if (table === Tables.FREQUENCIES) {
-    fieldNames = ['medication_id', 'dosage', 'dosage_unit', 'cycle', 'times', 'updated_at'];
+    fieldNames = ['dosage', 'dosage_unit', 'cycle', 'times', 'updated_at'];
     dataValues = [
-      data.medicationId,
       data.dosage,
       data.dosageUnit,
       data.cycle,
-      data.times,
+      data.times.join(','),
       id
     ];
   } else if (table === Tables.APPOINTMENTS) {
@@ -323,13 +325,14 @@ export const updateData = (table: string, id: number, data: any) => {
 
   bindValues = fieldNames.map((v: string, index: number) => index < fieldNames.length - 1 ? `${v}=?` : `${v}=DATETIME(\'now\')`);
   const ret = db.runSync(
-    `UPDATE ${table} SET ${bindValues.join(',')} WHERE id = ?`,
+    `UPDATE ${table} SET ${bindValues.join(',')} WHERE ${whereField} = ?`,
     dataValues
   );
-  return ret;
+  return ret.changes > 0;
 };
 
-export const deleteData = async (table: string, id: number) => {
-  await db.runAsync(`DELETE FROM ${table} WHERE id = ?`, [id]);
+export const deleteData = (table: string, id: number, whereField: string = 'id') => {
+  const ret = db.runSync(`DELETE FROM ${table} WHERE ${whereField} = ?`, [id]);
+  return ret.changes > 0;
 };
 
