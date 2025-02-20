@@ -6,7 +6,7 @@
  */
 import axiosInstance from './instance';
 
-import { addData, getAllData, Tables } from './db';
+import { addData, deleteDataGroup, getAllData, Tables } from './db';
 
 export const emergencyContactSync = async (): Promise<boolean> => {
   return axiosInstance.get(
@@ -29,12 +29,22 @@ export const emergencyContactSync = async (): Promise<boolean> => {
     });
 }
 
-export const getContactList = async () => {
+export const getEmergencyContactList = async () => {
   try {
     const contactList = await getAllData(Tables.EMERGENCY_CONTACTS);
     return { success: true, data: contactList };
   } catch (error) {
     console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
+  }
+}
+
+export const deleteEmergencyContactGroup = (idList: string): boolean => {
+  try {
+    const ret = deleteDataGroup(Tables.EMERGENCY_CONTACTS, idList);
+    return ret;
+  } catch (error) {
+    console.log(error);
+    return false;
   }
 }

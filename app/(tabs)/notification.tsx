@@ -14,14 +14,16 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  TouchableHighlight
+  TouchableHighlight,
+  FlatList,
+  RefreshControl
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 import { deleteNotificationGroup, getNotificationList } from '@/services/notification';
 import { INotification, TResponse } from '@/@types';
-import { FlatList, GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon } from '@/utils/svgs';
 import { Colors, NotificationType } from '@/config/constants';
 import { useRouter } from 'expo-router';
@@ -134,22 +136,22 @@ export default function NotificationScreen() {
   }
 
   const handleLoadData = async (): Promise<void> => {
-      setIsLoading(true);
-      getNotificationList()
-        .then((res: TResponse) => {
-          setIsLoading(false);
-  
-          if (res.success) {
-            setNotificationList(res.data?? []);
-          } else {
-  
-          }
-        })
-        .catch(error => {
-          setIsLoading(false);
-          console.log(error);
-        });
-    }
+    setIsLoading(true);
+    getNotificationList()
+      .then((res: TResponse) => {
+        setIsLoading(false);
+
+        if (res.success) {
+          setNotificationList(res.data?? []);
+        } else {
+
+        }
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.log(error);
+      });
+  }
 
   type ContactItemProps = {
     id: number,

@@ -18,15 +18,17 @@ import {
   View,
   TouchableHighlight,
   TouchableOpacity,
+  RefreshControl,
+  FlatList
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
-import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon, PhoneIcon } from '@/utils/svgs';
 import { ThemedText } from '@/components/ThemedText';
 import { IEmergencyContact, TResponse } from '@/@types';
-import { getContactList } from '@/services/emergency';
-import { getMarkColorFromName, getMarkLabelFromName } from '@/utils';
+import { getEmergencyContactList, deleteEmergencyContactGroup } from '@/services/emergency';
+import { getMarkColorFromName, getMarkLabelFromName, showToast } from '@/utils';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
 
@@ -37,6 +39,7 @@ export default function EmergencyContactScreen() {
   const { t } = useTranslation();
   const { appState } = useContext(ApplicationContext);
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [contactList, setContactList] = useState<IEmergencyContact[]>([]);
   const [selectableVisible, setSelectableVisible] = useState<boolean>(false);
   const [checkedIdList, setCheckedIdList] = useState<number[]>([]);
@@ -48,7 +51,7 @@ export default function EmergencyContactScreen() {
 
     initiatedRef.current = true;
 
-    getContactList()
+    getEmergencyContactList()
       .then((res: TResponse) => {
         if (res.success) {
           setContactList(res.data?? []);          
@@ -80,13 +83,41 @@ export default function EmergencyContactScreen() {
   }
 
   const handleContactDelete = (): void => {
-    setDeleteConfirmResultVisible(true);
+   if (checkedIdList.length === 0) return;
+   
+    const idList = checkedIdList.join(',');
+    const ret = deleteEmergencyContactGroup(idList);
+    if (ret) {
+      const filter = contactList.filter(v => !checkedIdList.includes(v.id));
+      setContactList([...filter]);
+      setDeleteConfirmResultVisible(true);
+    } else {
+      showToast(t('message.alert_delete_fail'));
+    }
   }
 
   const handleDeleteConfirmResult = (): void => {
     setDeleteConfirmVisible(false);
     setDeleteConfirmResultVisible(false);
     setCheckedIdList([]);
+  }
+
+  const handleLoadData = async (): Promise<void> => {
+    setIsLoading(true);
+    getEmergencyContactList()
+      .then((res: TResponse) => {
+        setIsLoading(false);
+
+        if (res.success) {
+          setContactList(res.data?? []);
+        } else {
+
+        }
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.log(error);
+      });
   }
 
   type ContactItemProps = {
@@ -198,7 +229,14 @@ export default function EmergencyContactScreen() {
                 </ThemedText>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setDeleteConfirmVisible(true)}>
+            <TouchableOpacity
+              onPress={
+                () => {
+                  if (checkedIdList.length === 0) return;
+                  setDeleteConfirmVisible(true);
+                }
+              }
+            >
               <ThemedText type="default">
                 {t('delete')}({checkedIdList.length})
               </ThemedText>
@@ -221,6 +259,9 @@ export default function EmergencyContactScreen() {
                         />
           }
           keyExtractor={item => `${item.id}`}
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={handleLoadData} />
+          }
         />
         <View style={styles.actionWrapper}>
           <CustomButton onPress={() => {}}>
