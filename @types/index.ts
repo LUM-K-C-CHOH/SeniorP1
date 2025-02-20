@@ -46,14 +46,13 @@ export interface IMedication {
 }
 
 export interface IAppointment {
-  id: number,
+  id?: number,
   name: string,
   phone: string,
   image: string,
   scheduledTime: string,
   description: string,
   location: string,
-  createdAt: string,
 }
 
 export interface IContact {

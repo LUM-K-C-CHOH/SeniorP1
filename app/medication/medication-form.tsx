@@ -95,6 +95,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['name'] = t('message.alert_input_name');
+        setErrors({ ...errors });
       }
 
       return;
@@ -107,6 +108,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['dosage'] = t('message.alert_input_dosage');
+        setErrors({ ...errors });
       }
 
       return;
@@ -119,6 +121,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['dosageUnit'] = t('message.alert_select_dosage_unit');
+        setErrors({ ...errors });
       }
 
       return;
@@ -131,6 +134,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['cycle'] = t('message.alert_select_cycle');
+        setErrors({ ...errors });
       }
 
       return;
@@ -143,6 +147,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['stock'] = t('message.alert_input_stock');
+        setErrors({ ...errors });
       }
 
       return;
@@ -155,6 +160,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['threshold'] = t('message.alert_input_threshold');
+        setErrors({ ...errors });
       }
 
       return;
@@ -167,6 +173,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['startDate'] = t('message.alert_select_start_date');
+        setErrors({ ...errors });
       }
 
       return;
@@ -179,6 +186,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['endDate'] = t('message.alert_select_end_date');
+        setErrors({ ...errors });
       }
 
       return;

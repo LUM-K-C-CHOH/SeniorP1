@@ -7,7 +7,7 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';
 import CustomButton from '@/components/CustomButton';
-import ConfirmPanel from '@/components/ConfrimPanel';
+import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 
 import {
   StyleSheet,
@@ -20,9 +20,9 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 import { IAppointment, TResponse } from '@/@types';
-import { getAppointmentList } from '@/services/appointment';
+import { deleteAppointment, getAppointmentList } from '@/services/appointment';
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
-import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
+import { CircleCheckIcon, ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -39,7 +39,8 @@ export default function AppointmentScreen() {
   const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
-
+  const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
+  
   useEffect(() => {
     if (initiatedRef.current) return;
 
@@ -54,7 +55,9 @@ export default function AppointmentScreen() {
       });
   }, []);
 
-  const handleEditRow = (rowMap: RowMap<IAppointment>, id: number): void => {
+  const handleEditRow = (rowMap: RowMap<IAppointment>, id?: number): void => {
+    if (!id) return;
+    
     const find = appointmentList.find(v => v.id === id);
     
     if (!find) return;
@@ -62,16 +65,28 @@ export default function AppointmentScreen() {
     router.push({ pathname: '/appointment/edit', params: { id } });
   }
 
-  const handleDeleteRow = (rowMap: RowMap<IAppointment>, id: number): void => {
+  const handleDeleteRow = (rowMap: RowMap<IAppointment>, id?: number): void => {
+    if (!id) return;
+
     setDeleteConfirmPopupOptions({ opened: true, id });
   }
 
   const handleDeleteConfrim = (): void => {
-    const delteId: number = deleteConfirmPopupOptions.id as number;
+    const deleteId: number = deleteConfirmPopupOptions.id as number;
 
-    if (delteId < 0) return;
+    if (deleteId < 0) return;
     
+    const ret = deleteAppointment(deleteId)
+    if (ret) {
+      const filter = appointmentList.filter(v => v.id !== deleteId);
+      setAppointmentList([...filter]);
+      setDeleteConfirmResultVisible(true);
+    }
+  }
+
+  const handleDeleteConfirmResult = (): void => {
     setDeleteConfirmPopupOptions({ opened: false, id: -1 });
+    setDeleteConfirmResultVisible(false);
   }
 
   const handleOpenedRow = (): void => {
@@ -167,7 +182,25 @@ export default function AppointmentScreen() {
         positiveButtonText={t('delete')}
         negativeButtonText={t('cancel')}
         bodyText={t('message.confirm_delete')}
-        onCancel={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+        resultVisible={deleteConfirmResultVisible}
+          resultElement={
+            <ThemedView style={ConfirmResultStyle.container}>
+              <ThemedText style={ConfirmResultStyle.titleText}>
+                {t('message.deleted_successfully')}
+              </ThemedText>
+              <View style={ConfirmResultStyle.iconWrapper}><CircleCheckIcon /></View>
+              <View style={ConfirmResultStyle.actionsWrapper}>
+                <ThemedText style={ConfirmResultStyle.labelText}>{t('click')}</ThemedText>
+                <TouchableOpacity
+                  onPress={handleDeleteConfirmResult}
+                >
+                  <ThemedText style={[ConfirmResultStyle.labelText, ConfirmResultStyle.linkText]}>{t('here')}</ThemedText>
+                </TouchableOpacity>
+                <ThemedText style={ConfirmResultStyle.labelText}>{t('to_continue')}</ThemedText>
+              </View>
+            </ThemedView>
+          }
+        onCancel={handleDeleteConfirmResult}
         onConfirm={handleDeleteConfrim}
       />
       <SwipeListView
