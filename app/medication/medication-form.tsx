@@ -24,7 +24,7 @@ import {
 import { IMedication } from '@/@types';
 import { useTranslation } from 'react-i18next';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors, DosageUnitType } from '@/config/constants';
+import { Colors, DosageUnitType, MedicationCycleType } from '@/config/constants';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { ThemedView } from '@/components/ThemedView';
 import { CalendarIcon, CloseIcon, MinusIcon, PlusIcon, SearchIcon } from '@/utils/svgs';
@@ -43,9 +43,9 @@ const dosageUnitList = [
 ];
 const hourList = Array.from(new Array(24), (_, index: number) => new String(index) .padStart(2, '0')).map((v, index) => ({ key: index, value: v }));
 const cycleList = [
-  { key: 1, value: '1 Day', selected: true },
-  { key: 2, value: '2 Days' },
-  { key: 3, value: '3 Days' },
+  { key: MedicationCycleType.EVERYDAY, value: '1 Day', selected: true },
+  { key: MedicationCycleType.TWODAYS, value: '2 Days' },
+  { key: MedicationCycleType.THREEDAYS, value: '3 Days' },
 ]
 export default function MedicationForm({ medication }: TMedicationFormProps) {
   const backgroundColor = useThemeColor({}, 'background');

@@ -7,7 +7,9 @@
 import axiosInstance from './instance';
 
 import { IMedication } from '@/@types';
+import { MedicationCycleType } from '@/config/constants';
 import { addData, deleteData, getAllData, Tables, updateData } from '@/services/db';
+import dayjs from 'dayjs';
 
 export const frequencySync = async (): Promise<boolean> => {
   return axiosInstance.get(
@@ -138,10 +140,38 @@ export const addMedication = (medication: IMedication): boolean => {
 }
 
 export const getTodayMedicationList = async () => {
+  const todayStr = dayjs().format('YYYY-MM-DD');
   try {
     const resultList: IMedication[] = await getCombinedMedicationList();
-  
-    return { success: true, data: resultList };
+    const list: IMedication[] = [];
+    for (let i = 0; i < resultList.length; i++) {
+      const medication = resultList[i];
+      if (medication.frequency.cycle === MedicationCycleType.EVERYDAY) {
+        list.push(medication);
+      } else if (medication.frequency.cycle === MedicationCycleType.TWODAYS) {
+        const startDate = medication.startDate;
+        if (startDate === todayStr) {
+          list.push(medication);
+        } else {
+          const dateStr = dayjs(startDate, 'YYYY-MM-DD').add(2, 'day').format('YYYY-MM-DD');
+          if (dateStr === todayStr) {
+            list.push(medication)
+          }
+        }
+
+      } else if (medication.frequency.cycle === MedicationCycleType.THREEDAYS) {
+        const startDate = medication.startDate;
+        if (startDate === todayStr) {
+          list.push(medication);
+        } else {
+          const dateStr = dayjs(startDate, 'YYYY-MM-DD').add(3, 'day').format('YYYY-MM-DD');
+          if (dateStr === todayStr) {
+            list.push(medication)
+          }
+        }
+      }
+    }
+    return { success: true, data: list };
   } catch (error) {
     console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
@@ -151,8 +181,8 @@ export const getTodayMedicationList = async () => {
 export const getRefillMedicationList = async () => {
   try {
     const resultList: IMedication[] = await getCombinedMedicationList();
-  
-    return { success: true, data: resultList };
+    const list: IMedication[] = resultList.filter(v => v.stock < v.threshold);
+    return { success: true, data: list };
   } catch (error) {
     console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };

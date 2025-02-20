@@ -101,7 +101,8 @@
     "alert_select_unique_time": "Please select the time not overlapped.",
     "alert_save_success": "Saved successfully.",
     "alert_save_fail": "Failed to save.",
-    "alert_delete_fail": "Failed to delete."
+    "alert_delete_fail": "Failed to delete.",
+    "hint_no_reserved_appointment_today": "No appointment reserved today."
   },
   "dashboard": {
     "welcome_back": "Welcome Back",

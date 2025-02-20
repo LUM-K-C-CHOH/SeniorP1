@@ -196,24 +196,34 @@ export default function DashboardScreen() {
                 {t('dashboard.todays_appointments')}
               </ThemedText>
             </View>
-            <Animated.ScrollView style={{ marginTop: 5 }}>
-              {appointmentList.map((data: IAppointment, index: number) =>
-                <View key={index} style={cstyles.appointmentItemWrapper}>
-                  <ThemedText
-                    type="default"
-                  >
-                    {getTime(data.scheduledTime)}
-                  </ThemedText>
-                  <ThemedText
-                    type="small"
-                    darkColor={Colors.dark.grayText}
-                    lightColor={Colors.light.grayText}
-                  >
-                    {data.name}
-                  </ThemedText>
-                </View>
-              )}
-            </Animated.ScrollView>
+            {appointmentList.length > 0
+              ? <Animated.ScrollView style={{ marginTop: 5 }}>
+                  {appointmentList.map((data: IAppointment, index: number) =>
+                    <View key={index} style={cstyles.appointmentItemWrapper}>
+                      <ThemedText
+                        type="default"
+                      >
+                        {getTime(data.scheduledTime)}
+                      </ThemedText>
+                      <ThemedText
+                        type="small"
+                        darkColor={Colors.dark.grayText}
+                        lightColor={Colors.light.grayText}
+                      >
+                        {data.name}
+                      </ThemedText>
+                    </View>
+                  )}
+                </Animated.ScrollView>
+              : <ThemedText
+                  type="default"
+                  darkColor={Colors.dark.grayText}
+                  lightColor={Colors.light.grayText}
+                  style={{ padding: 20, textAlign: 'center' }}
+                >
+                  {t('message.hint_no_reserved_appointment_today')}
+                </ThemedText>
+            }
           </ThemedView>
         </View>
         <View style={styles.rowWrapper}>

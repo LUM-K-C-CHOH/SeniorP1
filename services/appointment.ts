@@ -55,7 +55,7 @@ export const getTodayAppointmentList = async () => {
   const todayStr = dayjs().format('YYYY-MM-DD');
   try {
     const appointmentList = await getAllData(Tables.APPOINTMENTS);
-    const list = appointmentList.map((v: any) => ({
+    let list: IAppointment[] = appointmentList.map((v: any) => ({
       id: v.id,
       name: v.name,
       phone: v.phone,
@@ -64,6 +64,7 @@ export const getTodayAppointmentList = async () => {
       description: v.description,
       location: v.location,
     }));
+    list = list.filter(v => dayjs(v.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') === todayStr);
     return { success: true, data: list };
   } catch (error) {
     console.log(error);

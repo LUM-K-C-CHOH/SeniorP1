@@ -85,3 +85,9 @@ export const DosageUnitType = {
   MG: 2,
   ML: 3,
 }
+
+export const MedicationCycleType = {
+  EVERYDAY: 1,
+  TWODAYS: 2,
+  THREEDAYS: 3
+}

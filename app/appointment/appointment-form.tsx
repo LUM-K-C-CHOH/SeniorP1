@@ -54,10 +54,10 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const [name, setName] = useState<string>(appointment?.name?? '');
   const [phone, setPhone] = useState<string>(appointment?.phone?? '');
   const [image, setImage] = useState<string>(appointment?.image?? '');
-  const [selectedDate, setSelectedDate] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-  const [timeType, setTimeType] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime).format('a') : TimeType.AM);
-  const [hour,setHour] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime).format('hh') : '');
-  const [minute, setMinute] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime).format('mm') : '');
+  const [selectedDate, setSelectedDate] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
+  const [timeType, setTimeType] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('a') : TimeType.AM);
+  const [hour,setHour] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('hh') : '');
+  const [minute, setMinute] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('mm') : '');
   const [description, setDescription] = useState<string>(appointment?.description?? '');
   const [calendarPopupVisible, setCalendarPopupVisible] = useState<boolean>(false);
   const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
@@ -83,10 +83,10 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     setName(appointment.name?? '');
     setPhone(appointment.phone?? '');
     setImage(appointment.image?? '');
-    setSelectedDate((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-    setHour((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime).format('hh') : '');
-    setMinute((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime).format('mm') : '');
-    setTimeType((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime).format('a') : TimeType.AM);
+    setSelectedDate((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
+    setHour((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('hh') : '');
+    setMinute((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('mm') : '');
+    setTimeType((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('a') : TimeType.AM);
     setDescription(appointment.description?? '');
 
   }, [appointment]);
@@ -364,7 +364,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
                   lightColor={Colors.light.defaultControlText}
                   style={{ fontWeight: 400 }}
                 >
-                  {selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}
+                  {selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD') : ''}
                 </ThemedText>
                 <CalendarIcon color={appState.setting.theme === 'light' ? '#494e50' : '#aaa'} />
               </ThemedView>
