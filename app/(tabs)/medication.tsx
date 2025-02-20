@@ -42,7 +42,7 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
-import { getDosageUnitString } from '@/utils';
+import { getDosageUnitString, showToast } from '@/utils';
 
 export default function MedicationScreen() {
   const initiatedRef = useRef<boolean>(false);
@@ -134,6 +134,8 @@ export default function MedicationScreen() {
       const filter = medicationList.filter(v => v.id !== deleteId);
       setMedicationList([...filter]);
       setDeleteConfirmResultVisible(true);
+    } else {
+      showToast(t('message.alert_delete_fail'));
     }
   }
 

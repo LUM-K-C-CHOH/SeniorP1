@@ -24,7 +24,7 @@ import { deleteAppointment, getAppointmentList } from '@/services/appointment';
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
 import { CircleCheckIcon, ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
-import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
+import { getDateString, getMarkColorFromName, getMarkLabelFromName, showToast } from '@/utils';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
 
@@ -57,7 +57,7 @@ export default function AppointmentScreen() {
 
   const handleEditRow = (rowMap: RowMap<IAppointment>, id?: number): void => {
     if (!id) return;
-    
+
     const find = appointmentList.find(v => v.id === id);
     
     if (!find) return;
@@ -81,6 +81,8 @@ export default function AppointmentScreen() {
       const filter = appointmentList.filter(v => v.id !== deleteId);
       setAppointmentList([...filter]);
       setDeleteConfirmResultVisible(true);
+    } else {
+      showToast(t('message.alert_delete_fail'));
     }
   }
 

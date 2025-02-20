@@ -19,13 +19,14 @@ import {
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
-import { getNotificationList } from '@/services/notification';
+import { deleteNotificationGroup, getNotificationList } from '@/services/notification';
 import { INotification, TResponse } from '@/@types';
-import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { FlatList, GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon } from '@/utils/svgs';
 import { Colors, NotificationType } from '@/config/constants';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { showToast } from '@/utils';
 
 export default function NotificationScreen() {
   const initiatedRef = useRef<boolean>(false);
@@ -35,6 +36,7 @@ export default function NotificationScreen() {
   const { appState } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [notificationList, setNotificationList] = useState<INotification[]>([]);
   const [selectableVisible, setSelectableVisible] = useState<boolean>(false);
   const [checkedIdList, setCheckedIdList] = useState<number[]>([]);
@@ -78,7 +80,17 @@ export default function NotificationScreen() {
   }
 
   const handleContactDelete = (): void => {
-    setDeleteConfirmResultVisible(true);
+    if (checkedIdList.length === 0) return;
+
+    const idList = checkedIdList.join(',');
+    const ret = deleteNotificationGroup(idList);
+    if (ret) {
+      const filter = notificationList.filter(v => !checkedIdList.includes(v.id));
+      setNotificationList([...filter]);
+      setDeleteConfirmResultVisible(true);
+    } else {
+      showToast(t('message.alert_delete_fail'));
+    }
   }
 
   const handleDeleteConfirmResult = (): void => {
@@ -120,6 +132,24 @@ export default function NotificationScreen() {
 
     router.push({ pathname: '/medication', params: { medicationId: notification.targetId } })
   }
+
+  const handleLoadData = async (): Promise<void> => {
+      setIsLoading(true);
+      getNotificationList()
+        .then((res: TResponse) => {
+          setIsLoading(false);
+  
+          if (res.success) {
+            setNotificationList(res.data?? []);
+          } else {
+  
+          }
+        })
+        .catch(error => {
+          setIsLoading(false);
+          console.log(error);
+        });
+    }
 
   type ContactItemProps = {
     id: number,
@@ -281,7 +311,14 @@ export default function NotificationScreen() {
                 </ThemedText>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setDeleteConfirmVisible(true)}>
+            <TouchableOpacity
+              onPress={
+                () => {
+                  if (checkedIdList.length === 0) return;
+                  setDeleteConfirmVisible(true)
+                }
+              }
+            >
               <ThemedText type="default">
                 {t('delete')}({checkedIdList.length})
               </ThemedText>
@@ -303,6 +340,9 @@ export default function NotificationScreen() {
                         />
           }
           keyExtractor={item => `${item.id}`}
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={handleLoadData} />
+          }
         />
       </GestureHandlerRootView>
     </SafeAreaView>

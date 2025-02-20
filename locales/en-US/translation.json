@@ -100,7 +100,8 @@
     "alert_add_time": "Please add the time.",
     "alert_select_unique_time": "Please select the time not overlapped.",
     "alert_save_success": "Saved successfully.",
-    "alert_save_fail": "Failed to save."
+    "alert_save_fail": "Failed to save.",
+    "alert_delete_fail": "Failed to delete."
   },
   "dashboard": {
     "welcome_back": "Welcome Back",

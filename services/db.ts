@@ -223,7 +223,7 @@ export const getRowData = (table: string, id: number, whereField: string = 'id')
   return one;
 }
 
-export const updateData = (table: string, id: number, data: any, whereField: string = 'id') => {
+export const updateData = (table: string, id: number, data: any, whereField: string = 'id'): boolean => {
   let fieldNames: string[] = [];
   let dataValues: any[] = [];
   let bindValues: string[] = [];
@@ -308,8 +308,13 @@ export const updateData = (table: string, id: number, data: any, whereField: str
   return ret.changes > 0;
 }
 
-export const deleteData = (table: string, id: number, whereField: string = 'id') => {
+export const deleteData = (table: string, id: number, whereField: string = 'id'): boolean => {
   const ret = db.runSync(`DELETE FROM ${table} WHERE ${whereField} = ?`, [id]);
+  return ret.changes > 0;
+}
+
+export const deleteDataGroup = (table: string, idList: string, whereField: string = 'id') => {
+  const ret = db.runSync(`DELETE FROM ${table} WHERE ${whereField} IN (${idList})`);
   return ret.changes > 0;
 }
 
