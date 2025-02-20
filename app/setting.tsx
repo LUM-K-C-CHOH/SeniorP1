@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import { Stack } from 'expo-router';
 import Header from './layout/header';
+import { updateUserSetting } from '@/services/setting';
 
 export default function SettingScreen() {
   const backgroundColor = useThemeColor({}, 'background');
@@ -29,35 +30,50 @@ export default function SettingScreen() {
 
   const handleColorThemeChange = (mode: 'light'|'dark'): void => {
     if (mode === appState.setting.theme) return;
+
+    const setting = {
+      ...appState.setting,
+      theme: mode
+    };
+
     setAppState({
       ...appState,
-      setting: {
-        ...appState.setting,
-        theme: mode
-      }
+      setting
     });
+
+    updateUserSetting(setting, appState.user?.id);
   }
 
   const handleFontSizeChange = (mode: 'small'|'normal'|'large'): void => {
     if (mode === appState.setting.font) return;
+
+    const setting = {
+      ...appState.setting,
+      font: mode
+    };
+
     setAppState({
       ...appState,
-      setting: {
-        ...appState.setting,
-        font: mode
-      }
+      setting
     });
+
+    updateUserSetting(setting, appState.user?.id);
   }
 
   const handlePushChange = (mode: 'on'|'off'): void => {
     if (mode === appState.setting.push) return;
+
+    const setting = {
+      ...appState.setting,
+      push: mode
+    };
+
     setAppState({
       ...appState,
-      setting: {
-        ...appState.setting,
-        push: mode
-      }
+      setting
     });
+
+    updateUserSetting(setting, appState.user?.id);
   }
 
   return (

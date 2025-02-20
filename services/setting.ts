@@ -6,7 +6,8 @@
  */
 import axiosInstance from './instance';
 
-import { addData, Tables } from './db';
+import { addData, getRowData, Tables, updateData } from './db';
+import { ISetting } from '@/@types';
 
 export const userSettingSync = async (): Promise<boolean> => {
   return axiosInstance.post(
@@ -24,4 +25,16 @@ export const userSettingSync = async (): Promise<boolean> => {
       console.log(error);
       return false;
     });
+}
+
+export const getUserSetting = (userId: number): ISetting => {
+  const data = getRowData(Tables.SETTINGS, userId, 'user_id');
+  return data as ISetting;
+}
+
+export const updateUserSetting = (setting: ISetting, userId?: number): boolean => {
+  if (!userId) return false;
+
+  const ret = updateData(Tables.SETTINGS, userId, setting);
+  return ret;
 }

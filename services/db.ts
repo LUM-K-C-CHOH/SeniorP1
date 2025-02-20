@@ -114,7 +114,7 @@ export const setupDatabase = async () => {
       )
     `);
   });  
-};
+}
 
 export const addData = (table: string, data: any): number => {
   let fieldNames: string[] = [];
@@ -149,12 +149,6 @@ export const addData = (table: string, data: any): number => {
       data.startDate,
       data.endDate
     ];
-
-    if (data.id) {
-      fieldNames = ['id', ...fieldNames];
-      bindValues = ['?', ...bindValues];
-      dataValues = [data.id, ...dataValues];
-    }
   } else if (table === Tables.FREQUENCIES) {
     fieldNames = ['medication_id', 'dosage', 'dosage_unit', 'cycle', 'times', 'created_at', 'updated_at'];
     dataValues = [
@@ -164,12 +158,6 @@ export const addData = (table: string, data: any): number => {
       data.cycle,
       data.times.join(',')
     ];
-
-    if (data.id) {
-      fieldNames = ['id', ...fieldNames];
-      bindValues = ['?', ...bindValues];
-      dataValues = [data.id, ...dataValues];
-    }
   } else if (table === Tables.APPOINTMENTS) {
     fieldNames = ['name', 'phone', 'image', 'scheduled_time', 'location', 'description', 'created_at', 'updated_at'];
     dataValues = [
@@ -180,12 +168,6 @@ export const addData = (table: string, data: any): number => {
       data.location,
       data.description,
     ];
-
-    if (data.id) {
-      fieldNames = ['id', ...fieldNames];
-      bindValues = ['?', ...bindValues];
-      dataValues = [data.id, ...dataValues];
-    }
   } else if (table === Tables.EMERGENCY_CONTACTS) {
     fieldNames = ['name', 'phone', 'image', 'type', 'created_at', 'updated_at'];
     dataValues = [
@@ -194,12 +176,6 @@ export const addData = (table: string, data: any): number => {
       data.image,
       data.type,
     ];
-
-    if (data.id) {
-      fieldNames = ['id', ...fieldNames];
-      bindValues = ['?', ...bindValues];
-      dataValues = [data.id, ...dataValues];
-    }
   } else if (table === Tables.NOTIFICATIONS) {
     fieldNames = ['type', 'status', 'target_id', 'var1', 'var2', 'var3', 'created_at', 'updated_at'];
     dataValues = [       
@@ -210,47 +186,48 @@ export const addData = (table: string, data: any): number => {
       data.var2,
       data.var3
     ];
-
-    if (data.id) {
-      fieldNames = ['id', ...fieldNames];
-      bindValues = ['?', ...bindValues];
-      dataValues = [data.id, ...dataValues];
-    }
   }
   
   if (fieldNames.length === 0 || dataValues.length === 0) {
     return -1;
   }
 
+  if (data.id) {
+    fieldNames = ['id', ...fieldNames];
+    dataValues = [data.id, ...dataValues];
+  }
+
   bindValues = Array.from(new Array(fieldNames.length), (_, index) => index < fieldNames.length - 2 ? '?' : 'DATETIME(\'now\')');
+  
   const ret = db.runSync(
     `INSERT OR REPLACE INTO ${table} (${fieldNames.join(',')})
     VALUES (${bindValues.join(',')})`,
     dataValues
   );
   return ret.lastInsertRowId;
-};
+}
 
 export const getAllData = async (table: string): Promise<any> => {
   const all = await db.getAllAsync(
     `SELECT * FROM ${table}`
   );
   return all;
-};
+}
 
-export const getRowData = async (table: string, id: number): Promise<any> => {
-  const one = await db.getFirstAsync(
-    `SELECT * FROM ${table} WHERE id = ?`,
+export const getRowData = (table: string, id: number, whereField: string = 'id') => {
+  const one = db.getFirstSync(
+    `SELECT * FROM ${table} WHERE ${whereField} = ?`,
     [id]
   );
 
   return one;
-};
+}
 
 export const updateData = (table: string, id: number, data: any, whereField: string = 'id') => {
   let fieldNames: string[] = [];
   let dataValues: any[] = [];
   let bindValues: string[] = [];
+
   if (table === Tables.USERS) {
     fieldNames = ['name', 'email', 'phone', 'country', 'updated_at'];
     dataValues = [
@@ -329,10 +306,10 @@ export const updateData = (table: string, id: number, data: any, whereField: str
     dataValues
   );
   return ret.changes > 0;
-};
+}
 
 export const deleteData = (table: string, id: number, whereField: string = 'id') => {
   const ret = db.runSync(`DELETE FROM ${table} WHERE ${whereField} = ?`, [id]);
   return ret.changes > 0;
-};
+}
 

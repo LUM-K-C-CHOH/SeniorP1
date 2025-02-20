@@ -33,7 +33,7 @@ import {
 } from '@/config/constants';
 import { validateEmail } from '@/utils';
 import { getStorageItem, setStorageItem } from '@/utils/storage';
-import { userSettingSync } from '@/services/setting';
+import { getUserSetting, userSettingSync } from '@/services/setting';
 import { frequencySync, medicationSync } from '@/services/medication';
 import { appointmentSync } from '@/services/appointment';
 import { emergencyContactSync } from '@/services/emergency';
@@ -95,6 +95,13 @@ export default function SignInScreen() {
               setSyncDBPopupVisible(false);
               lockedSync = false;
               console.log('db sync end');
+
+              const setting = getUserSetting(res.data.userId);
+
+              setAppState({
+                ...appState,
+                setting
+              });
             }
           } else {
             console.log('already synced...');
