@@ -7,7 +7,7 @@
 import axiosInstance from './instance';
 
 import { IMedication } from '@/@types';
-import { MedicationCycleType } from '@/config/constants';
+import { MedicationCycleType, SyncStatus } from '@/config/constants';
 import { addData, deleteData, getAllData, Tables, updateData } from '@/services/db';
 import dayjs from 'dayjs';
 
@@ -19,8 +19,9 @@ export const frequencySync = async (): Promise<boolean> => {
       if (response.data.code === 0) {
         for (let i = 0; i < response.data.data.length; i++) {
           const d = response.data.data[i];
-          addData(Tables.FREQUENCIES, d);
+          addData(Tables.FREQUENCIES, { ...d, syncStatus: SyncStatus.SYNCED });
         }
+
         return true;
       } else {
         return false;
@@ -41,7 +42,7 @@ export const medicationSync = async (): Promise<boolean> => {
       if (response.data.code === 0) {
         for (let i = 0; i < response.data.data.length; i++) {
           const d = response.data.data[i];
-          addData(Tables.MEDICATIONS, d);
+          addData(Tables.MEDICATIONS, { ...d, syncStatus: SyncStatus.SYNCED });
         }
         return true;
       } else {
@@ -109,9 +110,9 @@ export const updateMedication = (medication: IMedication): boolean => {
   try {
     if (medication.id) {
       const { frequency, ...rest } = medication;
-      let ret = updateData(Tables.MEDICATIONS, medication.id, rest);
+      let ret = updateData(Tables.MEDICATIONS, medication.id, { ...rest, syncStatus: SyncStatus.UPDATED });
       if (ret) {
-        ret = updateData(Tables.FREQUENCIES, medication.id, frequency, 'medication_id');
+        ret = updateData(Tables.FREQUENCIES, medication.id, { ...frequency, syncStatus: SyncStatus.UPDATED }, 'medication_id');
         return ret;
       }   
       return false;
@@ -127,9 +128,9 @@ export const updateMedication = (medication: IMedication): boolean => {
 export const addMedication = (medication: IMedication): boolean => {
   try {
     const { frequency, ...rest } = medication;
-    let ret = addData(Tables.MEDICATIONS, rest);
+    let ret = addData(Tables.MEDICATIONS, { ...rest, syncStatus: SyncStatus.ADDED });
     if (ret >= 0) {
-      ret = addData(Tables.FREQUENCIES, { medicationId: ret, ...frequency });
+      ret = addData(Tables.FREQUENCIES, { medicationId: ret, ...frequency, syncStatus: SyncStatus.ADDED });
       return ret >= 0;
     }
     return false;    

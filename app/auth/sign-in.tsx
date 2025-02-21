@@ -78,13 +78,12 @@ export default function SignInScreen() {
     login(email, password)
       .then(async (res: TResponse) => {
         if (res.success) {
-          setAppState({
+          const state = {
             ...appState,
             lockScreen: false,
             authenticated: true,
             user: res.data
-          });
-
+          };
           const synced = await getStorageItem(KEY_DB_SYNCED);
           if (synced !== 'true') {
             if (!lockedSync) {
@@ -96,19 +95,25 @@ export default function SignInScreen() {
               lockedSync = false;
               console.log('db sync end');
 
-              const setting = getUserSetting(res.data.userId);
-
+              const setting = getUserSetting(res.data.id);
+              
               setAppState({
-                ...appState,
+                ...state,
+                lockScreen: false,
+                authenticated: true,
+                user: res.data,
                 setting
               });
+            } else {
+              setAppState(state);
             }
           } else {
+            setAppState(state);
             console.log('already synced...');
           }
 
           await new Promise(resolve => setTimeout(() => resolve(1), 100));
-
+          console.log('login')
           router.replace('/');
         } else {
           let errors: {[k: string]: string} = {};

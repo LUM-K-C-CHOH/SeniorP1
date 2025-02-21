@@ -9,6 +9,7 @@ import axiosInstance from './instance';
 
 import { addData, deleteData, getAllData, Tables, updateData } from './db';
 import { IAppointment } from '@/@types';
+import { SyncStatus } from '@/config/constants';
 
 export const appointmentSync = async (): Promise<boolean> => {
   return axiosInstance.get(
@@ -18,7 +19,7 @@ export const appointmentSync = async (): Promise<boolean> => {
       if (response.data.code === 0) {
         for (let i = 0; i < response.data.data.length; i++) {
           const d = response.data.data[i];
-          addData(Tables.APPOINTMENTS, d);
+          addData(Tables.APPOINTMENTS, { ...d, syncStatus: SyncStatus.SYNCED });
         }
         return true;
       } else {
@@ -85,7 +86,7 @@ export const deleteAppointment = (appointmentId: number): boolean => {
 export const updateAppointment = (appointment: IAppointment): boolean => {  
   try {
     if (appointment.id) {
-      let ret = updateData(Tables.APPOINTMENTS, appointment.id, appointment);
+      let ret = updateData(Tables.APPOINTMENTS, appointment.id, { ...appointment, syncStatus: SyncStatus.UPDATED });
       return ret;
     } else {
       return false;
@@ -98,7 +99,7 @@ export const updateAppointment = (appointment: IAppointment): boolean => {
 
 export const addAppointment = (appointment: IAppointment): boolean => {
   try {
-    let ret = addData(Tables.APPOINTMENTS, appointment);
+    let ret = addData(Tables.APPOINTMENTS, { ...appointment, syncStatus: SyncStatus.ADDED });
     return ret >= 0;
   } catch (error) {
     console.log(error);

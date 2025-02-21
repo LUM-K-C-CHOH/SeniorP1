@@ -91,3 +91,10 @@ export const MedicationCycleType = {
   TWODAYS: 2,
   THREEDAYS: 3
 }
+
+export const SyncStatus = {
+  SYNCED: 'synced',
+  ADDED: 'add',
+  UPDATED: 'updated',
+  DELETED: 'deleted',
+}

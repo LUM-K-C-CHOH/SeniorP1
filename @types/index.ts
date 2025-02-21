@@ -70,9 +70,10 @@ export interface INotification {
   id: number,
   type: number,
   var1: string,
+  var2: string,
+  var3: string,
   status: number,
   targetId: number,
-  reservedTime: number,
 }
 
 export type TResponse = {

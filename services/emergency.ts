@@ -8,6 +8,7 @@ import axiosInstance from './instance';
 
 import { addData, deleteDataGroup, getAllData, Tables } from './db';
 import { IEmergencyContact } from '@/@types';
+import { SyncStatus } from '@/config/constants';
 
 export const emergencyContactSync = async (): Promise<boolean> => {
   return axiosInstance.get(
@@ -17,7 +18,7 @@ export const emergencyContactSync = async (): Promise<boolean> => {
       if (response.data.code === 0) {
         for (let i = 0; i < response.data.data.length; i++) {
           const d = response.data.data[i];
-          addData(Tables.EMERGENCY_CONTACTS, d);
+          addData(Tables.EMERGENCY_CONTACTS, { ...d, syncStatus: SyncStatus.SYNCED });
         }
         return true;
       } else {
@@ -33,7 +34,14 @@ export const emergencyContactSync = async (): Promise<boolean> => {
 export const getEmergencyContactList = async () => {
   try {
     const contactList = await getAllData(Tables.EMERGENCY_CONTACTS);
-    return { success: true, data: contactList };
+    const list: IEmergencyContact[] = contactList.map((v: any) => ({
+      id: v.id,
+      name: v.name,
+      phone: v.phone,
+      image: v.image,
+      type: v.type
+    }));
+    return { success: true, data: list };
   } catch (error) {
     console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
@@ -52,7 +60,7 @@ export const deleteEmergencyContactGroup = (idList: string): boolean => {
 
 export const addEmergencyContact = (contact: IEmergencyContact): boolean => {
   try {
-    let ret = addData(Tables.EMERGENCY_CONTACTS, contact);
+    let ret = addData(Tables.EMERGENCY_CONTACTS, { ...contact, syncStatus: SyncStatus.ADDED });
     return ret >= 0;
   } catch (error) {
     console.log(error);

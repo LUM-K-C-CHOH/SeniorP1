@@ -66,7 +66,6 @@ export default function MedicationScreen() {
     if (initiatedRef.current) return;
 
     initiatedRef.current = true;
-    console.log('load data...');
     getMedicationList()
       .then((res: TResponse) => {
         if (res.success) {

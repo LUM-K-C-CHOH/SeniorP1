@@ -387,7 +387,8 @@ const notificationData = [
     targetId: 1,
     var1: 'Aspirin 81mg',
     var2: '',
-    var3: ''
+    var3: '',
+    status: 1
   },
   {
     id: 2,
@@ -395,7 +396,8 @@ const notificationData = [
     targetId: 2,
     var1: 'Aspirin 81mg',
     var2: '',
-    var3: ''
+    var3: '',
+    status: 1
   },
   {
     id: 3,
@@ -403,7 +405,8 @@ const notificationData = [
     targetId: 3,
     var1: 'Metoprolol 30mg',
     var2: '',
-    var3: ''
+    var3: '',
+    status: 1
   },
   {
     id: 4,
@@ -411,7 +414,8 @@ const notificationData = [
     targetId: 4,
     var1: 'Metoprolol 30mg',
     var2: '',
-    var3: ''
+    var3: '',
+    status: 1
   },
 ];
 
