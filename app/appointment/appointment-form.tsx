@@ -11,6 +11,7 @@ import Calendar from '@/components/Calendar';
 import dayjs from 'dayjs';
 import Animated from 'react-native-reanimated';
 import ApplicationContext from '@/context/ApplicationContext';
+import * as Contacts from 'expo-contacts';
 
 import { IAppointment, IContact, TResponse } from '@/@types';
 import {
@@ -61,7 +62,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const [description, setDescription] = useState<string>(appointment?.description?? '');
   const [calendarPopupVisible, setCalendarPopupVisible] = useState<boolean>(false);
   const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
-  const [contactList, setContactList] = useState<IContact[]>([]);  
+  const [orgContactList, setOrgContactList] = useState<IContact[]>([]);  
   const [errors, setErrors] = useState<{[k: string]: string}>({});
 
   useEffect(() => {
@@ -69,12 +70,6 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
 
     initiatedRef.current = true;
 
-    getContactList()
-      .then((res: TResponse) => {
-        if (res.success) {
-          setContactList(res.data?? []);          
-        }
-      });
   }, []);
 
   useEffect(() => {
@@ -104,16 +99,14 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     setSelectedDate(dayjs(date).format('YYYY-MM-DD'));
   }
 
-  const handleContactSelect = (id: number): void => {
-    const find = contactList.find(v => v.id === id);
- 
-    if (!find) return;
+  const handleContactSelect = (index: number): void => {
+    if (index > orgContactList.length - 1) return;
 
     const { contact, ...rest } = errors;
     setErrors(rest);
 
-    setName(find.name);
-    setPhone(find.phone);
+    setName(orgContactList[index].name);
+    setPhone(orgContactList[index].phone);
     setContactPopupVisible(false);
   }
 
@@ -230,15 +223,40 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     }
   }
 
+  const handleContactPopupOpen = async (): Promise<void> => {
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [
+          Contacts.Fields.FirstName,
+          Contacts.Fields.LastName,
+          Contacts.Fields.PhoneNumbers,
+          Contacts.Fields.ContactType,
+          Contacts.Fields.Emails,
+          Contacts.Fields.Image
+        ],
+      });
+
+      let orgContactList: IContact[] = data.map(v => ({
+        name: v.name,
+        image: v.image ? v.image.uri?? '' : '',
+        phone: v.phoneNumbers ? v.phoneNumbers?.map(p => p.number).join(',') : ''
+      }));
+
+      setOrgContactList(orgContactList);
+      setContactPopupVisible(true);
+    }
+  }
+
   type ContactItemProps = {
-    id: number,
+    index: number,
     name: string,
-    onSelectedContact: (id: number) => void
+    onSelectedContact: (index: number) => void
   };
 
-  const ContactItem = ({ id, name, onSelectedContact }: ContactItemProps): JSX.Element => {
+  const ContactItem = ({ index, name, onSelectedContact }: ContactItemProps): JSX.Element => {
     return (
-      <TouchableHighlight onPress={() => onSelectedContact(id)}>
+      <TouchableHighlight onPress={() => onSelectedContact(index)}>
         <ThemedView style={cstyles.contactNameWrapper}>
           <LocationPinIcon color={appState.setting.theme === 'light' ? '#1e75e5' : '#aaa'} />
           <ThemedText
@@ -275,8 +293,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           ]}
         >
           <FlatList
-            data={contactList}
-            renderItem={({item}) => <ContactItem id={item.id} name={item.name} onSelectedContact={handleContactSelect}/>}
+            data={orgContactList}
+            renderItem={({item, index}) => <ContactItem index={index} name={item.name} onSelectedContact={handleContactSelect}/>}
             keyExtractor={item => `${item.id}`}
           />
         </ThemedView>
@@ -320,7 +338,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           </View>
           <TouchableHighlight
             style={{ borderRadius: 5, marginTop: 5 }}
-            onPress={() => setContactPopupVisible(true)}
+            onPress={() => handleContactPopupOpen()}
           >
             <View style={styles.providerPickButton}>
               <LocationIcon color={appState.setting.theme === 'light' ? '#87b5f2' : '#87b5f2'} />
