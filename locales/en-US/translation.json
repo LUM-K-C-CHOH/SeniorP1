@@ -51,6 +51,9 @@
   "off": "Off",
   "email_alert": "Email Alert",
   "threshold": "Threshold",
+  "contacts": "Contacts",
+  "add": "Add",
+  "already_added": "Already added",
   "auth": {
     "sign_in": "Sign In",
     "sign_up": "Sign Up",

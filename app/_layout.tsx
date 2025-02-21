@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as globalState from '@/config/global';
+import * as Contacts from 'expo-contacts';
 
 import '@/i18n';
 import 'react-native-reanimated';
@@ -60,6 +61,12 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+
+  useEffect(() => {
+    (async () => {
+      await Contacts.requestPermissionsAsync();      
+    })();
+  }, []);
 
   useEffect(() => {
     checkAuth();

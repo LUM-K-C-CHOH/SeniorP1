@@ -7,6 +7,7 @@
 import axiosInstance from './instance';
 
 import { addData, deleteDataGroup, getAllData, Tables } from './db';
+import { IEmergencyContact } from '@/@types';
 
 export const emergencyContactSync = async (): Promise<boolean> => {
   return axiosInstance.get(
@@ -43,6 +44,16 @@ export const deleteEmergencyContactGroup = (idList: string): boolean => {
   try {
     const ret = deleteDataGroup(Tables.EMERGENCY_CONTACTS, idList);
     return ret;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+export const addEmergencyContact = (contact: IEmergencyContact): boolean => {
+  try {
+    let ret = addData(Tables.EMERGENCY_CONTACTS, contact);
+    return ret >= 0;
   } catch (error) {
     console.log(error);
     return false;

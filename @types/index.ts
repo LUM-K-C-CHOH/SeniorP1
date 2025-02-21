@@ -56,7 +56,7 @@ export interface IAppointment {
 }
 
 export interface IContact {
-  id: number,
+  id?: number,
   name: string,
   phone: string,
   image: string,
