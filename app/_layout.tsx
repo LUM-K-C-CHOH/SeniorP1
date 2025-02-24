@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as globalState from '@/config/global';
 import * as Contacts from 'expo-contacts';
+import * as Location from 'expo-location';
 
 import '@/i18n';
 import 'react-native-reanimated';
@@ -38,8 +39,10 @@ if (__DEV__) {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+// Load the app state
 globalState.loadAppState();
 
+// Set up the local database
 getStorageItem(KEY_DB_INITIALIZED)
   .then(async (res: string) => {
     if (res !== 'true') {
@@ -62,14 +65,19 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  useEffect(() => {
-    (async () => {
-      await Contacts.requestPermissionsAsync();      
-    })();
-  }, []);
+  const requestPermissions = async () => {
+    await Contacts.requestPermissionsAsync();
+    await Location.requestForegroundPermissionsAsync();
+  }
 
   useEffect(() => {
     checkAuth();
+
+    const state = globalState.getAppState();
+    if (state.authenticated) {
+      requestPermissions();
+      
+    }
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();

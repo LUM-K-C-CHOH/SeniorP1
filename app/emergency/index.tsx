@@ -8,6 +8,7 @@ import React, { useState, useContext } from 'react';
 import Header from '@/app/layout/header';
 import ConfirmPanel from '@/components/ConfrimPanel';
 import ApplicationContext from '@/context/ApplicationContext';
+import * as Location from 'expo-location';
 
 import { Stack } from 'expo-router';
 import {
@@ -24,7 +25,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
-import { generateBoxShadowStyle } from '@/utils';
+import { generateBoxShadowStyle, showToast } from '@/utils';
 import { PhonebookIcon } from '@/utils/svgs';
 import { Images } from '@/utils/assets';
 import { useRouter } from 'expo-router';
@@ -47,7 +48,15 @@ export default function EmergencyScreen() {
     setShareLocation(v);
   }
 
-  const handleCallHelp = (): void => {
+  const handleCallHelp = async (): Promise<void> => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      showToast(t('message.alert_location_permission_denied'));
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    
     setCallConfirmVisible(false);
     setCallResultVisible(true);
   }

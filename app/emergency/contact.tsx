@@ -147,6 +147,8 @@ export default function EmergencyContactScreen() {
 
       setOrgContactList(orgContactList);
       setContactPopupVisible(true);
+    } else {
+      showToast(t('message.alert_contact_permission_denied'));
     }
   }
 

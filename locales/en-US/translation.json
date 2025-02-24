@@ -105,7 +105,9 @@
     "alert_save_success": "Saved successfully.",
     "alert_save_fail": "Failed to save.",
     "alert_delete_fail": "Failed to delete.",
-    "hint_no_reserved_appointment_today": "No appointment reserved today."
+    "hint_no_reserved_appointment_today": "No appointment reserved today.",
+    "alert_location_permission_denied": "Permission to access location was denied.",
+    "alert_contact_permission_denied": "Permission to access contact was denied."
   },
   "dashboard": {
     "welcome_back": "Welcome Back",

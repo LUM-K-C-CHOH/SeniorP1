@@ -245,6 +245,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
 
       setOrgContactList(orgContactList);
       setContactPopupVisible(true);
+    } else {
+      showToast(t('message.alert_contact_permission_denied'));
     }
   }
 
