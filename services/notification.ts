@@ -10,7 +10,7 @@ import { addData, deleteDataGroup, getAllData, Tables } from './db';
 import { SyncStatus } from '@/config/constants';
 import { INotification } from '@/@types';
 
-export const notificationSync = async (): Promise<boolean> => {
+export const notificationSyncWithServer = async (): Promise<boolean> => {
   return axiosInstance.get(
     '/notification/list'
   )
@@ -26,7 +26,25 @@ export const notificationSync = async (): Promise<boolean> => {
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
+      return false;
+    });
+}
+
+export const notificationSyncToServer = async (notificationData: INotification[]): Promise<boolean> => {
+  return axiosInstance.put(
+    '/notification/update',
+    notificationData
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
       return false;
     });
 }
@@ -45,7 +63,7 @@ export const getNotificationList = async () => {
     }));
     return { success: true, data: list };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -55,7 +73,7 @@ export const deleteNotificationGroup = (idList: string): boolean => {
     const ret = deleteDataGroup(Tables.NOTIFICATIONS, idList);
     return ret;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return false;
   }
 }

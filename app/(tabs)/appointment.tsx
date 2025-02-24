@@ -109,7 +109,7 @@ export default function AppointmentScreen() {
       })
       .catch(error => {
         setIsLoading(false);
-        console.log(error);
+        console.error(error);
       });
   }
 

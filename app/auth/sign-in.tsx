@@ -24,20 +24,11 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import {
   Colors,
   KEY_DB_SYNCED,
-  KEY_DB_SYNCED_APPOINTMENT,
-  KEY_DB_SYNCED_EMERGENCY_CONTACT,
-  KEY_DB_SYNCED_FREQUENCY,
-  KEY_DB_SYNCED_MEDICATION,
-  KEY_DB_SYNCED_NOTIFICATION,
-  KEY_DB_SYNCED_SETTING
 } from '@/config/constants';
 import { validateEmail } from '@/utils';
-import { getStorageItem, setStorageItem } from '@/utils/storage';
-import { getUserSetting, userSettingSync } from '@/services/setting';
-import { frequencySync, medicationSync } from '@/services/medication';
-import { appointmentSync } from '@/services/appointment';
-import { emergencyContactSync } from '@/services/emergency';
-import { notificationSync } from '@/services/notification';
+import { getStorageItem } from '@/utils/storage';
+import { getUserSetting } from '@/services/setting';
+import { syncLocalDatabaseWithRemote } from '@/services/sync';
 
 let lockedSync = false;
 
@@ -90,12 +81,12 @@ export default function SignInScreen() {
               lockedSync = true;
               console.log('db sync start');
               setSyncDBPopupVisible(true);
-              await syncDatabase();
+              await syncLocalDatabaseWithRemote();
               setSyncDBPopupVisible(false);
               lockedSync = false;
               console.log('db sync end');
 
-              const setting = getUserSetting(res.data.id);
+              const setting = getUserSetting();
               
               setAppState({
                 ...state,
@@ -122,54 +113,6 @@ export default function SignInScreen() {
         }
       });
   }, [email, password]);
-
-  const syncDatabase = async (): Promise<boolean> => {
-    const settingSyncedStatus = await getStorageItem(KEY_DB_SYNCED_SETTING);
-    let retSetting = true;
-    if (settingSyncedStatus !== 'true') {
-      retSetting = await userSettingSync();
-      setStorageItem(KEY_DB_SYNCED_SETTING, retSetting ? 'true' : 'false');
-    }
-  
-    const frequencySyncedStatus = await getStorageItem(KEY_DB_SYNCED_FREQUENCY);
-    let retFrequency = true;
-    if (frequencySyncedStatus !== 'true') {
-      retFrequency = await frequencySync();
-      setStorageItem(KEY_DB_SYNCED_FREQUENCY, retFrequency ? 'true' : 'false');
-    }
-  
-    const medicationSyncedStatus = await getStorageItem(KEY_DB_SYNCED_MEDICATION);
-    let retMedication = true;
-    if (medicationSyncedStatus !== 'true') {
-      retMedication = await medicationSync();
-      setStorageItem(KEY_DB_SYNCED_MEDICATION, retFrequency ? 'true' : 'false');
-    }
-  
-    const appointmentSyncedStatus = await getStorageItem(KEY_DB_SYNCED_APPOINTMENT);
-    let retAppointment = true;
-    if (appointmentSyncedStatus !== 'true') {
-      retAppointment = await appointmentSync();
-      setStorageItem(KEY_DB_SYNCED_APPOINTMENT, retAppointment ? 'true' : 'false');
-    }
-  
-    const emergencyContactSyncedStatus = await getStorageItem(KEY_DB_SYNCED_EMERGENCY_CONTACT);
-    let retEmergencyContact = true;
-    if (emergencyContactSyncedStatus !== 'true') {
-      retEmergencyContact = await emergencyContactSync();
-      setStorageItem(KEY_DB_SYNCED_EMERGENCY_CONTACT, retEmergencyContact ? 'true' : 'false');
-    }
-  
-    const notificationSyncedStatus = await getStorageItem(KEY_DB_SYNCED_NOTIFICATION);
-    let retNotification = true;
-    if (notificationSyncedStatus !== 'true') {
-      retNotification = await notificationSync();
-      setStorageItem(KEY_DB_SYNCED_NOTIFICATION, retNotification ? 'true' : 'false');
-    }
-  
-    let ret = retSetting && retFrequency && retMedication && retAppointment && retEmergencyContact && retNotification;
-    setStorageItem(KEY_DB_SYNCED, ret ? 'true' : 'false');
-    return ret;
-  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>

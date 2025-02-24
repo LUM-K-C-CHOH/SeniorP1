@@ -11,7 +11,7 @@ import { addData, deleteData, getAllData, Tables, updateData } from './db';
 import { IAppointment } from '@/@types';
 import { SyncStatus } from '@/config/constants';
 
-export const appointmentSync = async (): Promise<boolean> => {
+export const appointmentSyncWithServer = async (): Promise<boolean> => {
   return axiosInstance.get(
     '/appointment/list'
   )
@@ -27,7 +27,25 @@ export const appointmentSync = async (): Promise<boolean> => {
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
+      return false;
+    });
+}
+
+export const appointmentSyncToServer = async (appointmentData: IAppointment[]): Promise<boolean> => {
+  return axiosInstance.put(
+    '/appointment/update',
+    appointmentData,
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
       return false;
     });
 }
@@ -46,7 +64,7 @@ export const getAppointmentList = async () => {
     }));
     return { success: true, data: list };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: true, message: error instanceof Error ? error.message : 'unknown error' };
   }
   
@@ -68,7 +86,7 @@ export const getTodayAppointmentList = async () => {
     list = list.filter(v => dayjs(v.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') === todayStr);
     return { success: true, data: list };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -78,7 +96,7 @@ export const deleteAppointment = (appointmentId: number): boolean => {
     let ret = deleteData(Tables.APPOINTMENTS, appointmentId);    
     return ret;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return false;
   }
 }
@@ -92,7 +110,7 @@ export const updateAppointment = (appointment: IAppointment): boolean => {
       return false;
     }   
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return false;
   }
 }
@@ -102,7 +120,7 @@ export const addAppointment = (appointment: IAppointment): boolean => {
     let ret = addData(Tables.APPOINTMENTS, { ...appointment, syncStatus: SyncStatus.ADDED });
     return ret >= 0;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return false;
   }
 }

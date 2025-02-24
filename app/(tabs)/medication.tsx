@@ -161,7 +161,7 @@ export default function MedicationScreen() {
       })
       .catch(error => {
         setIsLoading(false);
-        console.log(error);
+        console.error(error);
       });
   }
 

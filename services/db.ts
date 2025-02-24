@@ -38,7 +38,6 @@ export const setupDatabase = async () => {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS ${Tables.SETTINGS} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
         theme VARCHAR(10) NOT NULL,
         font VARCHAR(10) NOT NULL,
         push VARCHAR(10) NOT NULL,
@@ -138,9 +137,8 @@ export const addData = (table: string, data: any): number => {
       data.password
     ];
   } else if (table === Tables.SETTINGS) {
-    fieldNames = ['user_id', 'theme', 'font', 'push'];
+    fieldNames = ['theme', 'font', 'push'];
     dataValues = [
-      data.userId,
       data.theme,
       data.font,
       data.push
@@ -226,6 +224,13 @@ export const addData = (table: string, data: any): number => {
 export const getAllData = async (table: string): Promise<any> => {
   const all = await db.getAllAsync(
     `SELECT * FROM ${table} WHERE sync_status <> '${SyncStatus.DELETED}'`
+  );
+  return all;
+}
+
+export const getAllUnSyncedData = async (table: string): Promise<any> => {
+  const all = await db.getAllAsync(
+    `SELECT * FROM ${table} WHERE sync_status <> '${SyncStatus.SYNCED}'`
   );
   return all;
 }
@@ -320,6 +325,95 @@ export const updateData = (table: string, id: number, data: any, whereField: str
     `UPDATE ${table} SET ${bindValues.join(',')} WHERE ${whereField} = ?`,
     dataValues
   );
+  return ret.changes > 0;
+}
+
+export const updateAllData = (table: string, data: any): boolean => {
+  let fieldNames: string[] = [];
+  let dataValues: any[] = [];
+  let bindValues: string[] = [];
+
+  if (table === Tables.USERS) {
+    fieldNames = ['name', 'email', 'phone', 'country'];
+    dataValues = [
+      data.name,
+      data.email,
+      data.phone,
+      data.country,
+    ];
+  } else if (table === Tables.SETTINGS) {
+    fieldNames = ['theme', 'font', 'push'];
+    dataValues = [
+      data.theme,
+      data.font,
+      data.push,
+    ];
+  } else if (table === Tables.MEDICATIONS) {
+    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date'];
+    dataValues = [
+      data.name,
+      data.image,
+      data.stock,
+      data.threshold,
+      data.emailAlert,
+      data.pushAlert,
+      data.startDate,
+      data.endDate,
+    ];
+  } else if (table === Tables.FREQUENCIES) {
+    fieldNames = ['dosage', 'dosage_unit', 'cycle', 'times'];
+    dataValues = [
+      data.dosage,
+      data.dosageUnit,
+      data.cycle,
+      data.times.join(','),
+    ];
+  } else if (table === Tables.APPOINTMENTS) {
+    fieldNames = ['name', 'phone', 'image', 'scheduled_time', 'description', 'location'];
+    dataValues = [
+      data.name,
+      data.phone,
+      data.image,
+      data.scheduledTime,
+      data.description,
+      data.location,
+    ];
+  } else if (table === Tables.EMERGENCY_CONTACTS) {
+    fieldNames = ['name', 'phone', 'image', 'type'];
+    dataValues = [
+      data.name,
+      data.phone,
+      data.image,
+      data.type,
+    ];
+  } else if (table === Tables.NOTIFICATIONS) {
+    fieldNames = ['type', 'status', 'target_id', 'var1', 'var2', 'var3'];
+    dataValues = [
+      data.type,
+      data.status,
+      data.targetId,
+      data.var1,
+      data.var2,
+      data.var3,
+    ];
+  }
+
+  if (data.syncStatus) {
+    fieldNames = [...fieldNames, 'sync_status'];
+    dataValues = [...dataValues, data.syncStatus];
+  }
+
+  fieldNames.push('updated_at');
+  bindValues = fieldNames.map((v: string, index: number) => index < fieldNames.length - 1 ? `${v}=?` : `${v}=DATETIME(\'now\')`);
+  const ret = db.runSync(
+    `UPDATE ${table} SET ${bindValues.join(',')}`,
+    dataValues
+  );
+  return ret.changes > 0;
+}
+
+export const updateAllDataToSynced = (table: string): boolean => {
+  const ret = db.runSync(`UPDATE ${table} SET sync_status='${SyncStatus.SYNCED}'`);
   return ret.changes > 0;
 }
 

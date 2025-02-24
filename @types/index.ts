@@ -26,7 +26,7 @@ export interface IAppState {
   setting: ISetting
 }
 
-export type TFrequency = {
+export type IFrequency = {
   dosage: number,
   dosageUnit: number,
   cycle: number,
@@ -37,7 +37,7 @@ export interface IMedication {
   image: string,
   name: string,
   stock: number,
-  frequency: TFrequency,
+  frequency: IFrequency,
   startDate: string,
   endDate: string,
   threshold: number,

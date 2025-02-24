@@ -41,7 +41,7 @@ export default function SettingScreen() {
       setting
     });
 
-    updateUserSetting(setting, appState.user?.id);
+    updateUserSetting(setting);
   }
 
   const handleFontSizeChange = (mode: 'small'|'normal'|'large'): void => {
@@ -57,7 +57,7 @@ export default function SettingScreen() {
       setting
     });
 
-    updateUserSetting(setting, appState.user?.id);
+    updateUserSetting(setting);
   }
 
   const handlePushChange = (mode: 'on'|'off'): void => {
@@ -73,7 +73,7 @@ export default function SettingScreen() {
       setting
     });
 
-    updateUserSetting(setting, appState.user?.id);
+    updateUserSetting(setting);
   }
 
   return (

@@ -6,11 +6,11 @@
  */
 import axiosInstance from './instance';
 
-import { addData, getRowData, Tables, updateData } from './db';
+import { addData, getAllData, Tables, updateAllData } from './db';
 import { ISetting } from '@/@types';
 import { SyncStatus } from '@/config/constants';
 
-export const userSettingSync = async (): Promise<boolean> => {
+export const userSettingSyncWithServer = async (): Promise<boolean> => {
   return axiosInstance.post(
     '/user/setting'
   )
@@ -23,25 +23,41 @@ export const userSettingSync = async (): Promise<boolean> => {
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
       return false;
     });
 }
 
-export const getUserSetting = (userId: number): ISetting => {
-  const setting: any = getRowData(Tables.SETTINGS, userId, 'user_id');
+export const userSettingSyncToServer = async (settingData: ISetting): Promise<boolean> => {
+  return axiosInstance.post(
+    '/user/setting/update',
+    settingData
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      return false;
+    });
+}
+
+export const getUserSetting = (): ISetting => {
+  const settingList: any = getAllData(Tables.SETTINGS);
   const data: ISetting = {
-    push: setting.push,
-    font: setting.font,
-    theme: setting.theme
+    push: settingList[0].push,
+    font: settingList[0].font,
+    theme: settingList[0].theme
   }
   return data as ISetting;
 }
 
-export const updateUserSetting = (setting: ISetting, userId?: number): boolean => {
-  if (!userId) return false;
-
-  const ret = updateData(Tables.SETTINGS, userId, { ...setting, syncStatus: SyncStatus.UPDATED }, 'user_id');
+export const updateUserSetting = (setting: ISetting): boolean => {
+  const ret = updateAllData(Tables.SETTINGS, { ...setting, syncStatus: SyncStatus.UPDATED });
   return ret;
 }
 

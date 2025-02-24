@@ -6,12 +6,12 @@
  */
 import axiosInstance from './instance';
 
-import { IMedication } from '@/@types';
+import { IFrequency, IMedication } from '@/@types';
 import { MedicationCycleType, SyncStatus } from '@/config/constants';
 import { addData, deleteData, getAllData, Tables, updateData } from '@/services/db';
 import dayjs from 'dayjs';
 
-export const frequencySync = async (): Promise<boolean> => {
+export const frequencySyncWithServer = async (): Promise<boolean> => {
   return axiosInstance.get(
     '/medication/frequency/list'
   )
@@ -28,12 +28,30 @@ export const frequencySync = async (): Promise<boolean> => {
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
       return false;
     });
 }
 
-export const medicationSync = async (): Promise<boolean> => {
+export const frequencySyncToServer = async (frequencyData: IFrequency[]): Promise<boolean> => {
+  return axiosInstance.put(
+    '/medication/frequency/update',
+    frequencyData
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      return false;
+    });
+}
+
+export const medicationSyncWithServer = async (): Promise<boolean> => {
   return axiosInstance.get(
     '/medication/list'
   )
@@ -50,7 +68,26 @@ export const medicationSync = async (): Promise<boolean> => {
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
+      return false;
+    });
+}
+
+export const medicationSyncToServer = async (medicationData: IMedication[]): Promise<boolean> => {
+  return axiosInstance.put(
+    '/medication/update',
+    medicationData
+  )
+    .then(response => {
+      console.log(response)
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
       return false;
     });
 }
@@ -88,7 +125,7 @@ export const getMedicationList = async () => {
   
     return { success: true, data: resultList };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -101,7 +138,7 @@ export const deleteMedication = (medicationId: number): boolean => {
     }
     return ret;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return false;
   }
 }
@@ -120,7 +157,7 @@ export const updateMedication = (medication: IMedication): boolean => {
       return false;
     }   
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return false;
   }
 }
@@ -135,7 +172,7 @@ export const addMedication = (medication: IMedication): boolean => {
     }
     return false;    
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return false;
   }
 }
@@ -174,7 +211,7 @@ export const getTodayMedicationList = async () => {
     }
     return { success: true, data: list };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -185,7 +222,7 @@ export const getRefillMedicationList = async () => {
     const list: IMedication[] = resultList.filter(v => v.stock < v.threshold);
     return { success: true, data: list };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -197,7 +234,7 @@ export const getMedicationSufficient = async () => {
     const sufficient = Math.floor(sum / resultList.length);
     return { success: true, data: { sufficient } };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: true, data: { sufficient: 0 } };
   }
 }
