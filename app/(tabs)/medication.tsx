@@ -573,7 +573,8 @@ const rstyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: 15
+    marginHorizontal: 15,
+    marginVertical: 5
   },
   errorText: {
     color: 'red',
@@ -587,7 +588,8 @@ const rstyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderTopColor: '#e2e2e2',
-    borderTopWidth: 1
+    borderTopWidth: 1,
+    marginTop: 10
   },
   button: {
     flex: 1,
