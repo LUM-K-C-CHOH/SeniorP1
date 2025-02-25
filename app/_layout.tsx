@@ -15,7 +15,9 @@ import {
   View,
   ActivityIndicator,
   AppState,
-  AppStateStatus
+  AppStateStatus,
+  TouchableOpacity,
+  Text
 } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -104,9 +106,10 @@ export default function RootLayout() {
     checkAuth();
   }, [appContext]);
 
-  // if (!loaded) {
-  //   return null;
-  // }
+  const handleEmergencyPress = () => {
+    console.log('Emergency button pressed');
+    // Implement emergency call functionality here
+  };
 
   return (
     <ApplicationContextProvider value={appContext}>
@@ -130,6 +133,19 @@ export default function RootLayout() {
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
+        <TouchableOpacity
+          onPress={handleEmergencyPress}
+          style={{
+            position: 'absolute',
+            bottom: 20,
+            right: 20,
+            backgroundColor: 'red',
+            padding: 15,
+            borderRadius: 50,
+          }}
+        >
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>Emergency</Text>
+        </TouchableOpacity>
       </ThemeProvider>
     </ApplicationContextProvider>
   );
