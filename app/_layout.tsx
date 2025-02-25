@@ -4,9 +4,11 @@
  * 
  * Created by Thornton on 01/23/2025
  */
-import React, { useState } from 'react';
+import React from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as globalState from '@/config/global';
+import * as Linking from 'expo-linking';
+import { PermissionsAndroid, Platform } from 'react-native';
 
 import '@/i18n';
 import 'react-native-reanimated';
@@ -17,7 +19,8 @@ import {
   AppState,
   AppStateStatus,
   TouchableOpacity,
-  Text
+  Text,
+  Alert
 } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -25,7 +28,7 @@ import { Stack, useRouter, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { ApplicationContextProvider, IAppContext } from '@/context/ApplicationContext';
+import { ApplicationContextProvider } from '@/context/ApplicationContext';
 import { IAppState } from '@/@types';
 import { InitialAppState, KEY_ACCESS_TOKEN } from '@/config/constants';
 import { setStorageItem } from '@/utils/storage';
@@ -41,6 +44,11 @@ globalState.loadAppState();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [appContext, setAppContext] = React.useState({
+    appState: InitialAppState,
+    setAppState: (state: IAppState) => setAppState(state),
+    logout: async () => await logout(),
+  });
   const router = useRouter();
   const path = usePathname();
   
@@ -50,7 +58,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     checkAuth();
-
+    requestCallPermission();
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();
   }, [path]);
@@ -58,7 +66,6 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-
       const state = globalState.getAppState();
       setAppContext({
         ...appContext,
@@ -79,7 +86,6 @@ export default function RootLayout() {
       ...appContext,
       appState: data
     });
-    
     globalState.saveAppState(data);
   }
 
@@ -96,19 +102,62 @@ export default function RootLayout() {
     setStorageItem(KEY_ACCESS_TOKEN, '');
   }
 
-  const [appContext, setAppContext] = useState<IAppContext>({
-    appState: globalState.getAppState(),
-    setAppState,
-    logout,
-  });
+  const requestCallPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CALL_PHONE,
+          {
+            title: 'Call Permission',
+            message: 'This app needs permission to make emergency calls.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert('Permission Denied', 'Call functionality may not work correctly.');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  };
 
-  useEffect(() => {
-    checkAuth();
-  }, [appContext]);
+  const makeCall = (phoneNumber: string) => {
+    if (Platform.OS === 'android') {
+      Linking.openURL(`tel:${phoneNumber}`);
+    } else {
+      Linking.openURL(`telprompt:${phoneNumber}`);
+    }
+  };
+
+  let tapCount = 0;
+  let tapTimeout: NodeJS.Timeout;
 
   const handleEmergencyPress = () => {
-    console.log('Emergency button pressed');
-    // Implement emergency call functionality here
+    tapCount++;
+    if (tapTimeout) {
+      clearTimeout(tapTimeout);
+    }
+    tapTimeout = setTimeout(() => {
+      if (tapCount === 1) {
+        makeCall('1234567890'); // Call caregiver
+      } else if (tapCount === 2) {
+        makeCall('0987654321'); // Call nurse
+      } else if (tapCount === 3) {
+        makeCall('1122334455'); // Call doctor
+      }
+      tapCount = 0;
+    }, 500);
+  };
+
+  const handleEmergencyLongPress = (duration: number) => {
+    if (duration >= 5000) {
+      makeCall('911'); // Call police
+    } else if (duration >= 2000) {
+      makeCall('119'); // Call ambulance
+    }
   };
 
   return (
@@ -135,6 +184,7 @@ export default function RootLayout() {
         <StatusBar style="auto" />
         <TouchableOpacity
           onPress={handleEmergencyPress}
+          onLongPress={() => handleEmergencyLongPress(2000)} // Example duration
           style={{
             position: 'absolute',
             bottom: 20,
