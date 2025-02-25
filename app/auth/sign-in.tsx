@@ -86,7 +86,7 @@ export default function SignInScreen() {
               lockedSync = false;
               console.log('db sync end');
 
-              const setting = getUserSetting();
+              const setting = await getUserSetting();
               
               setAppState({
                 ...state,

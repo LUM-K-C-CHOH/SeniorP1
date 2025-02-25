@@ -8,7 +8,7 @@ import axiosInstance from './instance';
 
 import { addData, getAllData, Tables, updateAllData } from './db';
 import { ISetting } from '@/@types';
-import { SyncStatus } from '@/config/constants';
+import { InitialAppState, SyncStatus } from '@/config/constants';
 
 export const userSettingSyncWithServer = async (): Promise<boolean> => {
   return axiosInstance.post(
@@ -17,6 +17,7 @@ export const userSettingSyncWithServer = async (): Promise<boolean> => {
     .then(response => {
       if (response.data.code === 0) {
         addData(Tables.SETTINGS, { ...response.data.data, syncStatus: SyncStatus.SYNCED });
+        
         return true;
       } else {
         return false;
@@ -46,14 +47,20 @@ export const userSettingSyncToServer = async (settingData: ISetting): Promise<bo
     });
 }
 
-export const getUserSetting = (): ISetting => {
-  const settingList: any = getAllData(Tables.SETTINGS);
-  const data: ISetting = {
-    push: settingList[0].push,
-    font: settingList[0].font,
-    theme: settingList[0].theme
+export const getUserSetting = async (): Promise<ISetting> => {
+  try {
+    const settingList: any = await getAllData(Tables.SETTINGS);
+    
+    const data: ISetting = {
+      push: settingList[0].push,
+      font: settingList[0].font,
+      theme: settingList[0].theme
+    }
+    return data as ISetting;
+  } catch (error) {
+    console.error(error);
+    return InitialAppState.setting;
   }
-  return data as ISetting;
 }
 
 export const updateUserSetting = (setting: ISetting): boolean => {

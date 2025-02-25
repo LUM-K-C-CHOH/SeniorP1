@@ -7,9 +7,11 @@ import { getRefillMedicationList } from '@/services/medication';
 import { IMedication, INotification, TResponse } from '@/@types';
 import { NotificationStatus, NotificationType } from '@/config/constants';
 import { addNotification } from '@/services/notification';
+import { getAppState } from '@/config/global';
 
 const BACKGROUND_NOTIFICATION_TASK = 'background-notification';
 TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
+  const appState = getAppState();
   try {
     getRefillMedicationList()
       .then((res: TResponse) => {
@@ -26,7 +28,10 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
             }
             addNotification(notification);
 
-            // Todo: Push Notification
+            if (appState.setting.push === 'off' || medication.pushAlert === 'off') {
+              continue;
+            }
+            
             Notifications.scheduleNotificationAsync({
               content: {
                 title: i18next.t('notfication_manage.low_stock_alert'),

@@ -76,7 +76,7 @@ export default function NotificationScreen() {
     if (checkedIdList.length === notificationList.length) {
       setCheckedIdList([]);
     } else {
-      const idList = notificationList.map(v => v.id);
+      const idList = notificationList.map(v => v.id as number);
       setCheckedIdList(idList);
     }
   }
@@ -87,7 +87,7 @@ export default function NotificationScreen() {
     const idList = checkedIdList.join(',');
     const ret = deleteNotificationGroup(idList);
     if (ret) {
-      const filter = notificationList.filter(v => !checkedIdList.includes(v.id));
+      const filter = notificationList.filter(v => !checkedIdList.includes(v.id as number));
       setNotificationList([...filter]);
       setDeleteConfirmResultVisible(true);
     } else {
@@ -153,17 +153,17 @@ export default function NotificationScreen() {
       });
   }
 
-  type ContactItemProps = {
+  type NotificationItemProps = {
     id: number,
     notification: INotification,
     checkedStatus: boolean,
   };
   
-  const ContactItem = ({
+  const NotificationItem = ({
     id,
     notification,
     checkedStatus
-  }: ContactItemProps): JSX.Element => {
+  }: NotificationItemProps): JSX.Element => {
     return (
       <TouchableHighlight
         onLongPress={handleLongPress}
@@ -335,10 +335,10 @@ export default function NotificationScreen() {
         <FlatList
           data={notificationList}
           renderItem={
-            ({item}) => <ContactItem
-                          id={item.id}
+            ({item}) => <NotificationItem
+                          id={item.id as number}
                           notification={item}
-                          checkedStatus={checkedIdList.includes(item.id)}
+                          checkedStatus={checkedIdList.includes(item.id as number)}
                         />
           }
           keyExtractor={item => `${item.id}`}
