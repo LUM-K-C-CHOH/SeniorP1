@@ -4,9 +4,10 @@
  * 
  * Created by Thornton on 01/28/2025
  */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
+import ApplicationContext from '@/context/ApplicationContext';
 import CustomButton from '@/components/CustomButton';
-import ConfirmPanel from '@/components/ConfrimPanel';
+import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 
 import {
   StyleSheet,
@@ -18,53 +19,45 @@ import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
-import { IAppointment, IContact, TResponse } from '@/@types';
-import { getAppointmentList } from '@/services/appointment';
+import { IAppointment, TResponse } from '@/@types';
+import { deleteAppointment, getAppointmentList } from '@/services/appointment';
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
-import { ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
+import { CircleCheckIcon, ClockIcon, DeleteIcon, EditIcon } from '@/utils/svgs';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
-import { getDateString, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
-import { getContactList } from '@/services/contact';
+import { getDateString, getMarkColorFromName, getMarkLabelFromName, showToast } from '@/utils';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
+  const { appState } = useContext(ApplicationContext);
 
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
 
   const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);
-  const [contactList, setContactList] = useState<IContact[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
-
+  const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
+  
   useEffect(() => {
     if (initiatedRef.current) return;
 
     initiatedRef.current = true;
-    Promise.all(
-      [
-        getAppointmentList(),
-        getContactList()
-      ]
-    ).then((res: TResponse[]) => {
-      if (res[0].success) {
-        setAppointmentList(res[0].data?? []);
-      } else {
-
-      }
-      if (res[1].success) {
-        setContactList(res[1].data?? []);
-      } else {
-
-      }
-    });
-      
+    getAppointmentList()
+      .then((res: TResponse) => {
+        if (res.success) {
+          setAppointmentList(res.data?? []);
+        } else {
+  
+        }
+      });
   }, []);
 
-  const handleEditRow = (rowMap: RowMap<IAppointment>, id: number): void => {
+  const handleEditRow = (rowMap: RowMap<IAppointment>, id?: number): void => {
+    if (!id) return;
+
     const find = appointmentList.find(v => v.id === id);
     
     if (!find) return;
@@ -72,16 +65,30 @@ export default function AppointmentScreen() {
     router.push({ pathname: '/appointment/edit', params: { id } });
   }
 
-  const handleDeleteRow = (rowMap: RowMap<IAppointment>, id: number): void => {
+  const handleDeleteRow = (rowMap: RowMap<IAppointment>, id?: number): void => {
+    if (!id) return;
+
     setDeleteConfirmPopupOptions({ opened: true, id });
   }
 
   const handleDeleteConfrim = (): void => {
-    const delteId: number = deleteConfirmPopupOptions.id as number;
+    const deleteId: number = deleteConfirmPopupOptions.id as number;
 
-    if (delteId < 0) return;
+    if (deleteId < 0) return;
     
+    const ret = deleteAppointment(deleteId)
+    if (ret) {
+      const filter = appointmentList.filter(v => v.id !== deleteId);
+      setAppointmentList([...filter]);
+      setDeleteConfirmResultVisible(true);
+    } else {
+      showToast(t('message.alert_delete_fail'));
+    }
+  }
+
+  const handleDeleteConfirmResult = (): void => {
     setDeleteConfirmPopupOptions({ opened: false, id: -1 });
+    setDeleteConfirmResultVisible(false);
   }
 
   const handleOpenedRow = (): void => {
@@ -102,7 +109,7 @@ export default function AppointmentScreen() {
       })
       .catch(error => {
         setIsLoading(false);
-        console.log(error);
+        console.error(error);
       });
   }
 
@@ -110,38 +117,40 @@ export default function AppointmentScreen() {
     router.push('/appointment/add');
   }
 
-  const getContactName = (id: number): string => {
-    const find = contactList.find(v => v.id === id);
-    return find ? find.name : '';
-  }
-
   const renderItem = (data: ListRenderItemInfo<IAppointment>) => (
-    <ThemedView style={styles.itemWrapper}>
+    <ThemedView
+      style={[
+        styles.itemWrapper,
+        {
+          borderBottomColor: appState.setting.theme === 'light' ? Colors.light.defaultSplitter : Colors.dark.defaultSplitter
+        }
+      ]}
+    >
       <View
         style={[
           styles.logoWrapper,
-          { backgroundColor: getMarkColorFromName(getContactName(data.item.contactId)).bgColor }
+          { backgroundColor: getMarkColorFromName(data.item.name).bgColor }
         ]}
       >
         <ThemedText
-          style={[{ color: getMarkColorFromName(getContactName(data.item.contactId)).textColor }]}
+          style={[{ color: getMarkColorFromName(data.item.name).textColor }]}
         >
-          {getMarkLabelFromName(getContactName(data.item.contactId))}
+          {getMarkLabelFromName(data.item.name)}
         </ThemedText>
       </View>
       <View style={styles.infoWrapper}>
         <View style={styles.rowWrapper}>
-          <ThemedText type="default">{getContactName(data.item.contactId)}</ThemedText>
+          <ThemedText type="default">{data.item.name}</ThemedText>
         </View>
         <View style={styles.rowWrapper}>
-          <ClockIcon />
+          <ClockIcon color={appState.setting.theme === 'light' ? '#1e1e1e' : '#fff'} />
           <ThemedText type="default">{getDateString(data.item.scheduledTime)}</ThemedText>
         </View>
         <View style={styles.rowWrapper}>
           <ThemedText
             type="default"
-            lightColor='#999'
-            darkColor='#333'
+            lightColor='#888'
+            darkColor='#777'
           >
             {data.item.description}
           </ThemedText>
@@ -175,7 +184,25 @@ export default function AppointmentScreen() {
         positiveButtonText={t('delete')}
         negativeButtonText={t('cancel')}
         bodyText={t('message.confirm_delete')}
-        onCancel={() => setDeleteConfirmPopupOptions({ opened: false, id: -1 })}
+        resultVisible={deleteConfirmResultVisible}
+          resultElement={
+            <ThemedView style={ConfirmResultStyle.container}>
+              <ThemedText style={ConfirmResultStyle.titleText}>
+                {t('message.deleted_successfully')}
+              </ThemedText>
+              <View style={ConfirmResultStyle.iconWrapper}><CircleCheckIcon /></View>
+              <View style={ConfirmResultStyle.actionsWrapper}>
+                <ThemedText style={ConfirmResultStyle.labelText}>{t('click')}</ThemedText>
+                <TouchableOpacity
+                  onPress={handleDeleteConfirmResult}
+                >
+                  <ThemedText style={[ConfirmResultStyle.labelText, ConfirmResultStyle.linkText]}>{t('here')}</ThemedText>
+                </TouchableOpacity>
+                <ThemedText style={ConfirmResultStyle.labelText}>{t('to_continue')}</ThemedText>
+              </View>
+            </ThemedView>
+          }
+        onCancel={handleDeleteConfirmResult}
         onConfirm={handleDeleteConfrim}
       />
       <SwipeListView
@@ -218,7 +245,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
-    borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,
   },

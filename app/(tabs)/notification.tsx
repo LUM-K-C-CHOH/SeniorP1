@@ -4,9 +4,10 @@
  * 
  * Created by Thornton on 01/28/2025
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 import Modal from 'react-native-modal';
+import ApplicationContext from '@/context/ApplicationContext';
 
 import {
   SafeAreaView,
@@ -14,27 +15,30 @@ import {
   View,
   TouchableOpacity,
   TouchableHighlight,
-  useColorScheme
+  FlatList,
+  RefreshControl
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
-import { getNotificationList } from '@/services/notification';
+import { deleteNotificationGroup, getNotificationList } from '@/services/notification';
 import { INotification, TResponse } from '@/@types';
-import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon } from '@/utils/svgs';
-import { NotificationType } from '@/config/constants';
+import { Colors, NotificationType } from '@/config/constants';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { showToast } from '@/utils';
 
 export default function NotificationScreen() {
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
 
+  const { appState } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [notificationList, setNotificationList] = useState<INotification[]>([]);
   const [selectableVisible, setSelectableVisible] = useState<boolean>(false);
   const [checkedIdList, setCheckedIdList] = useState<number[]>([]);
@@ -72,13 +76,23 @@ export default function NotificationScreen() {
     if (checkedIdList.length === notificationList.length) {
       setCheckedIdList([]);
     } else {
-      const idList = notificationList.map(v => v.id);
+      const idList = notificationList.map(v => v.id as number);
       setCheckedIdList(idList);
     }
   }
 
   const handleContactDelete = (): void => {
-    setDeleteConfirmResultVisible(true);
+    if (checkedIdList.length === 0) return;
+
+    const idList = checkedIdList.join(',');
+    const ret = deleteNotificationGroup(idList);
+    if (ret) {
+      const filter = notificationList.filter(v => !checkedIdList.includes(v.id as number));
+      setNotificationList([...filter]);
+      setDeleteConfirmResultVisible(true);
+    } else {
+      showToast(t('message.alert_delete_fail'));
+    }
   }
 
   const handleDeleteConfirmResult = (): void => {
@@ -121,23 +135,48 @@ export default function NotificationScreen() {
     router.push({ pathname: '/medication', params: { medicationId: notification.targetId } })
   }
 
-  type ContactItemProps = {
+  const handleLoadData = async (): Promise<void> => {
+    setIsLoading(true);
+    getNotificationList()
+      .then((res: TResponse) => {
+        setIsLoading(false);
+
+        if (res.success) {
+          setNotificationList(res.data?? []);
+        } else {
+
+        }
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error(error);
+      });
+  }
+
+  type NotificationItemProps = {
     id: number,
     notification: INotification,
     checkedStatus: boolean,
   };
   
-  const ContactItem = ({
+  const NotificationItem = ({
     id,
     notification,
     checkedStatus
-  }: ContactItemProps): JSX.Element => {
+  }: NotificationItemProps): JSX.Element => {
     return (
       <TouchableHighlight
         onLongPress={handleLongPress}
         onPress={() => setNotificationPopupOptions({ opened: true, notification })}
       >
-        <ThemedView style={nstyles.itemWrapper}>
+        <ThemedView
+          style={[
+            nstyles.itemWrapper,
+            {
+              borderBottomColor: appState.setting.theme === 'light' ? Colors.light.defaultSplitter : Colors.dark.defaultSplitter
+            }
+          ]}
+        >
           <View
             style={nstyles.typeWrapper}
           >
@@ -151,7 +190,6 @@ export default function NotificationScreen() {
           <View style={nstyles.infoWrapper}>
             <ThemedText
               type="default"
-              style={nstyles.normalText}
             >
               {getNotificationMessage(notification)}
             </ThemedText>
@@ -159,8 +197,8 @@ export default function NotificationScreen() {
           {selectableVisible&&
             <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
               {checkedStatus
-                ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
-                : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                ? <CheckboxFilledIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
+                : <CheckboxBlankIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
               }
             </TouchableOpacity>
           }
@@ -267,15 +305,22 @@ export default function NotificationScreen() {
                 }}
               >
                 {checkedIdList.length === notificationList.length
-                  ? <CheckboxFilledIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
-                  : <CheckboxBlankIcon color={theme === 'light' ? '#1d1b20' : '#fff'} />
+                  ? <CheckboxFilledIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
+                  : <CheckboxBlankIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
                 }
                 <ThemedText type="default">
                   {t('select_all')}
                 </ThemedText>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setDeleteConfirmVisible(true)}>
+            <TouchableOpacity
+              onPress={
+                () => {
+                  if (checkedIdList.length === 0) return;
+                  setDeleteConfirmVisible(true)
+                }
+              }
+            >
               <ThemedText type="default">
                 {t('delete')}({checkedIdList.length})
               </ThemedText>
@@ -290,13 +335,16 @@ export default function NotificationScreen() {
         <FlatList
           data={notificationList}
           renderItem={
-            ({item}) => <ContactItem
-                          id={item.id}
+            ({item}) => <NotificationItem
+                          id={item.id as number}
                           notification={item}
-                          checkedStatus={checkedIdList.includes(item.id)}
+                          checkedStatus={checkedIdList.includes(item.id as number)}
                         />
           }
           keyExtractor={item => `${item.id}`}
+          refreshControl={
+            <RefreshControl refreshing={isLoading} onRefresh={handleLoadData} />
+          }
         />
       </GestureHandlerRootView>
     </SafeAreaView>
@@ -326,22 +374,17 @@ const nstyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 15,
-    borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1,
     columnGap: 10,
   },
   typeWrapper: {
     width: 80,
   },
-  typeText: {
-    color: '#000',    
+  typeText: {  
     textTransform: 'uppercase'
   },
   infoWrapper: {
     flex: 1,
-  },
-  normalText: {
-    color: '#000'
   },
 });
 

@@ -22,7 +22,7 @@ export const login = (email: string, password: string) => {
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
       return { success: false, message: error.message };
     });
 }
@@ -52,7 +52,7 @@ export const register = (
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
       return { success: false, message: error.message };
     });
 }
@@ -74,7 +74,7 @@ export const sendVerificationCode = (
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
       return { success: false, message: error.message };
     });
 }
@@ -96,7 +96,7 @@ export const verifyCode = (
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
       return { success: false, message: error.message };
     });
 }
@@ -120,7 +120,7 @@ export const resetPassword = (
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
       return { success: false, message: error.message };
     });
 }
@@ -144,7 +144,7 @@ export const updatePassword = (
       }
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
       return { success: false, message: error.message };
     });
 }

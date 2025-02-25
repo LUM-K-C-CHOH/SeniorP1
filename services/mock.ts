@@ -13,62 +13,136 @@ import dayjs from 'dayjs';
 
 const mock = new MockAdapter(axiosInstance);
 
+const frequencyData = [
+  {
+    id: 1,
+    medicationId: 1,
+    dosage: 1,
+    dosageUnit: DosageUnitType.PL,
+    cycle: 1,
+    times: ['09:00']
+  },
+  {
+    id: 2,
+    medicationId: 2,
+    dosage: 5,
+    dosageUnit: DosageUnitType.ML,
+    cycle: 1,
+    times: ['09:00', '21:00']
+  },
+  {
+    id: 3,
+    medicationId: 3,
+    dosage: 10,
+    dosageUnit: DosageUnitType.ML,
+    cycle: 1,
+    times: ['06:00', '14:00', '22:00']
+  },
+  {
+    id: 4,
+    medicationId: 4,
+    dosage: 500,
+    dosageUnit: DosageUnitType.ML,
+    cycle: 2,
+    times: ['06:00']
+  },
+  {
+    id: 5,
+    medicationId: 5,
+    dosage: 500,
+    dosageUnit: DosageUnitType.ML,
+    cycle: 2,
+    times: ['06:00']
+  },
+  {
+    id: 6,
+    medicationId: 6,
+    dosage: 10,
+    dosageUnit: DosageUnitType.ML,
+    cycle: 1,
+    times: ['06:00', '14:00', '22:00']
+  },
+  {
+    id: 7,
+    medicationId: 7,
+    dosage: 1,
+    dosageUnit: DosageUnitType.PL,
+    cycle: 1,
+    times: ['09:00']
+  },
+  {
+    id: 8,
+    medicationId: 8,
+    dosage: 10,
+    dosageUnit: DosageUnitType.ML,
+    cycle: 1,
+    times: ['06:00', '14:00', '22:00']
+  },
+  {
+    id: 9,
+    medicationId: 9,
+    dosage: 5,
+    dosageUnit: DosageUnitType.ML,
+    cycle: 1,
+    times: ['09:00', '21:00']
+  },
+  {
+    id: 10,
+    medicationId: 10,
+    dosage: 1,
+    dosageUnit: DosageUnitType.PL,
+    cycle: 1,
+    times: ['09:00']
+  }
+];
 const medicationData = [
   {
     id: 1,
     image: 'https://theme635-medical.myshopify.com/cdn/shop/products/first_aid_dual_head_stethoscope_2_170x170_crop_top.png?v=1552665562',
     name: 'Aspirin',
-    frequency: {
-      dosage: 1,
-      dosageUnit: DosageUnitType.PL,
-      cycle: 1,
-      times: ['09:00']
-    },
     stock: 32,
-    miniStock: 10,
+    threshold: 10,
     notifications: 0,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 2,
     image: 'https://theme635-medical.myshopify.com/cdn/shop/products/drive_medical_clinical_care_geri_chair_recliner_2_170x170_crop_top.png?v=1552665466',
     name: 'Metoprolol',
     stock: 16,
-    miniStock: 10,
-    frequency: {
-      dosage: 5,
-      dosageUnit: DosageUnitType.ML,
-      cycle: 1,
-      times: ['09:00', '21:00']
-    },
+    threshold: 10,
     notifications: 1,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 3,
     image: 'https://theme635-medical.myshopify.com/cdn/shop/products/drive_medical_deluxe_folding_exercise_peddler_with_electronic_display_2_170x170_crop_top.png?v=1552665478',
     name: 'Lisinoprill',
     stock: 4,
-    miniStock: 10,
-    frequency: {
-      dosage: 10,
-      dosageUnit: DosageUnitType.ML,
-      cycle: 1,
-      times: ['06:00', '14:00', '22:00']
-    },
+    threshold: 10,
     notifications: 1,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 4,
     image: 'https://theme635-medical.myshopify.com/cdn/shop/files/Gallery-5_370x370_crop_center.png?v=1613531679',
     name: 'Amoxicilin',
     stock: 14,
-    miniStock: 10,
-    frequency: {
-      dosage: 500,
-      dosageUnit: DosageUnitType.ML,
-      cycle: 2,
-      times: ['06:00']
-    },
+    threshold: 10,
     notifications: 0,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 5,
@@ -76,14 +150,12 @@ const medicationData = [
     name: 'Clopidogrel',
     dosage: '75mg',
     stock: 206,
-    miniStock: 10,
-    frequency: {
-      dosage: 500,
-      dosageUnit: DosageUnitType.ML,
-      cycle: 2,
-      times: ['06:00']
-    },
+    threshold: 10,
     notifications: 0,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 6,
@@ -91,14 +163,12 @@ const medicationData = [
     name: 'Aspirin',
     dosage: '100mg',
     stock: 32,
-    miniStock: 10,
-    frequency: {
-      dosage: 10,
-      dosageUnit: DosageUnitType.ML,
-      cycle: 1,
-      times: ['06:00', '14:00', '22:00']
-    },
+    threshold: 10,
     notifications: 4,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 7,
@@ -106,14 +176,12 @@ const medicationData = [
     name: 'Metoprolol',
     dosage: '5mg',
     stock: 16,
-    miniStock: 10,
-    frequency: {
-      dosage: 1,
-      dosageUnit: DosageUnitType.PL,
-      cycle: 1,
-      times: ['09:00']
-    },
+    threshold: 10,
     notifications: 0,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 8,
@@ -121,14 +189,12 @@ const medicationData = [
     name: 'Lisinoprill',
     dosage: '50mg',
     stock: 4,
-    miniStock: 10,
-    frequency: {
-      dosage: 10,
-      dosageUnit: DosageUnitType.ML,
-      cycle: 1,
-      times: ['06:00', '14:00', '22:00']
-    },
+    threshold: 10,
     notifications: 0,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 9,
@@ -136,14 +202,12 @@ const medicationData = [
     name: 'Amoxicilin',
     dosage: '500mg',
     stock: 14,
-    miniStock: 10,
-    frequency: {
-      dosage: 5,
-      dosageUnit: DosageUnitType.ML,
-      cycle: 1,
-      times: ['09:00', '21:00']
-    },
+    threshold: 10,
     notifications: 2,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   },
   {
     id: 10,
@@ -151,76 +215,104 @@ const medicationData = [
     name: 'Clopidogrel',
     dosage: '75mg',
     stock: 206,
-    miniStock: 10,
-    frequency: {
-      dosage: 1,
-      dosageUnit: DosageUnitType.PL,
-      cycle: 1,
-      times: ['09:00']
-    },
+    threshold: 10,
     notifications: 1,
+    startDate: '2025-02-19',
+    endDate: '',
+    pushAlert: 'on',
+    emailAlert: 'on'
   }
 ];
 
 const appointmentData = [
   {
     id: 1,
-    contactId: 1,
+    name: 'Gabi Emilson',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-01-24 14:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 2,
-    contactId: 2,
+    name: 'Malcom Stewart',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-01-26 16:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 3,
-    contactId: 3,
+    name: 'Jhon Smith',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-02-02 16:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 4,
-    contactId: 4,
+    name: 'Robert Wilson',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-02-04 15:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 5,
-    contactId: 5,
+    name: 'David Anderson',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-02-04 16:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 6,
-    contactId: 6,
+    name: 'Joseph Martin',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-02-05 15:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 7,
-    contactId: 7,
+    name: 'William Thomas',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-02-05 17:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 8,
-    contactId: 8,
+    name: 'Jacob Harris',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-02-06 14:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 9,
-    contactId: 9,
+    name: 'Liam Lopez',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-02-06 16:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
   {
     id: 10,
-    contactId: 10,
+    name: 'Daniel Allen',
+    phone: '+1(123) 456 7890',
+    image: '',
     scheduledTime: '2025-02-07 15:30:00',
+    location: '',
     description: 'Consulting on health...',
   },
 ];
@@ -229,51 +321,61 @@ const contactData = [
   {
     id: 1,
     name: 'Gabi Emilson',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 2,
     name: 'Malcom Stewart',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 3,
     name: 'Jhon Smith',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 4,
     name: 'Robert Wilson',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 5,
     name: 'David Anderson',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 6,
     name: 'Joseph Martin',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 7,
     name: 'William Thomas',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 8,
     name: 'Jacob Harris',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 9,
     name: 'Liam Lopez',
+    image: '',
     phone: '+1(123) 456 7890'
   },
   {
     id: 10,
     name: 'Daniel Allen',
+    image: '',
     phone: '+1(123) 456 7890'
   },
 ];
@@ -283,25 +385,37 @@ const notificationData = [
     id: 1,
     type: NotificationType.MEDICATION,
     targetId: 1,
-    var1: 'Aspirin 81mg'
+    var1: 'Aspirin 81mg',
+    var2: '',
+    var3: '',
+    status: 1
   },
   {
     id: 2,
     type: NotificationType.MEDICATION,
     targetId: 2,
-    var1: 'Aspirin 81mg'
+    var1: 'Aspirin 81mg',
+    var2: '',
+    var3: '',
+    status: 1
   },
   {
     id: 3,
     type: NotificationType.MEDICATION,
     targetId: 3,
-    var1: 'Metoprolol 30mg'
+    var1: 'Metoprolol 30mg',
+    var2: '',
+    var3: '',
+    status: 1
   },
   {
     id: 4,
     type: NotificationType.MEDICATION,
     targetId: 4,
-    var1: 'Metoprolol 30mg'
+    var1: 'Metoprolol 30mg',
+    var2: '',
+    var3: '',
+    status: 1
   },
 ];
 
@@ -340,6 +454,20 @@ mock.onPost('/auth/update-password').reply(200, {
   code: 0
 });
 
+mock.onPost('/user/setting').reply(200, {
+  code: 0,
+  data: {
+    userId: 1,
+    theme: 'light',
+    font: 'normal',
+    push: 'on'
+  }
+});
+
+mock.onGet('/medication/frequency/list').reply(200, {
+  code: 0,
+  data: frequencyData,
+});
 mock.onGet('/medication/list').reply(200, {
   code: 0,
   data: medicationData

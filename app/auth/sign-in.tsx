@@ -21,12 +21,21 @@ import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedInput } from '@/components/ThemedIntput';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors } from '@/config/constants';
+import {
+  Colors,
+  KEY_DB_SYNCED,
+} from '@/config/constants';
 import { validateEmail } from '@/utils';
+import { getStorageItem } from '@/utils/storage';
+import { getUserSetting } from '@/services/setting';
+import { syncLocalDatabaseWithRemote } from '@/services/sync';
+
+let lockedSync = false;
 
 export default function SignInScreen() {
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
+  const [syncDBPopupVisible, setSyncDBPopupVisible] = useState<boolean>(false);
 
   const { t } = useTranslation();
   const { appState, setAppState } = useContext(ApplicationContext);
@@ -60,15 +69,42 @@ export default function SignInScreen() {
     login(email, password)
       .then(async (res: TResponse) => {
         if (res.success) {
-          setAppState({
+          const state = {
             ...appState,
             lockScreen: false,
             authenticated: true,
             user: res.data
-          });
+          };
+          const synced = await getStorageItem(KEY_DB_SYNCED);
+          if (synced !== 'true') {
+            if (!lockedSync) {
+              lockedSync = true;
+              console.log('db sync start');
+              setSyncDBPopupVisible(true);
+              await syncLocalDatabaseWithRemote();
+              setSyncDBPopupVisible(false);
+              lockedSync = false;
+              console.log('db sync end');
+
+              const setting = await getUserSetting();
+              
+              setAppState({
+                ...state,
+                lockScreen: false,
+                authenticated: true,
+                user: res.data,
+                setting
+              });
+            } else {
+              setAppState(state);
+            }
+          } else {
+            setAppState(state);
+            console.log('already synced...');
+          }
 
           await new Promise(resolve => setTimeout(() => resolve(1), 100));
-
+          console.log('login')
           router.replace('/');
         } else {
           let errors: {[k: string]: string} = {};
@@ -83,6 +119,25 @@ export default function SignInScreen() {
       <Stack.Screen
         options={{ headerShown: false }}
       />
+      {/* <Modal
+        style={{ position: 'absolute' }}
+        transparent={true}
+        visible={syncDBPopupVisible}
+        onRequestClose={() => setSyncDBPopupVisible(false)}
+      >
+        <Pressable
+          style={styles.popupOverlay}
+          onPress={() => setSyncDBPopupVisible(false)}
+        />
+        <ThemedView
+          style={[
+            styles.popupContainer,
+            generateBoxShadowStyle(-2, 4, '#171717', 0.2, 3, 4, '#171717')
+          ]}
+        >
+          <ThemedText>Syncing the databse...</ThemedText>
+        </ThemedView>
+      </Modal> */}
       <View style={styles.mainWrapper}>
         <ThemedText
           type="bigTitle"

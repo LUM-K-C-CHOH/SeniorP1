@@ -14,6 +14,7 @@ import {
 import { ThemedView } from './ThemedView';
 import { LeftArrowIcon, RightArrowIcon } from '@/utils/svgs';
 import { ThemedText } from './ThemedText';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 type TCalendarProps = {
   date?: Date,
@@ -45,6 +46,8 @@ const ViewMode = {
   Year: 3
 }
 const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
+  const labelBarBackgroundColor = useThemeColor({}, 'calendarDayBarBGColor');
+
   const [selectedDate, setSelectedDate] = useState<Date|undefined>(date);
 
   const MonthShortNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -218,7 +221,7 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
       <ThemedView style={styles.controlBar}>
         <TouchableHighlight style={{ width: 30, height: 30 }} onPress={prevMonth}>
           <ThemedView style={styles.navButton}>
-            <LeftArrowIcon />
+            <LeftArrowIcon width={12} height={17} color="#454b60" />
           </ThemedView>
         </TouchableHighlight>
         <ThemedView style={styles.yymmWrapper}>
@@ -235,7 +238,7 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
         </ThemedView>
         <TouchableHighlight style={{ width: 30, height: 30 }} onPress={nextMonth}>
           <ThemedView style={styles.navButton}>
-            <RightArrowIcon />
+            <RightArrowIcon width={12} height={17} color="#454b60" />
           </ThemedView>
         </TouchableHighlight>
       </ThemedView>
@@ -271,7 +274,14 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
       }
       {viewMode === ViewMode.Day&&
         <>
-          <ThemedView style={styles.labelBar}>
+          <ThemedView
+            style={[
+              styles.labelBar,
+              {
+                backgroundColor: labelBarBackgroundColor
+              }
+            ]}
+          >
             {DayShortNames.map((v: string, index: number) =>
               <ThemedText style={styles.dayLabelText} key={index}>{v}</ThemedText>
             )}
@@ -362,12 +372,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5
   },
   navbarLabelText: {
-    fontSize: 14,
-    color: '#494E50',
+    fontSize: 16,
     fontWeight: 500
   },
   labelBar: {
-    backgroundColor: '#f5f7fa',
     flexDirection: 'row',
     paddingVertical: 8
   },
@@ -392,7 +400,8 @@ const styles = StyleSheet.create({
   monthText: {
     fontSize: 16,
     fontWeight: 400,
-    color: '#222',
+    paddingVertical: 1,
+    paddingHorizontal: 5
   },
   selectedMonthText: {
     color: '#fff',
@@ -412,7 +421,8 @@ const styles = StyleSheet.create({
   yearText: {
     fontSize: 16,
     fontWeight: 400,
-    color: '#222',
+    paddingVertical: 1,
+    paddingHorizontal: 5
   },
   selectedYearText: {
     color: '#fff',
@@ -431,7 +441,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontWeight: 400,
-    color: '#222'
   },
   inactiveDayText: {
     color: '#999'

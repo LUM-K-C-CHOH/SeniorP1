@@ -4,9 +4,11 @@
  * 
  * Created by Thornton on 01/28/2025
  */
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Header from '@/app/layout/header';
 import ConfirmPanel from '@/components/ConfrimPanel';
+import ApplicationContext from '@/context/ApplicationContext';
+import * as Location from 'expo-location';
 
 import { Stack } from 'expo-router';
 import {
@@ -18,13 +20,12 @@ import {
   View,
   TouchableHighlight,
   Image,
-  useColorScheme
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
-import { generateBoxShadowStyle } from '@/utils';
+import { generateBoxShadowStyle, showToast } from '@/utils';
 import { PhonebookIcon } from '@/utils/svgs';
 import { Images } from '@/utils/assets';
 import { useRouter } from 'expo-router';
@@ -34,8 +35,8 @@ import { Colors } from '@/config/constants';
 export default function EmergencyScreen() {
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
 
+  const { appState } = useContext(ApplicationContext);
   const { t } = useTranslation();
   
   const [callConfirmVisible, setCallConfirmVisible] = useState<boolean>(false);
@@ -47,7 +48,15 @@ export default function EmergencyScreen() {
     setShareLocation(v);
   }
 
-  const handleCallHelp = (): void => {
+  const handleCallHelp = async (): Promise<void> => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      showToast(t('message.alert_location_permission_denied'));
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    
     setCallConfirmVisible(false);
     setCallResultVisible(true);
   }
@@ -149,7 +158,7 @@ export default function EmergencyScreen() {
           <View style={styles.shareLocationWrapper}>
             <ThemedText
               type="defaultMedium"
-              darkColor={'#3f3f3f'}
+              darkColor={'#aaa'}
               lightColor={'#3f3f3f'}
             >
               {t('emergency_control.share_my_location')}:
@@ -189,10 +198,10 @@ export default function EmergencyScreen() {
           </View>
           <TouchableHighlight style={styles.contactButtonWrapper} onPress={() => router.push('/emergency/contact')}>
             <ThemedView style={styles.contactButton}>
-              <PhonebookIcon color={theme === 'light' ? '#356ade' : '#356ade'} />
+              <PhonebookIcon color={appState.setting.theme === 'light' ? '#356ade' : '#aaa'} />
               <ThemedText
                 type="default"
-                darkColor={'#236ad3'}
+                darkColor={'#aaa'}
                 lightColor={'#236ad3'}
                 style={styles.contactButtonText}
               >

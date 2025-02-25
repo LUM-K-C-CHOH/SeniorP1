@@ -63,7 +63,7 @@ const ConfirmPanel = ({
           <View style={styles.body}>
             {bodyElement&& <>{bodyElement}</>}
             {bodyText&&
-              <ThemedText type="default">{bodyText}</ThemedText>
+              <ThemedText type="default" style={{ textAlign: 'center' }}>{bodyText}</ThemedText>
             }
           </View>
           <View style={styles.actions}>
