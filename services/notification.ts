@@ -68,6 +68,16 @@ export const getNotificationList = async () => {
   }
 }
 
+export const addNotification = (notification: INotification): boolean => {
+  try {
+    let ret = addData(Tables.NOTIFICATIONS, { ...notification, syncStatus: SyncStatus.ADDED });
+    return ret >= 0;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
 export const deleteNotificationGroup = (idList: string): boolean => {
   try {
     const ret = deleteDataGroup(Tables.NOTIFICATIONS, idList);

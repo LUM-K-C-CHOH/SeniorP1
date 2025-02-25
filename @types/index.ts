@@ -67,7 +67,7 @@ export interface IEmergencyContact extends IContact {
 }
 
 export interface INotification {
-  id: number,
+  id?: number,
   type: number,
   var1: string,
   var2: string,

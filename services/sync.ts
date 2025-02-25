@@ -22,7 +22,6 @@ import { frequencySyncWithServer, medicationSyncWithServer, frequencySyncToServe
 import { appointmentSyncWithServer, appointmentSyncToServer } from './appointment';
 import { emergencyContactSyncWithServer, emergencyContactSyncToServer } from './emergency';
 import { notificationSyncWithServer, notificationSyncToServer } from './notification';
-import { TResponse } from '@/@types';
 
 export const syncLocalDatabaseWithRemote = async () => {
   const settingSyncedStatus = await getStorageItem(KEY_DB_SYNCED_SETTING);
@@ -72,7 +71,7 @@ export const syncLocalDatabaseWithRemote = async () => {
   return ret;
 }
 
-async function syncLocalUpdatesToServer() {
+export const syncLocalUpdatesToServer = async () => {
   const netInfo = await NetInfo.fetch();
   if (!netInfo.isConnected) {
     console.log('database sync: no internet connection.');

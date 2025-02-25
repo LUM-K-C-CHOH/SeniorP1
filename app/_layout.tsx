@@ -9,8 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as globalState from '@/config/global';
 import * as Contacts from 'expo-contacts';
 import * as Location from 'expo-location';
-import * as BackgroundFetch from 'expo-background-fetch';
-import * as TaskManager from 'expo-task-manager';
+import * as Notifications from 'expo-notifications';
 
 import '@/i18n';
 import 'react-native-reanimated';
@@ -33,6 +32,8 @@ import {
 } from '@/config/constants';
 import { getStorageItem, setStorageItem } from '@/utils/storage';
 import { setupDatabase } from '@/services/db';
+import { registerBackgroundDBSyncTask } from '@/tasks/db-sync';
+import { registerBackgroundNotificationTask } from '@/tasks/notification';
 
 if (__DEV__) {
   require('@/services/mock');
@@ -58,62 +59,13 @@ getStorageItem(KEY_DB_INITIALIZED)
     console.error('db setup error', error);
   });
 
-const BACKGROUND_TASK = 'background-fetch';
-TaskManager.defineTask(BACKGROUND_TASK, async () => {
-  try {
-    const appState = globalState.getAppState();
-    globalState.saveAppState({ 
-      ...appState,
-      setting: {
-        ...appState.setting,
-        theme: 'dark'
-      }
-     })
-    const now = new Date().toISOString();
-    console.log(`background task executed at: ${now}`);
-
-    return BackgroundFetch.BackgroundFetchResult.NewData;
-  } catch (error) {
-    console.error("background task failed:", error);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
-  }
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
 });
-
-async function registerBackgroundFetchAsync() {
-  try {
-    const status = await BackgroundFetch.getStatusAsync();
-    console.log("checking background task status:", status);
-
-    if (status === BackgroundFetch.BackgroundFetchStatus.Denied) {
-      console.log("background task is denied. Requesting permission...");
-      return;
-    }
-
-    if (status === BackgroundFetch.BackgroundFetchStatus.Restricted) {
-      console.log("bacgkround task is restricted.");
-      return;
-    }
-
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK);
-    
-    if (!isRegistered) {
-      await BackgroundFetch.registerTaskAsync(BACKGROUND_TASK, {
-        minimumInterval: 60, // Run every 1 minute
-        stopOnTerminate: false,
-        startOnBoot: true,
-      });
-      console.log("background task registered successfully!");
-    } else {
-      console.log("background task already registered.");
-    }
-  } catch (error) {
-    console.error("failed to register background task:", error);
-  }
-}
-
-async function unregisterBackgroundFetchAsync() {
-  return BackgroundFetch.unregisterTaskAsync(BACKGROUND_TASK);
-}
 
 export default function RootLayout() {
   // const colorScheme = useColorScheme();
@@ -129,17 +81,6 @@ export default function RootLayout() {
     await Contacts.requestPermissionsAsync();
     await Location.requestForegroundPermissionsAsync();
   }
-
-  const checkStatus = async () => {
-    const tasks = await TaskManager.getRegisteredTasksAsync();
-    console.log("registered tasks:", tasks);
-  
-    const status = await BackgroundFetch.getStatusAsync();
-    console.log("background task status:", status);
-  
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK);
-    console.log("is background task registered?", isRegistered);
-  };
   
   useEffect(() => {
     const state = globalState.getAppState();
@@ -147,11 +88,8 @@ export default function RootLayout() {
     
     if (state.authenticated) {
       requestPermissions();
-      checkStatus()
-        .then(() => {
-          registerBackgroundFetchAsync();
-        });
-      
+      registerBackgroundDBSyncTask();
+      registerBackgroundNotificationTask();
     }
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
