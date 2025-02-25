@@ -4,7 +4,7 @@
  * 
  * Created by Thornton on 01/23/2025
  */
-import React, { useContext } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import ApplicationContext from '@/context/ApplicationContext';
 import Header from '@/app/layout/header';
@@ -17,7 +17,7 @@ import {
   View,
 } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
-import { Colors } from '@/config/constants';
+import { Colors, NotificationStatus } from '@/config/constants';
 
 import {
   HomeIcon,
@@ -25,9 +25,29 @@ import {
   AppointmentIcon,
   MedicationIcon,
 } from '@/utils/svgs';
+import { INotification, TResponse } from '@/@types';
+import { getNotificationList } from '@/services/notification';
 
 export default function TabLayout() {
+  const initiatedRef = useRef<boolean>(false);
+
   const { appState } = useContext(ApplicationContext);
+
+  const [unReadNotificationCount, setUnReadNotificationCount] = useState<number>(0);
+
+  useEffect(() => {
+    if (initiatedRef.current) return;
+
+    initiatedRef.current = true;
+
+    getNotificationList()
+      .then((res: TResponse) => {
+        if (res.success) {          
+          const count = res.data.reduce((acc: number, cur: INotification) => acc + (cur.status === NotificationStatus.PENDING ? 1 : 0), 0);
+          setUnReadNotificationCount(count);
+        }
+      })
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -76,7 +96,7 @@ export default function TabLayout() {
           name="notification"
           options={{
             href: '/notification',
-            tabBarBadge: 2,
+            tabBarBadge: unReadNotificationCount,
             tabBarShowLabel: false,
             tabBarIcon: ({ color }) => <View style={{ marginTop: 5 }}><ReminderIcon color={color} /></View>,
           }}
