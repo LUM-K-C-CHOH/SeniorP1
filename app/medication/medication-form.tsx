@@ -4,10 +4,13 @@
  * 
  * Created by Thornton on 01/28/2025
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Animated from 'react-native-reanimated';
 import Modal from 'react-native-modal';
+import dayjs from 'dayjs';
+import Calendar from '@/components/Calendar';
+import ApplicationContext from '@/context/ApplicationContext';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedInput } from '@/components/ThemedIntput';
@@ -15,18 +18,19 @@ import {
   StyleSheet,
   SafeAreaView,
   View,
-  useColorScheme,
-  TouchableHighlight
+  TouchableHighlight,
+  Switch
 } from 'react-native';
 import { IMedication } from '@/@types';
 import { useTranslation } from 'react-i18next';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors, DosageUnitType } from '@/config/constants';
-import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list'
+import { Colors, DosageUnitType, MedicationCycleType } from '@/config/constants';
+import { SelectList } from 'react-native-dropdown-select-list'
 import { ThemedView } from '@/components/ThemedView';
-import { CalendarIcon, MinusIcon, PlusIcon } from '@/utils/svgs';
-import dayjs from 'dayjs';
-import Calendar from '@/components/Calendar';
+import { CalendarIcon, CloseIcon, MinusIcon, PlusIcon, SearchIcon } from '@/utils/svgs';
+import { addMedication, updateMedication } from '@/services/medication';
+import { showToast } from '@/utils';
+import { useRouter } from 'expo-router';
 
 type TMedicationFormProps = {
   medication?: IMedication
@@ -39,15 +43,16 @@ const dosageUnitList = [
 ];
 const hourList = Array.from(new Array(24), (_, index: number) => new String(index) .padStart(2, '0')).map((v, index) => ({ key: index, value: v }));
 const cycleList = [
-  { key: 1, value: '1 Day', selected: true },
-  { key: 2, value: '2 Days' },
-  { key: 3, value: '3 Days' },
+  { key: MedicationCycleType.EVERYDAY, value: '1 Day', selected: true },
+  { key: MedicationCycleType.TWODAYS, value: '2 Days' },
+  { key: MedicationCycleType.THREEDAYS, value: '3 Days' },
 ]
 export default function MedicationForm({ medication }: TMedicationFormProps) {
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
+  const router = useRouter();
 
   const { t } = useTranslation();
+  const { appState } = useContext(ApplicationContext);
 
   const [errors, setErrors] = useState<{[k: string]: string}>({});
   const [timeErrors, setTimeErrors] = useState<string[]>(medication ? Array.from(new Array(medication.frequency.times.length), () => '') : ['']);
@@ -59,7 +64,9 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   const [startDate, setStartDate] = useState<string>(medication ? medication.startDate : dayjs().format('YYYY-MM-DD'));
   const [endDate, setEndDate] = useState<string>(medication ? medication.endDate : dayjs().format('YYYY-MM-DD'));
   const [stock, setStock] = useState<string>(medication ? `${medication.stock}` : '');
-  const [miniStock, setMiniStock] = useState<string>(medication ? `${medication.miniStock}` : '');
+  const [threshold, setThreshold] = useState<string>(medication ? `${medication.threshold}` : '');
+  const [emailAlert, setEmailAlert] = useState<string>(medication ? medication.emailAlert : 'on');
+  const [pushAlert, setPushAlert] = useState<string>(medication ? medication.pushAlert : 'on');
   const [calendarPopupOptions, setCalendarPopupOptions] = useState({ opened: false, type: 0 });
 
   useEffect(() => {
@@ -71,9 +78,11 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
     setCycle(medication?.frequency.cycle ? `${medication.frequency.cycle}` : '');
     setTimes(medication?.frequency.times ? medication?.frequency.times : ['00:00']);
     setStock(medication?.stock ? `${medication.stock}` : '');
-    setStock(medication?.miniStock ? `${medication.miniStock}` : '');
-    setStartDate(medication?.startDate?? '');
-    setEndDate(medication?.endDate?? '');
+    setThreshold(medication?.threshold ? `${medication.threshold}` : '');
+    setEmailAlert(medication?.emailAlert ? medication.emailAlert : '');
+    setPushAlert(medication?.pushAlert ? medication.pushAlert : '');
+    setStartDate((medication?.startDate && medication.startDate.length > 0) ? medication.startDate : dayjs().format('YYYY-MM-DD'));
+    setEndDate((medication?.endDate && medication.endDate.length > 0) ? medication.endDate : dayjs().format('YYYY-MM-DD'));
     setTimeErrors(medication?.frequency.times ? Array.from(new Array(medication.frequency.times.length), () => '') : ['']);
   }, [medication]);
 
@@ -86,6 +95,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['name'] = t('message.alert_input_name');
+        setErrors({ ...errors });
       }
 
       return;
@@ -98,6 +108,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['dosage'] = t('message.alert_input_dosage');
+        setErrors({ ...errors });
       }
 
       return;
@@ -110,6 +121,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['dosageUnit'] = t('message.alert_select_dosage_unit');
+        setErrors({ ...errors });
       }
 
       return;
@@ -122,6 +134,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['cycle'] = t('message.alert_select_cycle');
+        setErrors({ ...errors });
       }
 
       return;
@@ -134,18 +147,20 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['stock'] = t('message.alert_input_stock');
+        setErrors({ ...errors });
       }
 
       return;
     }
 
-    if (type === 'miniStock') {
-      setMiniStock(value);
+    if (type === 'threshold') {
+      setThreshold(value);
       if (value.length > 0) {
-        const { miniStock, ...rest } = errors;
+        const { threshold, ...rest } = errors;
         setErrors(rest);
       } else {
-        errors['miniStock'] = t('message.alert_mini_input_stock');
+        errors['threshold'] = t('message.alert_input_threshold');
+        setErrors({ ...errors });
       }
 
       return;
@@ -158,6 +173,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['startDate'] = t('message.alert_select_start_date');
+        setErrors({ ...errors });
       }
 
       return;
@@ -170,6 +186,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         setErrors(rest);
       } else {
         errors['endDate'] = t('message.alert_select_end_date');
+        setErrors({ ...errors });
       }
 
       return;
@@ -207,8 +224,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       }
     }
 
-    if (miniStock.length === 0) {
-      errors['miniStock'] = t('message.alert_mini_input_stock');
+    if (threshold.length === 0) {
+      errors['threshold'] = t('message.alert_input_threshold');
     }
 
     if (stock.length === 0) {
@@ -225,8 +242,46 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 
     setErrors(errors);
     setTimeErrors(tes);
+
     if (Object.keys(errors).length > 0) return;
     if (tes.filter(v => v.length > 0).length > 0) return;
+
+    let data: IMedication = {
+      name: name,
+      stock: parseInt(stock, 10),
+      threshold: parseInt(threshold, 10),
+      pushAlert: pushAlert,
+      emailAlert: emailAlert,
+      startDate: startDate,
+      endDate: endDate,
+      image: '',
+      frequency: {
+        dosage: parseInt(dosage, 10),
+        dosageUnit: parseInt(dosageUnit, 10),
+        cycle: parseInt(cycle, 10),
+        times: times
+      }
+    }
+
+    if (medication) {
+      // update
+      data['id'] = medication.id;
+      const ret = updateMedication(data);
+      if (ret) {
+        router.back();
+        showToast(t('message.alert_save_success'));
+      } else {
+        showToast(t('message.alert_save_fail'));
+      }
+    } else {
+      const ret = addMedication(data);
+      if (ret) {
+        router.back();
+        showToast(t('message.alert_save_success'));
+      } else {
+        showToast(t('message.alert_save_fail'));
+      }
+    }
   }
 
   const handleTimeAdd = (): void => {
@@ -354,19 +409,22 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               data={dosageUnitList}
               save="key"
               placeholder="--Select--"
+              searchPlaceholder=""
+              searchicon={<SearchIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
+              closeicon={<CloseIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
               defaultOption={dosageUnitList.find(v => v.key === parseInt(dosageUnit, 10))}
               boxStyles={{
-                borderColor: errors.dosageUnit ? 'red' : '#e2e2e2',
+                borderColor: errors.dosageUnit ? 'red' : appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                 paddingHorizontal: 10,
               }}
               inputStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText,
               }}
               dropdownStyles={{
-                borderColor: '#e2e2e2',
+                borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
               }}
               dropdownTextStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
             />
             {errors.dosageUnit&&
@@ -395,19 +453,22 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               data={cycleList}
               save="key"
               placeholder="--Select--"
+              searchPlaceholder=""
+              searchicon={<SearchIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
+              closeicon={<CloseIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
               defaultOption={cycleList.find(v => v.key === parseInt(cycle, 10))}
               boxStyles={{
-                borderColor: errors.cycle ? 'red' : '#e2e2e2',
+                borderColor: errors.cycle ? 'red' : appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                 paddingHorizontal: 10,
               }}
               inputStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
               dropdownStyles={{
-                borderColor: '#e2e2e2',
+                borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
               }}
               dropdownTextStyles={{
-                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
               }}
             />
             {errors.cycle&&
@@ -439,25 +500,35 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                     data={hourList}
                     save="key"
                     placeholder="HH"
+                    searchPlaceholder=""
+                    searchicon={<SearchIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
+                    closeicon={<CloseIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
                     defaultOption={hourList.find(v => v.key === parseInt(times[index].split(':')[0], 10))}
                     boxStyles={{
-                      borderColor: timeErrors[index].length > 0 ? 'red' : '#e2e2e2',
+                      borderColor: timeErrors[index].length > 0 ? 'red' : appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                       paddingHorizontal: 10,
                       width: 70
                     }}
                     inputStyles={{
-                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                      color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
                     }}
                     dropdownStyles={{
-                      borderColor: '#e2e2e2',
+                      borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                       width: 70
                     }}
                     dropdownTextStyles={{
-                      color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                      color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
                     }}
                   />
                   <ThemedText type="default">:</ThemedText>
-                  <View style={styles.secondPlaceholderWrapper}>
+                  <View
+                    style={[
+                      styles.secondPlaceholderWrapper,
+                      {
+                        backgroundColor: appState.setting.theme === 'light' ? '#eee' : '#666',
+                      }
+                    ]}
+                  >
                     <ThemedText
                       type="defaultMedium"
                       darkColor={Colors.dark.defaultControlText}
@@ -470,14 +541,14 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
                   {index === times.length - 1&&
                     <TouchableHighlight onPress={() => handleTimeAdd()}>
                       <ThemedView style={styles.iconButtonWrapper}>
-                        <PlusIcon color={theme === 'light' ? '#454b60' : '#fff'} />
+                        <PlusIcon color={appState.setting.theme === 'light' ? '#454b60' : '#fff'} />
                       </ThemedView>
                     </TouchableHighlight>
                   }
                   {index < times.length - 1&&
                     <TouchableHighlight onPress={() => handleTimeRemove(index)}>
                       <ThemedView style={styles.iconButtonWrapper}>
-                        <MinusIcon color={theme === 'light' ? '#454b60' : '#fff'} />
+                        <MinusIcon color={appState.setting.theme === 'light' ? '#454b60' : '#fff'} />
                       </ThemedView>
                     </TouchableHighlight>
                   }
@@ -532,26 +603,64 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
             lightColor={Colors.light.grayText}
             style={styles.controlLabel}
           >
-            {t('stock_limitation')}{':'}
+            {t('threshold')}{':'}
           </ThemedText>
           <View style={styles.formControlWrapper}>
             <ThemedInput
               type="default"
               style={[
-                errors.miniStock ? { borderColor: 'red' } : {}
+                errors.threshold ? { borderColor: 'red' } : {}
               ]}
-              value={miniStock}
-              onChangeText={(v) => handleFormValueChange('miniStock', v)}
+              value={threshold}
+              onChangeText={(v) => handleFormValueChange('threshold', v)}
             />
-            {errors.miniStock&&
+            {errors.threshold&&
               <ThemedText
                 type="small"
                 darkColor={Colors.dark.redText}
                 lightColor={Colors.light.redText}
               >
-                {errors.miniStock}
+                {errors.threshold}
               </ThemedText>
             }
+          </View>
+        </View>
+        <View style={styles.formGroup}>
+          <ThemedText
+            type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
+            style={styles.controlLabel}
+          >
+            {t('push_notification')}{':'}
+          </ThemedText>
+          <View style={styles.formControlWrapper}>
+            <Switch
+              trackColor={{ false: '#eee', true: '#0066ff' }}
+              ios_backgroundColor={'#0066ff'}
+              thumbColor={pushAlert === 'on' ? '#fff' : '#999'}
+              value={pushAlert === 'on'}
+              onValueChange={(v) => setPushAlert(v ? 'on' : 'off')}
+            />
+          </View>
+        </View>
+        <View style={styles.formGroup}>
+          <ThemedText
+            type="default"
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
+            style={styles.controlLabel}
+          >
+            {t('email_alert')}{':'}
+          </ThemedText>
+          <View style={styles.formControlWrapper}>
+            <Switch
+              trackColor={{ false: '#eee', true: '#0066ff' }}
+              ios_backgroundColor={'#0066ff'}
+              thumbColor={emailAlert === 'on' ? '#fff' : '#999'}
+              value={emailAlert === 'on'}
+              onValueChange={(v) => setEmailAlert(v ? 'on' : 'off')}
+            />
           </View>
         </View>
         <View style={styles.formGroup}>
@@ -568,16 +677,23 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               style={{ borderRadius: 10 }}
               onPress={() => handleCalendarPopupOpstions({ opened: true, type: 1 })}
             >
-              <ThemedView style={styles.dateControl}>
+              <ThemedView
+                style={[
+                  styles.dateControl,
+                  {
+                    borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
+                  }
+                ]}
+              >
                 <ThemedText
                   type="defaultMedium"
                   darkColor={Colors.dark.defaultControlText}
                   lightColor={Colors.light.defaultControlText}
                   style={{ fontWeight: 400 }}
                 >
-                  {startDate ? dayjs(startDate).format('YYYY-MM-DD') : ''}
+                  {startDate}
                 </ThemedText>
-                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
+                <CalendarIcon color={appState.setting.theme === 'light' ? '#494e50' : '#aaa'} />
               </ThemedView>
             </TouchableHighlight>
             {errors.startDate&&
@@ -603,18 +719,25 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
           <View style={styles.formControlWrapper}>
             <TouchableHighlight
               style={{ borderRadius: 10 }}
-              onPress={() => handleCalendarPopupOpstions({ opened: true, type: 1 })}
+              onPress={() => handleCalendarPopupOpstions({ opened: true, type: 2 })}
             >
-              <ThemedView style={styles.dateControl}>
+              <ThemedView
+                style={[
+                  styles.dateControl,
+                  {
+                    borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
+                  }
+                ]}
+              >
                 <ThemedText
                   type="defaultMedium"
                   darkColor={Colors.dark.defaultControlText}
                   lightColor={Colors.light.defaultControlText}
                   style={{ fontWeight: 400 }}
                 >
-                  {endDate ? dayjs(endDate).format('YYYY-MM-DD') : ''}
+                  {endDate}
                 </ThemedText>
-                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
+                <CalendarIcon color={appState.setting.theme === 'light' ? '#494e50' : '#aaa'} />
               </ThemedView>
             </TouchableHighlight>
             {errors.endDate&&
@@ -655,7 +778,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   controlLabel: {
-    width: 70,
+    width: 120,
     marginTop: 12
   },
   formControlWrapper: {
@@ -670,7 +793,6 @@ const styles = StyleSheet.create({
     columnGap: 10
   },
   secondPlaceholderWrapper: {
-    backgroundColor: '#eee',
     width: 60,
     height: 45,
     alignItems: 'center',
@@ -691,7 +813,6 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     height: 45,
     borderWidth: 1,
-    borderColor: '#e2e2e2',
     borderRadius: 10,
     paddingHorizontal: 10
   },

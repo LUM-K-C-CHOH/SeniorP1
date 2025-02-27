@@ -4,9 +4,11 @@
  * 
  * Created by Thornton on 01/23/2025
  */
-import { DosageUnitType } from "@/config/constants";
-import dayjs from "dayjs";
-import { Platform } from "react-native";
+import Toast from 'react-native-simple-toast';
+import dayjs from 'dayjs';
+
+import { DosageUnitType } from '@/config/constants';
+import { Platform } from 'react-native';
 
 export const generateBoxShadowStyle = (
   xOffset: number,
@@ -90,4 +92,19 @@ export const getDosageUnitString = (dosageUnit: number) => {
     }
 
     return 'pill';
+  }
+
+  export const showToast = (message: string) => {
+    Toast.showWithGravityAndOffset(
+      message, 
+      Toast.LONG, 
+      Toast.BOTTOM, 
+      0,
+      30,
+      {
+        backgroundColor: 'black',
+        textColor: 'white',
+        tapToDismissEnabled: true,
+      }
+    );
   }

@@ -7,13 +7,16 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import Animated from 'react-native-reanimated';
 import ApplicationContext from '@/context/ApplicationContext';
+import dayjs from 'dayjs';
 
+import {
+  ProgressChart,
+} from 'react-native-chart-kit';
 import {
   StyleSheet,
   SafeAreaView,
   View,
   TouchableOpacity,
-  useColorScheme
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
@@ -29,14 +32,16 @@ import {
   StoreIcon
 } from '@/utils/svgs';
 import { getTodayAppointmentList } from '@/services/appointment';
-import { IAppointment, IContact, IMedication, TResponse } from '@/@types';
-import { getContactList } from '@/services/contact';
-import { getRefillMedicationList, getTodayMedicationList, getMedicationSufficient } from '@/services/medication';
+import { IAppointment, IMedication, TResponse } from '@/@types';
+import {
+  getRefillMedicationList,
+  getTodayMedicationList,
+  getMedicationSufficient
+} from '@/services/medication';
 
 export default function DashboardScreen() {
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
   
   const { t } = useTranslation();
   const { appState } = useContext(ApplicationContext);
@@ -45,7 +50,6 @@ export default function DashboardScreen() {
   const [appointmentList, setAppointmentList] = useState<IAppointment[]>([]);
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
   const [refillMedicationList, setRefillMedicationList] = useState<IMedication[]>([]);
-  const [contactList, setContactList] = useState<IContact[]>([]);
   const [medicationSufficient, setMedicationSufficient] = useState<number>(0);
 
   useFocusEffect(   
@@ -56,12 +60,11 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     if (initiated) return;
-
+    
     setInitiated(true);
 
     Promise.all([
       getTodayAppointmentList(),
-      getContactList(),
       getTodayMedicationList(),
       getRefillMedicationList(),
       getMedicationSufficient()
@@ -71,26 +74,21 @@ export default function DashboardScreen() {
       }
 
       if (results[1].success) {
-        setContactList(results[1].data);
+        setMedicationList(results[1].data);
       }
 
       if (results[2].success) {
-        setMedicationList(results[2].data);
-      }
-
-      if (results[3].success) {
         setRefillMedicationList(results[2].data);
       }
 
-      if (results[4].success) {
-        setMedicationSufficient(results[4].data.sufficient);
+      if (results[3].success) {
+        setMedicationSufficient(results[3].data.sufficient);
       }
     });
   }, []);
 
-  const getContactName = (id: number): string => {
-    const find = contactList.find(v => v.id === id);
-    return find ? find.name : '';
+  const getTime = (datetimeStr: string): string => {
+    return dayjs(datetimeStr).format('hh:mm A');
   }
 
   return (
@@ -108,7 +106,7 @@ export default function DashboardScreen() {
         </View>
         <View style={styles.rowWrapper}>
           <ThemedView
-            darkColor={'#fff'}
+            darkColor={'#222'}
             lightColor={'#fff'}
             style={[
               cstyles.container,
@@ -117,14 +115,14 @@ export default function DashboardScreen() {
           >
             <View style={cstyles.topWrapper}>
               <ThemedView 
-                darkColor={'#fafafa'}
+                darkColor={'#666'}
                 lightColor={'#fafafa'}
                 style={[
                   cstyles.iconWrapper,
                   generateBoxShadowStyle(-2, 4, '#171717', 0.2, 3, 4, '#171717')
                 ]}
               >
-                <StoreIcon color={theme === 'light' ? '#8a8a8a' : '#8a8a8a'} />
+                <StoreIcon color={appState.setting.theme === 'light' ? '#8a8a8a' : '#aaa'} />
               </ThemedView>
               <ThemedText
                 type="default"
@@ -134,18 +132,42 @@ export default function DashboardScreen() {
               </ThemedText>
             </View>
             <View style={cstyles.sufficientWrapper}>
-              <ThemedText
-                type="default"
-                darkColor={Colors.dark.darkGrayText}
-                lightColor={Colors.light.darkGrayText}
-              >
-                {t('sufficient')}
-              </ThemedText>
-              <ThemedText type="bigTitle">{medicationSufficient}%</ThemedText>
+              <ProgressChart
+                data={{
+                  labels: [""],
+                  data: [medicationSufficient / 100]
+                }}
+                width={160}
+                height={160}
+                strokeWidth={16}
+                radius={55}
+                chartConfig={{
+                  backgroundGradientFromOpacity: 0,
+                  backgroundGradientFrom: appState.setting.theme === 'light' ? '#fff' : '#222',
+                  backgroundGradientTo: appState.setting.theme === 'light' ? '#fff' : '#222',
+                  backgroundGradientToOpacity: 0.5,
+                  color: (opacity = 1) => `rgba(7, 181, 7, ${opacity})`,
+                  strokeWidth: 2, // optional, default 3
+                  barPercentage: 0.5,
+                  useShadowColorFromDataset: false,
+                }}
+                center={[10, 0]}
+                hideLegend={true}
+              />
+              <View style={{ position: 'absolute' }}>
+                <ThemedText
+                  type="default"
+                  darkColor={Colors.dark.grayText}
+                  lightColor={Colors.light.grayText}
+                >
+                  {t('sufficient')}
+                </ThemedText>
+                <ThemedText type="bigTitle">{medicationSufficient}%</ThemedText>
+              </View>
             </View>
           </ThemedView>
           <ThemedView
-            darkColor={'#fff'}
+            darkColor={'#222'}
             lightColor={'#fff'}
             style={[
               cstyles.container,
@@ -154,7 +176,7 @@ export default function DashboardScreen() {
           >
             <View style={cstyles.topWrapper}>
               <ThemedView 
-                darkColor={'#fafafa'}
+                darkColor={'#666'}
                 lightColor={'#fafafa'}
                 style={[
                   cstyles.iconWrapper,
@@ -164,7 +186,7 @@ export default function DashboardScreen() {
                 <AppointmentIcon
                   width={14}
                   height={14}
-                  color={theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
+                  color={appState.setting.theme === 'light' ? '#8a8a8a' : '#aaa'}
                 />
               </ThemedView>
               <ThemedText
@@ -174,29 +196,39 @@ export default function DashboardScreen() {
                 {t('dashboard.todays_appointments')}
               </ThemedText>
             </View>
-            <Animated.ScrollView style={{ marginTop: 5 }}>
-              {appointmentList.map((data: IAppointment, index: number) =>
-                <View key={index} style={cstyles.appointmentItemWrapper}>
-                  <ThemedText
-                    type="default"
-                  >
-                    {data.scheduledTime.split(' ')[1]}
-                  </ThemedText>
-                  <ThemedText
-                    type="small"
-                    darkColor={Colors.dark.darkGrayText}
-                    lightColor={Colors.light.darkGrayText}
-                  >
-                    {getContactName(data.contactId)}
-                  </ThemedText>
-                </View>
-              )}
-            </Animated.ScrollView>
+            {appointmentList.length > 0
+              ? <Animated.ScrollView style={{ marginTop: 5 }}>
+                  {appointmentList.map((data: IAppointment, index: number) =>
+                    <View key={index} style={cstyles.appointmentItemWrapper}>
+                      <ThemedText
+                        type="default"
+                      >
+                        {getTime(data.scheduledTime)}
+                      </ThemedText>
+                      <ThemedText
+                        type="small"
+                        darkColor={Colors.dark.grayText}
+                        lightColor={Colors.light.grayText}
+                      >
+                        {data.name}
+                      </ThemedText>
+                    </View>
+                  )}
+                </Animated.ScrollView>
+              : <ThemedText
+                  type="default"
+                  darkColor={Colors.dark.grayText}
+                  lightColor={Colors.light.grayText}
+                  style={{ padding: 20, textAlign: 'center' }}
+                >
+                  {t('message.hint_no_reserved_appointment_today')}
+                </ThemedText>
+            }
           </ThemedView>
         </View>
         <View style={styles.rowWrapper}>
           <ThemedView
-            darkColor={'#fff'}
+            darkColor={'#222'}
             lightColor={'#fff'}
             style={[
               cstyles.container,
@@ -205,7 +237,7 @@ export default function DashboardScreen() {
           >
             <View style={cstyles.topWrapper}>
               <ThemedView 
-                darkColor={'#fafafa'}
+                darkColor={'#666'}
                 lightColor={'#fafafa'}
                 style={[
                   cstyles.iconWrapper,
@@ -215,7 +247,7 @@ export default function DashboardScreen() {
                 <MedicationIcon
                   width={23}
                   height={23}
-                  color={theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
+                  color={appState.setting.theme === 'light' ? '#8a8a8a' : '#aaa'}
                 />
               </ThemedView>
               <ThemedText
@@ -228,11 +260,11 @@ export default function DashboardScreen() {
             <Animated.ScrollView style={{ marginTop: 5 }}>
               {medicationList.map((data: IMedication, index: number) =>
                 <View key={index} style={cstyles.medicationItemWrapper}>
-                  <ThemedText type="default">{data.frequency.times[0]}</ThemedText>
+                  <ThemedText type="default">{getTime(`${dayjs().format('YYYY-MM-DD')} ${data.frequency.times[0]}:00`)}</ThemedText>
                   <ThemedText
                     type="small"
-                    darkColor={Colors.dark.darkGrayText}
-                    lightColor={Colors.light.darkGrayText}
+                    darkColor={Colors.dark.grayText}
+                    lightColor={Colors.light.grayText}
                   >
                     {data.name}
                   </ThemedText>
@@ -241,7 +273,7 @@ export default function DashboardScreen() {
             </Animated.ScrollView>
           </ThemedView>
           <ThemedView
-            darkColor={'#fff'}
+            darkColor={'#222'}
             lightColor={'#fff'}
             style={[
               cstyles.container,
@@ -250,7 +282,7 @@ export default function DashboardScreen() {
           >
             <View style={cstyles.topWrapper}>
               <ThemedView 
-                darkColor={'#fafafa'}
+                darkColor={'#666'}
                 lightColor={'#fafafa'}
                 style={[
                   cstyles.iconWrapper,
@@ -258,7 +290,7 @@ export default function DashboardScreen() {
                 ]}
               >
                 <ReminderOutlineIcon
-                  color={theme === 'light' ? '#8a8a8a' : '#8a8a8a'}
+                  color={appState.setting.theme === 'light' ? '#8a8a8a' : '#aaa'}
                 />
               </ThemedView>
               <ThemedText
@@ -273,8 +305,8 @@ export default function DashboardScreen() {
                 <View key={index} style={cstyles.refillItemWrapper}>
                   <ThemedText
                     type="small"
-                    darkColor={Colors.dark.darkGrayText}
-                    lightColor={Colors.light.darkGrayText}
+                    darkColor={Colors.dark.grayText}
+                    lightColor={Colors.light.grayText}
                   >
                     {data.name}
                   </ThemedText>
@@ -288,7 +320,7 @@ export default function DashboardScreen() {
                   </ThemedText>
                   <ThemedText type="default">/</ThemedText>
                   <ThemedText type="default">
-                    {data.miniStock}
+                    {data.threshold}
                   </ThemedText>
                 </View>
               )}

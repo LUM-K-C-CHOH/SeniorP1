@@ -12,42 +12,51 @@ export interface IUser {
   email: string;
 }
 
+export interface ISetting {
+  theme: 'dark'|'light',
+  font: 'small'|'normal'|'large',
+  push: 'on'|'off'
+}
+
 export interface IAppState {
   authenticated: boolean;
   user: IUser|null;
   currentPath: string;
   lockScreen: boolean;
+  setting: ISetting
 }
 
-export type TFrequency = {
+export type IFrequency = {
   dosage: number,
   dosageUnit: number,
   cycle: number,
   times: string[]
 }
 export interface IMedication {
-  id: number,
+  id?: number,
   image: string,
   name: string,
   stock: number,
-  miniStock: number,
-  frequency: TFrequency,
-  notifications: number,
+  frequency: IFrequency,
   startDate: string,
   endDate: string,
+  threshold: number,
+  pushAlert: string,
+  emailAlert: string,
 }
 
 export interface IAppointment {
-  id: number,
-  contactId: number,
+  id?: number,
+  name: string,
+  phone: string,
+  image: string,
   scheduledTime: string,
   description: string,
   location: string,
-  createdAt: string,
 }
 
 export interface IContact {
-  id: number,
+  id?: number,
   name: string,
   phone: string,
   image: string,
@@ -58,12 +67,13 @@ export interface IEmergencyContact extends IContact {
 }
 
 export interface INotification {
-  id: number,
+  id?: number,
   type: number,
   var1: string,
+  var2: string,
+  var3: string,
   status: number,
   targetId: number,
-  reservedTime: number,
 }
 
 export type TResponse = {

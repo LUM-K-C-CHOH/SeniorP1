@@ -4,12 +4,14 @@
  * 
  * Created by Thornton on 02/07/2025
  */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import CustomButton from '@/components/CustomButton';
 import { default as AnimatedModal } from 'react-native-modal';
 import Calendar from '@/components/Calendar';
 import dayjs from 'dayjs';
 import Animated from 'react-native-reanimated';
+import ApplicationContext from '@/context/ApplicationContext';
+import * as Contacts from 'expo-contacts';
 
 import { IAppointment, IContact, TResponse } from '@/@types';
 import {
@@ -20,43 +22,47 @@ import {
   StyleSheet,
   View,
   TouchableHighlight,
-  useColorScheme,
 } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedInput } from '@/components/ThemedIntput';
-import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName } from '@/utils';
+import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName, showToast } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon, LocationPinIcon } from '@/utils/svgs';
 import { getContactList } from '@/services/contact';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
+import { useRouter } from 'expo-router';
+import { addAppointment, updateAppointment } from '@/services/appointment';
 
 type TAppointmentFormProps = {
   appointment?: IAppointment
 };
 
 const TimeType = {
-  AM: 1,
-  PM: 2
+  AM: 'am',
+  PM: 'pm'
 }
 
 export default function AppointmentForm({ appointment }: TAppointmentFormProps) {
   const initiatedRef = useRef<boolean>(false);
   const backgroundColor = useThemeColor({}, 'background');
-  const theme = useColorScheme();
+  const router = useRouter();
 
   const { t } = useTranslation();
+  const { appState } = useContext(ApplicationContext);
 
-  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [name, setName] = useState<string>(appointment?.name?? '');
+  const [phone, setPhone] = useState<string>(appointment?.phone?? '');
+  const [image, setImage] = useState<string>(appointment?.image?? '');
+  const [selectedDate, setSelectedDate] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
+  const [timeType, setTimeType] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('a') : TimeType.AM);
+  const [hour,setHour] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('hh') : '');
+  const [minute, setMinute] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('mm') : '');
+  const [description, setDescription] = useState<string>(appointment?.description?? '');
   const [calendarPopupVisible, setCalendarPopupVisible] = useState<boolean>(false);
   const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
-  const [contactList, setContactList] = useState<IContact[]>([]);
-  const [selectedContactInfo, setSelectedContactInfo] = useState<IContact>();
-  const [timeType, setTimeType] = useState<number>(TimeType.AM);
-  const [hour,setHour] = useState<string>('');
-  const [minute, setMinute] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [orgContactList, setOrgContactList] = useState<IContact[]>([]);  
   const [errors, setErrors] = useState<{[k: string]: string}>({});
 
   useEffect(() => {
@@ -64,21 +70,20 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
 
     initiatedRef.current = true;
 
-    getContactList()
-      .then((res: TResponse) => {
-        if (res.success) {
-          setContactList(res.data?? []);          
-        } else {
-        }
-      });
   }, []);
 
   useEffect(() => {
-    if (appointment) {            
-      const contactId = appointment.contactId;
-      const find = contactList.find((v: IContact) => v.id === contactId);
-      setSelectedContactInfo(find);
-    }
+    if (!appointment) return;
+   
+    setName(appointment.name?? '');
+    setPhone(appointment.phone?? '');
+    setImage(appointment.image?? '');
+    setSelectedDate((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
+    setHour((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('hh') : '');
+    setMinute((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('mm') : '');
+    setTimeType((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('a') : TimeType.AM);
+    setDescription(appointment.description?? '');
+
   }, [appointment]);
 
   const handleCalendarPopupVisible = (visible: boolean): void => {
@@ -90,37 +95,57 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
       const { date, ...rest } = errors;
       setErrors(rest);
     }
-    setSelectedDate(date);
+
+    setSelectedDate(dayjs(date).format('YYYY-MM-DD'));
   }
 
-  const handleContactSelect = (id: number): void => {
-    const find = contactList.find(v => v.id === id);
- 
-    if (!find) return;
+  const handleContactSelect = (index: number): void => {
+    if (index > orgContactList.length - 1) return;
 
     const { contact, ...rest } = errors;
     setErrors(rest);
 
-    setSelectedContactInfo(find);
+    setName(orgContactList[index].name);
+    setPhone(orgContactList[index].phone);
     setContactPopupVisible(false);
   }
 
   const handleTimeChange = (type: string, value: string): void => {
     if (type === 'hour') {
-      setHour(value);
+      const h = parseInt(value, 10);
+      const m = parseInt(minute, 10);
 
-      if (value.length > 0 && minute.length > 0) {
+      if (isNaN(h) || h > 11 || h < 0) {
+        setHour('');
+      } else {
+        setHour(value);
+      }
+
+      if (!isNaN(h) && !isNaN(m)) {
         const { time, ...rest } = errors;
         setErrors(rest);
+      } else {
+        errors['time'] = t('message.alert_input_schedule_time');
+        setErrors({ ...errors });
       }
     }
 
     if (type === 'minute') {
-      setMinute(value);
+      const h = parseInt(hour, 10);
+      const m = parseInt(value, 10);
 
-      if (value.length > 0 && hour.length > 0) {
+      if (isNaN(m) || m > 59 || m < 0) {
+        setMinute('');
+      } else {
+        setMinute(value);
+      }
+
+      if (!isNaN(h) && !isNaN(m)) {
         const { time, ...rest } = errors;
         setErrors(rest);
+      } else {
+        errors['time'] = t('message.alert_input_schedule_time');
+        setErrors({ ...errors });
       }
     }
   }
@@ -131,13 +156,16 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     if (desc.length > 0) {
       const { description, ...rest } = errors;
       setErrors(rest);
+    } else {
+      errors['description'] = t('message.alert_input_description');
+      setErrors({ ...errors });
     }
   }
 
   const handleSchedule  = (): void => {
     const errors: {[k: string]: string} = {};
 
-    if (!selectedContactInfo) {
+    if (name.length === 0 || phone.length === 0) {
       errors['contact'] = t('message.alert_select_provider');
     }
 
@@ -145,7 +173,14 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
       errors['date'] = t('message.alert_select_schedule_date');
     }
 
-    if (hour.length === 0 || minute.length === 0) {
+    let h = parseInt(hour, 10);
+    const m = parseInt(minute, 10);
+
+    if (isNaN(h) || h > 11 || h < 0) {
+      errors['time'] = t('message.alert_input_schedule_time');
+    }
+
+    if (isNaN(m) || m > 59 || m < 0) {
       errors['time'] = t('message.alert_input_schedule_time');
     }
 
@@ -157,19 +192,75 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
 
     if (Object.keys(errors).length > 0) return;
 
+    h += timeType === TimeType.AM ? 0 : 12;
+    const scheduledTime = `${selectedDate} ${new String(h).padStart(2, '0')}:${new String(m).padStart(2, '0')}:00`;
+    const data: IAppointment = {
+      name,
+      image,
+      phone,
+      scheduledTime,
+      description,
+      location: ''
+    }
+
+    if (appointment) {
+      data['id'] = appointment.id;
+      const ret = updateAppointment(data);
+      if (ret) {
+        router.back();
+        showToast(t('message.alert_save_success'));
+      } else {
+        showToast(t('message.alert_save_fail'));
+      }
+    } else {
+      const ret = addAppointment(data);
+      if (ret) {
+        router.back();
+        showToast(t('message.alert_save_success'));
+      } else {
+        showToast(t('message.alert_save_fail'));
+      }
+    }
+  }
+
+  const handleContactPopupOpen = async (): Promise<void> => {
+    const { status } = await Contacts.requestPermissionsAsync();
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [
+          Contacts.Fields.FirstName,
+          Contacts.Fields.LastName,
+          Contacts.Fields.PhoneNumbers,
+          Contacts.Fields.ContactType,
+          Contacts.Fields.Emails,
+          Contacts.Fields.Image
+        ],
+      });
+
+      let orgContactList: IContact[] = data.map(v => ({
+        name: v.name,
+        image: v.image ? v.image.uri?? '' : '',
+        phone: v.phoneNumbers ? v.phoneNumbers?.map(p => p.number).join(',') : ''
+      }));
+
+      setOrgContactList(orgContactList);
+      setContactPopupVisible(true);
+    } else {
+      showToast(t('message.alert_contact_permission_denied'));
+    }
   }
 
   type ContactItemProps = {
-    id: number,
+    index: number,
     name: string,
-    onSelectedContact: (id: number) => void
+    onSelectedContact: (index: number) => void
   };
 
-  const ContactItem = ({ id, name, onSelectedContact }: ContactItemProps): JSX.Element => {
+  const ContactItem = ({ index, name, onSelectedContact }: ContactItemProps): JSX.Element => {
     return (
-      <TouchableHighlight onPress={() => onSelectedContact(id)}>
+      <TouchableHighlight onPress={() => onSelectedContact(index)}>
         <ThemedView style={cstyles.contactNameWrapper}>
-          <LocationPinIcon color={theme === 'light' ? '#1e75e5' : '#eee'} />
+          <LocationPinIcon color={appState.setting.theme === 'light' ? '#1e75e5' : '#aaa'} />
           <ThemedText
             type="small"
             darkColor={Colors.dark.grayText}
@@ -190,7 +281,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         onBackdropPress={() => handleCalendarPopupVisible(false)}
         onBackButtonPress={() => handleCalendarPopupVisible(false)}
       >
-        <Calendar date={selectedDate} onSelectedDate={handleDateSelect} />
+        <Calendar date={new Date(selectedDate)} onSelectedDate={handleDateSelect} />
       </AnimatedModal>
       <Modal
         visible={contactPopupVisible}
@@ -204,8 +295,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           ]}
         >
           <FlatList
-            data={contactList}
-            renderItem={({item}) => <ContactItem id={item.id} name={item.name} onSelectedContact={handleContactSelect}/>}
+            data={orgContactList}
+            renderItem={({item, index}) => <ContactItem index={index} name={item.name} onSelectedContact={handleContactSelect}/>}
             keyExtractor={item => `${item.id}`}
           />
         </ThemedView>
@@ -214,16 +305,16 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         <View style={styles.providerWrapper}>
           <ThemedText
             type="defaultMedium"
-            darkColor={'#333'}
-            lightColor={'#999'}
+            darkColor={Colors.dark.grayText}
+            lightColor={Colors.light.grayText}
             style={styles.labelText}
           >
             {t('appointment_manage.provider')}{' : '}
           </ThemedText>
           <View style={styles.providerInfoWrapper}>
-            <View style={[styles.logoWrapper, { backgroundColor: getMarkColorFromName(selectedContactInfo?.name?? 'N A').bgColor }]}>
-              <ThemedText style={[{ color: getMarkColorFromName(selectedContactInfo?.name?? 'N A').textColor }]}>
-                {getMarkLabelFromName(selectedContactInfo?.name?? 'N/A')}
+            <View style={[styles.logoWrapper, { backgroundColor: getMarkColorFromName(name?? 'N A').bgColor }]}>
+              <ThemedText style={[{ color: getMarkColorFromName(name?? 'N A').textColor }]}>
+                {getMarkLabelFromName(name?? 'N/A')}
               </ThemedText>
             </View>
             <View>
@@ -233,26 +324,26 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
                 lightColor={Colors.light.grayText}
                 style={{ fontWeight: 500 }}
               >
-                {selectedContactInfo ? selectedContactInfo.name : t('no_selected')}
+                {name.length > 0 ? name : t('no_selected')}
               </ThemedText>
-              {selectedContactInfo&&
+              {phone.length > 0&&
                 <ThemedText
                   type="default"
                   darkColor={Colors.dark.grayText}
                   lightColor={Colors.light.grayText}
                   style={{ fontWeight: 500 }}
                 >
-                  {selectedContactInfo.phone}
+                  {phone}
                 </ThemedText>
               }
             </View>
           </View>
           <TouchableHighlight
             style={{ borderRadius: 5, marginTop: 5 }}
-            onPress={() => setContactPopupVisible(true)}
+            onPress={() => handleContactPopupOpen()}
           >
             <View style={styles.providerPickButton}>
-              <LocationIcon color={theme === 'light' ? '#87b5f2' : '#87b5f2'} />
+              <LocationIcon color={appState.setting.theme === 'light' ? '#87b5f2' : '#87b5f2'} />
               <ThemedText
                 type="defaultMedium"
                 darkColor={'#87b5f2'}
@@ -293,9 +384,9 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
                   lightColor={Colors.light.defaultControlText}
                   style={{ fontWeight: 400 }}
                 >
-                  {selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : ''}
+                  {selectedDate ? dayjs(selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD') : ''}
                 </ThemedText>
-                <CalendarIcon color={theme === 'light' ? '#494e50' : '#494e50'} />
+                <CalendarIcon color={appState.setting.theme === 'light' ? '#494e50' : '#aaa'} />
               </ThemedView>
             </TouchableHighlight>
             {errors.date&&
@@ -317,7 +408,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               placeholder="00"
               keyboardType="number-pad"
               maxLength={2}
-              value={hour}
+              value={`${hour}`}
               onChangeText={(v) => handleTimeChange('hour', v)}
             />
             <ThemedText>:</ThemedText>
@@ -329,11 +420,18 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
               placeholder="00"
               keyboardType="number-pad"
               maxLength={2}
-              value={minute}
+              value={`${minute}`}
               onChangeText={(v) => handleTimeChange('minute', v)}
             />
             <ThemedText type="default">:</ThemedText>
-            <View style={styles.secondPlaceholderWrapper}>
+            <View
+              style={[
+                styles.secondPlaceholderWrapper,
+                {
+                  backgroundColor: appState.setting.theme === 'light' ? '#eee' : '#666'
+                }
+              ]}
+            >
               <ThemedText
                 type="defaultMedium"
                 darkColor={Colors.dark.defaultControlText}
@@ -393,8 +491,6 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           </ThemedText>
           <ThemedInput
             style={styles.descriptionInputControl}
-            darkColor={Colors.dark.defaultControlText}
-            lightColor={Colors.light.defaultControlText}
             type="default"
             multiline={true}
             autoCapitalize="none"
@@ -510,7 +606,6 @@ const styles = StyleSheet.create({
     borderColor: '#2196f3'
   },
   secondPlaceholderWrapper: {
-    backgroundColor: '#eee',
     width: 50,
     height: 40,
     alignItems: 'center',
@@ -522,7 +617,6 @@ const styles = StyleSheet.create({
   },
   descriptionInputControl: {
     borderWidth: 1,
-    borderColor: '#e2e2e2', 
     borderRadius: 5,
     marginTop: 10,
     height: 100,

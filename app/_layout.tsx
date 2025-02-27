@@ -4,11 +4,9 @@
  * 
  * Created by Thornton on 01/23/2025
  */
-import React from 'react';
+import React, { useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as globalState from '@/config/global';
-import * as Linking from 'expo-linking';
-import { PermissionsAndroid, Platform } from 'react-native';
 
 import '@/i18n';
 import 'react-native-reanimated';
@@ -22,16 +20,22 @@ import {
   Text,
   Alert
 } from 'react-native';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { ApplicationContextProvider } from '@/context/ApplicationContext';
+import { ApplicationContextProvider, IAppContext } from '@/context/ApplicationContext';
 import { IAppState } from '@/@types';
-import { InitialAppState, KEY_ACCESS_TOKEN } from '@/config/constants';
-import { setStorageItem } from '@/utils/storage';
+import {
+  InitialAppState,
+  KEY_ACCESS_TOKEN,
+  KEY_DB_INITIALIZED,
+} from '@/config/constants';
+import { getStorageItem, setStorageItem } from '@/utils/storage';
+import { setupDatabase } from '@/services/db';
+import { registerBackgroundDBSyncTask } from '@/tasks/db-sync';
+import { registerBackgroundNotificationTask } from '@/tasks/notification';
 
 if (__DEV__) {
   require('@/services/mock');
@@ -40,15 +44,33 @@ if (__DEV__) {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+// Load the app state
 globalState.loadAppState();
+
+// Set up the local database
+getStorageItem(KEY_DB_INITIALIZED)
+  .then(async (res: string) => {
+    if (res !== 'true') {
+      console.log('db setup start');
+      await setupDatabase();
+      setStorageItem(KEY_DB_INITIALIZED, 'true');
+      console.log('db setup end');
+    }
+  })
+  .catch(error => {
+    console.error('db setup error', error);
+  });
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [appContext, setAppContext] = React.useState({
-    appState: InitialAppState,
-    setAppState: (state: IAppState) => setAppState(state),
-    logout: async () => await logout(),
-  });
   const router = useRouter();
   const path = usePathname();
   
@@ -56,9 +78,15 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  const requestPermissions = async () => {
+    await Contacts.requestPermissionsAsync();
+    await Location.requestForegroundPermissionsAsync();
+  }
+  
   useEffect(() => {
+    const state = globalState.getAppState();
     checkAuth();
-    requestCallPermission();
+
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();
   }, [path]);
@@ -89,11 +117,15 @@ export default function RootLayout() {
     globalState.saveAppState(data);
   }
 
-  const checkAuth = (): void => {
+  const checkAuth = async (): Promise<void> => {
     const state = globalState.getAppState();
     if (!state.authenticated && path.indexOf('auth') < 0) {
-      console.log(path);
+      // console.log(path);
       router.replace('/auth/sign-in');
+    } else {
+      if (state.authenticated) {
+        
+      }
     }
   }
 
@@ -162,7 +194,6 @@ export default function RootLayout() {
 
   return (
     <ApplicationContextProvider value={appContext}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         {appContext.appState.lockScreen&&
           <View
             style={{
@@ -182,20 +213,6 @@ export default function RootLayout() {
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
-        <TouchableOpacity
-          onPress={handleEmergencyPress}
-          onLongPress={() => handleEmergencyLongPress(2000)} // Example duration
-          style={{
-            position: 'absolute',
-            bottom: 20,
-            right: 20,
-            backgroundColor: 'red',
-            padding: 15,
-            borderRadius: 50,
-          }}
-        >
-          <Text style={{ color: 'white', fontWeight: 'bold' }}>Emergency</Text>
-        </TouchableOpacity>
       </ThemeProvider>
     </ApplicationContextProvider>
   );
