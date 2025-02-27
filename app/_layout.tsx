@@ -154,6 +154,44 @@ export default function RootLayout() {
   // if (!loaded) {
   //   return null;
   // }
+  
+  // This code souldn't be placed here. Let's put it into the appropriate place in later.
+
+  // const makeCall = (phoneNumber: string) => {
+  //   if (Platform.OS === 'android') {
+  //     Linking.openURL(`tel:${phoneNumber}`);
+  //   } else {
+  //     Linking.openURL(`telprompt:${phoneNumber}`);
+  //   }
+  // };
+
+  // let tapCount = 0;
+  // let tapTimeout: NodeJS.Timeout;
+
+  // const handleEmergencyPress = () => {
+  //   tapCount++;
+  //   if (tapTimeout) {
+  //     clearTimeout(tapTimeout);
+  //   }
+  //   tapTimeout = setTimeout(() => {
+  //     if (tapCount === 1) {
+  //       makeCall('1234567890'); // Call caregiver
+  //     } else if (tapCount === 2) {
+  //       makeCall('0987654321'); // Call nurse
+  //     } else if (tapCount === 3) {
+  //       makeCall('1122334455'); // Call doctor
+  //     }
+  //     tapCount = 0;
+  //   }, 500);
+  // };
+
+  // const handleEmergencyLongPress = (duration: number) => {
+  //   if (duration >= 5000) {
+  //     makeCall('911'); // Call police
+  //   } else if (duration >= 2000) {
+  //     makeCall('119'); // Call ambulance
+  //   }
+  // };
 
   return (
     <ApplicationContextProvider value={appContext}>
