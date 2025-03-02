@@ -18,7 +18,8 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  useColorScheme
+  useColorScheme,
+  Alert
 } from 'react-native';
 import { register } from '@/services/auth';
 import { TResponse } from '@/@types';
@@ -27,7 +28,8 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedInput } from '@/components/ThemedIntput';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
-import { validateEmail } from '@/utils';
+import { showToast, validateEmail } from '@/utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -43,6 +45,8 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<{[k: string]: string}>({});
+
+  const { appState, setAppState } = useContext(ApplicationContext);
 
   const handleSignUp = useCallback(async () => {
     let errors: {[k: string]: string} = {};
@@ -89,18 +93,24 @@ export default function SignUpScreen() {
 
     let phoneNumber = phone.replaceAll(' ', '');
     let countryCode = country?.callingCode?? '+1';
-    
-    register(name, email, countryCode, phoneNumber, password)
-      .then((res: TResponse) => {
-        if (res.success) {
+    try {
+      let resultSignUp = await register(name, email, countryCode, phoneNumber, password);
+      const state = {
+        name: name,
+        email: email,
+        password: password
+      }
+      await AsyncStorage.setItem('user', JSON.stringify({ name: name, email: email }));
 
-        } else {
-          let errors: {[k: string]: string} = {};
-          errors['response_error'] = res.message?? '';
-          setErrors(errors);
-        }
-      });
-    
+      if(resultSignUp.success){
+        showToast('registered successfully!');
+        router.replace('/auth/sign-in');
+      }else {
+        showToast('register is already existed');
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }, [email, password, confirmPassword]);
 
   return (
@@ -172,7 +182,7 @@ export default function SignUpScreen() {
                 height: 45,
               },
               input: {
-                color: theme === 'light' ? Colors.dark.defaultControlText : Colors.dark.defaultControlText,
+                color: theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText,
                 fontSize: 16,
                 fontWeight: 400,
               },
@@ -234,7 +244,7 @@ export default function SignUpScreen() {
         <View style={styles.buttonWrapper}>
           <CustomButton
             onPress={handleSignUp}
-            bgColor={'#fa9800'}
+            bgColor={'#fa9800'} //#fa9800
           >
             <ThemedText
               type="button"
@@ -343,5 +353,8 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     marginTop: 20
+  },
+  formControl: {
+    marginTop: 10
   }
 });

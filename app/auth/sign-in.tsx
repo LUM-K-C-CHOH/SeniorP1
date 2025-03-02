@@ -40,9 +40,11 @@ export default function SignInScreen() {
   const { t } = useTranslation();
   const { appState, setAppState } = useContext(ApplicationContext);
 
-  const [email, setEmail] = useState<string>('morgan.thornton@bison.howard.edu');
-  const [password, setPassword] = useState<string>('123123');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<{[k: string]: string}>({});
+
+  const [loading, setLoading] = useState(false);
 
   const handleSignIn = useCallback(async (): Promise<void> => {
     let errors:{[k: string]: string} = {}
@@ -65,55 +67,55 @@ export default function SignInScreen() {
       ...appState,
       lockScreen: true
     });
+    try {
+      const resultLogIn: TResponse = await login(email, password);
+      console.log(resultLogIn);
 
-    login(email, password)
-      .then(async (res: TResponse) => {
-        if (res.success) {
-          const state = {
-            ...appState,
-            lockScreen: false,
-            authenticated: true,
-            user: res.data
-          };
-          const synced = await getStorageItem(KEY_DB_SYNCED);
-          if (synced !== 'true') {
-            if (!lockedSync) {
-              lockedSync = true;
-              console.log('db sync start');
-              setSyncDBPopupVisible(true);
-              await syncLocalDatabaseWithRemote();
-              setSyncDBPopupVisible(false);
-              lockedSync = false;
-              console.log('db sync end');
-
-              const setting = await getUserSetting();
-              
-              setAppState({
-                ...state,
-                lockScreen: false,
-                authenticated: true,
-                user: res.data,
-                setting
-              });
-            } else {
-              setAppState(state);
-            }
-          } else {
-            setAppState(state);
-            console.log('already synced...');
-          }
-
-          await new Promise(resolve => setTimeout(() => resolve(1), 100));
-          console.log('login')
-          router.replace('/');
-        } else {
-          let errors: {[k: string]: string} = {};
-          errors['response_error'] = res.message?? '';
-          setErrors(errors);
+      if(resultLogIn.success){
+        const state = {
+          ...appState,
+          lockScreen: false,
+          authenticated: true,
+          user: resultLogIn.data
         }
-      });
-  }, [email, password]);
+        
+        const synced = await getStorageItem(KEY_DB_SYNCED);
+        if (synced !== 'true') {
+          if (!lockedSync) {
+            lockedSync = true;
+            console.log('db sync start');
+            setSyncDBPopupVisible(true);
+            await syncLocalDatabaseWithRemote();
+            setSyncDBPopupVisible(false);
+            lockedSync = false;
+            console.log('db sync end');
 
+            const setting = await getUserSetting();
+
+            setAppState({
+              ...state,
+              user: resultLogIn.data,
+              setting: setting
+            });
+          } else {
+              setAppState(state);
+          }
+        } else {
+          setAppState(state);
+          console.log('already synced...');
+        }}
+
+        await new Promise(resolve => setTimeout(() => resolve(1), 100));
+        router.replace('/');
+    } catch (error) {
+      setAppState({
+        ...appState,
+        lockScreen: false
+      })
+      console.log(error);
+      
+    }  
+  }, [email, password]);
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <Stack.Screen
