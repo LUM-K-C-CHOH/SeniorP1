@@ -188,7 +188,7 @@ export default function AppointmentScreen() {
           resultElement={
             <ThemedView style={ConfirmResultStyle.container}>
               <ThemedText style={ConfirmResultStyle.titleText}>
-                {t('message.deleted_successfully')}
+                {t('message.alert_delete_success')}
               </ThemedText>
               <View style={ConfirmResultStyle.iconWrapper}><CircleCheckIcon /></View>
               <View style={ConfirmResultStyle.actionsWrapper}>

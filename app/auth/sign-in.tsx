@@ -25,11 +25,10 @@ import {
   Colors,
   KEY_DB_SYNCED,
 } from '@/config/constants';
-import { validateEmail } from '@/utils';
+import { showToast, validateEmail } from '@/utils';
 import { getStorageItem } from '@/utils/storage';
 import { getUserSetting } from '@/services/setting';
 import { syncLocalDatabaseWithRemote } from '@/services/sync';
-
 let lockedSync = false;
 
 export default function SignInScreen() {
@@ -43,8 +42,6 @@ export default function SignInScreen() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<{[k: string]: string}>({});
-
-  const [loading, setLoading] = useState(false);
 
   const handleSignIn = useCallback(async (): Promise<void> => {
     let errors:{[k: string]: string} = {}
@@ -61,17 +58,18 @@ export default function SignInScreen() {
     }
 
     setErrors(errors);
+
     if (Object.keys(errors).length > 0) return;
 
     setAppState({
       ...appState,
       lockScreen: true
     });
+
     try {
       const resultLogIn: TResponse = await login(email, password);
-      console.log(resultLogIn);
 
-      if(resultLogIn.success){
+      if (resultLogIn.success) {
         const state = {
           ...appState,
           lockScreen: false,
@@ -103,17 +101,26 @@ export default function SignInScreen() {
         } else {
           setAppState(state);
           console.log('already synced...');
-        }}
-
+        }
+        
         await new Promise(resolve => setTimeout(() => resolve(1), 100));
         router.replace('/');
+      }
+      else {
+        setAppState({
+          ...appState,
+          lockScreen: false
+        });
+        showToast(t('message.alert_login_fail'));
+      }
+
     } catch (error) {
       setAppState({
         ...appState,
         lockScreen: false
-      })
+      });
+      showToast(t('message.alert_login_fail'));
       console.log(error);
-      
     }  
   }, [email, password]);
   return (

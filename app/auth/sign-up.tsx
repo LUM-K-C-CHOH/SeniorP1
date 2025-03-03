@@ -93,22 +93,30 @@ export default function SignUpScreen() {
 
     let phoneNumber = phone.replaceAll(' ', '');
     let countryCode = country?.callingCode?? '+1';
+
+    setAppState({
+      ...appState,
+      lockScreen: true
+    });
+
     try {
       let resultSignUp = await register(name, email, countryCode, phoneNumber, password);
-      const state = {
-        name: name,
-        email: email,
-        password: password
-      }
-      await AsyncStorage.setItem('user', JSON.stringify({ name: name, email: email }));
+      setAppState({
+        ...appState,
+        lockScreen: false
+      });
 
-      if(resultSignUp.success){
-        showToast('registered successfully!');
+      if (resultSignUp.success) {
+        showToast(t('message.alert_register_success'));
         router.replace('/auth/sign-in');
-      }else {
-        showToast('register is already existed');
+      } else {
+        showToast(t('message.alert_exists_email'));
       }
     } catch (error) {
+      setAppState({
+        ...appState,
+        lockScreen: false
+      });
       console.log(error);
     }
   }, [email, password, confirmPassword]);

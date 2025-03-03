@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import CustomButton from '@/components/CustomButton';
 
+import ApplicationContext from '@/context/ApplicationContext';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Stack } from 'expo-router';
 import {
@@ -31,6 +32,8 @@ export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState<string>('');
   const [errors, setErrors] = useState<{[k: string]: string}>({});
 
+  const { appState, setAppState } = useContext(ApplicationContext);
+
   const handleSendVerifyCode = async (): Promise<void> => {
     let errors: {[k: string]: string} = {};
 
@@ -44,11 +47,22 @@ export default function ForgotPasswordScreen() {
 
     setErrors(errors);
     if (Object.keys(errors).length > 0) return;
+    
+    setAppState({
+      ...appState,
+      lockScreen: true
+    });
+
     try {
-      await sendVerificationCode(email);      
-      showToast("Password reset email sent. Check your email box.");
+      await sendVerificationCode(email);
+      setAppState({
+        ...appState,
+        lockScreen: false
+      });
+
+      showToast(t('messages.alert_forgot_password_success'));
     } catch (error) {
-      
+      console.error(error);
     }
   }
 
