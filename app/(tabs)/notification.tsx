@@ -268,7 +268,7 @@ export default function NotificationScreen() {
         resultElement={
           <ThemedView style={ConfirmResultStyle.container}>
             <ThemedText style={ConfirmResultStyle.titleText}>
-              {t('message.deleted_successfully')}
+              {t('message.alert_delete_success')}
             </ThemedText>
             <View style={ConfirmResultStyle.iconWrapper}>
               <CircleCheckIcon />

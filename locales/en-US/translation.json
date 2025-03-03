@@ -92,7 +92,7 @@
     "alert_select_country": "Please select a country.",
     "alert_input_confirm_password": "Please enter confirm password.",
     "alert_not_match_password": "Please enter correct confirm password.",
-    "deleted_successfully": "Deleted successfully.",
+    "alert_delete_success": "Deleted successfully.",
     "alert_input_dosage": "Please enter the dosage.",
     "alert_select_dosage_unit": "Please select the dosage unit.",
     "alert_select_cycle": "Please select the cycle.",
@@ -107,7 +107,11 @@
     "alert_delete_fail": "Failed to delete.",
     "hint_no_reserved_appointment_today": "No appointment reserved today.",
     "alert_location_permission_denied": "Permission to access location was denied.",
-    "alert_contact_permission_denied": "Permission to access contact was denied."
+    "alert_contact_permission_denied": "Permission to access contact was denied.",
+    "alert_register_success": "Registered successfully.",
+    "alert_exists_email": "The email was used by other members.",
+    "alert_login_fail": "The email and password are not correct.",
+    "alert_forgot_password_success": "Sent the link to change the password to your email."
   },
   "dashboard": {
     "welcome_back": "Welcome Back",

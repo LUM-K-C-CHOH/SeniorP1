@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import CustomButton from '@/components/CustomButton';
 
+import ApplicationContext from '@/context/ApplicationContext';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Stack } from 'expo-router';
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
@@ -14,7 +16,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedInput } from '@/components/ThemedIntput';
 import { Colors } from '@/config/constants';
 import { useTranslation } from 'react-i18next';
-import { validateEmail } from '@/utils';
+import { showToast, validateEmail } from '@/utils';
 import { LeftArrowIcon } from '@/utils/svgs';
 import { useRouter } from 'expo-router';
 import { sendVerificationCode } from '@/services/auth';
@@ -27,10 +29,12 @@ export default function ForgotPasswordScreen() {
 
   const { t } = useTranslation();
 
-  const [email, setEmail] = useState<string>('morgan.thornton@bison.howard.edu');
+  const [email, setEmail] = useState<string>('');
   const [errors, setErrors] = useState<{[k: string]: string}>({});
 
-  const handleSendVerifyCode = (): void => {
+  const { appState, setAppState } = useContext(ApplicationContext);
+
+  const handleSendVerifyCode = async (): Promise<void> => {
     let errors: {[k: string]: string} = {};
 
     if (email.length === 0) {
@@ -43,15 +47,23 @@ export default function ForgotPasswordScreen() {
 
     setErrors(errors);
     if (Object.keys(errors).length > 0) return;
+    
+    setAppState({
+      ...appState,
+      lockScreen: true
+    });
 
-    sendVerificationCode(email)
-      .then((res: TResponse) => {
-        if (res.success) {
-          router.push({ pathname: '/auth/reset-password', params: { email } });
-        } else {
-
-        }
+    try {
+      await sendVerificationCode(email);
+      setAppState({
+        ...appState,
+        lockScreen: false
       });
+
+      showToast(t('messages.alert_forgot_password_success'));
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

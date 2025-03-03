@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, StyleSheet } from 'react-native';
-import { RNCamera } from 'react-native-camera';
+// import { RNCamera } from 'react-native-camera';
 import ScannerOverlay from './ScannerOverlay';
 
 interface BarcodeScannerProps {
@@ -19,9 +19,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
   const isValidBarcode = (data: string) => data.length > 5; // Example validation
 
   return (
-    <RNCamera style={styles.camera} onBarCodeRead={handleBarCodeScanned}>
-      <ScannerOverlay />
-    </RNCamera>
+    <></>
+    // <RNCamera style={styles.camera} onBarCodeRead={handleBarCodeScanned}>
+    //   <ScannerOverlay />
+    // </RNCamera>
   );
 };
 
