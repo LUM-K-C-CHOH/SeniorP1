@@ -29,7 +29,6 @@ import { ThemedInput } from '@/components/ThemedIntput';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
 import { showToast, validateEmail } from '@/utils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignUpScreen() {
   const router = useRouter();

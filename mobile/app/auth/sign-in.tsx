@@ -68,7 +68,7 @@ export default function SignInScreen() {
 
     try {
       const resultLogIn: TResponse = await login(email, password);
-
+console.log(resultLogIn)
       if (resultLogIn.success) {
         const state = {
           ...appState,
@@ -83,7 +83,7 @@ export default function SignInScreen() {
             lockedSync = true;
             console.log('db sync start');
             setSyncDBPopupVisible(true);
-            await syncLocalDatabaseWithRemote();
+            await syncLocalDatabaseWithRemote(resultLogIn.data?.id);
             setSyncDBPopupVisible(false);
             lockedSync = false;
             console.log('db sync end');

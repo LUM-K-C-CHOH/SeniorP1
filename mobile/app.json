@@ -66,6 +66,7 @@
       "typedRoutes": true
     },
     "extra": {
+      "firebaseApiKey": "AIzaSyC11eg5Qe18WRYXsCvKRt2DTJm2URnfzvc",
       "router": {
         "origin": false
       },

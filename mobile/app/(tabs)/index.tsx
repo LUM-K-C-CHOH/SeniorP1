@@ -38,6 +38,7 @@ import {
   getTodayMedicationList,
   getMedicationSufficient
 } from '@/services/medication';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -51,11 +52,12 @@ export default function DashboardScreen() {
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
   const [refillMedicationList, setRefillMedicationList] = useState<IMedication[]>([]);
   const [medicationSufficient, setMedicationSufficient] = useState<number>(0);
-
+  const [value, setValue] = useState();
   useFocusEffect(   
     useCallback(() => {
       setInitiated(false);
     }, [])
+    
   );
 
   useEffect(() => {
@@ -85,6 +87,8 @@ export default function DashboardScreen() {
         setMedicationSufficient(results[3].data.sufficient);
       }
     });
+
+
   }, []);
 
   const getTime = (datetimeStr: string): string => {
@@ -101,7 +105,8 @@ export default function DashboardScreen() {
             darkColor={Colors.dark.grayText}
             lightColor={Colors.light.grayText}
           >
-            {t('dashboard.hi')}{', '}{appState.user?.name}
+            {t('dashboard.hi')}{', '}{'value'}
+            {/* {t('dashboard.hi')}{', '}{appState.user?.name} */}
           </ThemedText>
         </View>
         <View style={styles.rowWrapper}>

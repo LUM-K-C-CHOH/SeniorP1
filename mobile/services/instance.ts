@@ -6,8 +6,7 @@
  */
 import axios from 'axios';
 
-const prefixUrl = `${process.env.API_URL ? process.env.API_URL : ''}/`;
-
+const prefixUrl = `${process.env.EXPO_PUBLIC_API_URL ? process.env.EXPO_PUBLIC_API_URL : ''}/`;
 const axiosInstance = axios.create({
   baseURL: prefixUrl,
   timeout: 10000,

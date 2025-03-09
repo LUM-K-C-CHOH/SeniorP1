@@ -6,19 +6,26 @@
  */
 import axiosInstance from './instance';
 
-import { addData, deleteDataGroup, getAllData, Tables } from './db';
+import { addData, deleteDataGroup, getAllData, Tables, updateData } from './db';
 import { IEmergencyContact } from '@/@types';
 import { SyncStatus } from '@/config/constants';
 
-export const emergencyContactSyncWithServer = async (): Promise<boolean> => {
+export const emergencyContactSyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(
-    '/emergency/contact/list'
+    `/emergency/contact/${userId}`
   )
     .then(response => {
       if (response.data.code === 0) {
         for (let i = 0; i < response.data.data.length; i++) {
           const d = response.data.data[i];
-          addData(Tables.EMERGENCY_CONTACTS, { ...d, syncStatus: SyncStatus.SYNCED });
+          const data = {
+            id: d.id,
+            name: d.name,
+            phone: d.phone,
+            image: d.image,
+            type: d.type
+          }
+          addData(Tables.EMERGENCY_CONTACTS, { ...data, syncStatus: SyncStatus.SYNCED });
         }
         return true;
       } else {
@@ -31,10 +38,14 @@ export const emergencyContactSyncWithServer = async (): Promise<boolean> => {
     });
 }
 
-export const emergencyContactSyncToServer = async (emergencyContactData: IEmergencyContact[]): Promise<boolean> => {
+export const emergencyContactSyncToServer = async (emergencyContactData: IEmergencyContact, userId?: string): Promise<boolean> => {
+  const data = {
+    ...emergencyContactData,
+    user_id: userId
+  }
   return axiosInstance.put(
     '/emergency/contact/update',
-    emergencyContactData
+    data
   )
     .then(response => {
       if (response.data.code === 0) {
@@ -48,7 +59,27 @@ export const emergencyContactSyncToServer = async (emergencyContactData: IEmerge
       return false;
     });
 }
+export const deleteEmergencyContactSyncToServer = async (contactList: string, userId?: string): Promise<boolean> => {
+  
+  return axiosInstance.delete(
+    `/emergency/contact/${userId}`,{
+      data: {contactList},
+      headers: { "Content-Type": "application/json" }
+    }
 
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      return false;
+    });
+}
 export const getEmergencyContactList = async () => {
   try {
     const contactList = await getAllData(Tables.EMERGENCY_CONTACTS);
@@ -66,9 +97,14 @@ export const getEmergencyContactList = async () => {
   }
 }
 
-export const deleteEmergencyContactGroup = (idList: string): boolean => {
+export const deleteEmergencyContactGroup = async (idList: string, userId ?: string): Promise<boolean> => {
   try {
     const ret = deleteDataGroup(Tables.EMERGENCY_CONTACTS, idList);
+    if(ret){
+      console.log('aaaaaaaaaaaaaaaaaaaaaa', ret, idList);
+      await deleteEmergencyContactSyncToServer(idList, userId)
+      return true;
+    }
     return ret;
   } catch (error) {
     console.error(error);
@@ -76,10 +112,21 @@ export const deleteEmergencyContactGroup = (idList: string): boolean => {
   }
 }
 
-export const addEmergencyContact = (contact: IEmergencyContact): boolean => {
+export const addEmergencyContact = async (contact: IEmergencyContact, userId?: string): Promise<boolean> => {
   try {
-    let ret = addData(Tables.EMERGENCY_CONTACTS, { ...contact, syncStatus: SyncStatus.ADDED });
-    return ret >= 0;
+    let emergencyId = addData(Tables.EMERGENCY_CONTACTS, { ...contact, syncStatus: SyncStatus.ADDED });
+    if(emergencyId){
+      contact = {
+        ...contact,
+        id: emergencyId
+      }
+      let bret = await emergencyContactSyncToServer(contact, userId);
+      if(bret){
+        updateData(Tables.EMERGENCY_CONTACTS, emergencyId, { ...contact, syncStatus: SyncStatus.SYNCED });
+        return true;
+      }
+    }
+    return false;
   } catch (error) {
     console.error(error);
     return false;

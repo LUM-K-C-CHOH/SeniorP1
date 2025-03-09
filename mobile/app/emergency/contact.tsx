@@ -86,11 +86,11 @@ export default function EmergencyContactScreen() {
     }
   }
 
-  const handleContactDelete = (): void => {
+  const handleContactDelete = async (): Promise<void> => {
    if (checkedIdList.length === 0) return;
    
     const idList = checkedIdList.join(',');
-    const ret = deleteEmergencyContactGroup(idList);
+    const ret = await deleteEmergencyContactGroup(idList, appState.user?.id);
     if (ret) {
       const filter = contactList.filter(v => !checkedIdList.includes(v.id!));
       setContactList([...filter]);
@@ -162,13 +162,13 @@ export default function EmergencyContactScreen() {
     return false;
   }
 
-  const handleEmergencyContactAdd = (index: number): void => {
+  const handleEmergencyContactAdd = async (index: number): Promise<void> => {
     const orgContact = orgContactList[index];
     const exist = checkExistFromEmerygencyContact(orgContact.phone);
 
     if (exist) return;
 
-    const ret = addEmergencyContact(orgContact);
+    const ret = await addEmergencyContact(orgContact, appState.user?.id);
     if (ret) {
       handleLoadData();
       showToast(t('message.alert_save_success'));

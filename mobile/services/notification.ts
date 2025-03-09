@@ -6,13 +6,13 @@
  */
 import axiosInstance from './instance';
 
-import { addData, deleteDataGroup, getAllData, Tables } from './db';
+import { addData, deleteDataGroup, getAllData, Tables, updateData } from './db';
 import { SyncStatus } from '@/config/constants';
 import { INotification } from '@/@types';
 
-export const notificationSyncWithServer = async (): Promise<boolean> => {
+export const notificationSyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(
-    '/notification/list'
+    `/notification/${userId}`
   )
     .then(response => {
       if (response.data.code === 0) {
@@ -31,7 +31,8 @@ export const notificationSyncWithServer = async (): Promise<boolean> => {
     });
 }
 
-export const notificationSyncToServer = async (notificationData: INotification[]): Promise<boolean> => {
+export const notificationSyncToServer = async (notificationData: INotification, userId?: string): Promise<boolean> => {
+
   return axiosInstance.put(
     '/notification/update',
     notificationData
@@ -68,10 +69,17 @@ export const getNotificationList = async () => {
   }
 }
 
-export const addNotification = (notification: INotification): boolean => {
+export const addNotification = async (notification: INotification, userId?: string): Promise<boolean> => {
   try {
     let ret = addData(Tables.NOTIFICATIONS, { ...notification, syncStatus: SyncStatus.ADDED });
-    return ret >= 0;
+    if(ret){
+      let bret = await notificationSyncToServer(notification, userId);
+      if(bret){
+        updateData(Tables.NOTIFICATIONS, ret, { ...notification, syncStatus: SyncStatus.SYNCED });
+        return true;
+      }
+    }
+    return false;
   } catch (error) {
     console.error(error);
     return false;

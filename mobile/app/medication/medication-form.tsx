@@ -60,6 +60,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   const [dosage, setDosage] = useState<string>(medication ? `${medication.frequency.dosage}` : '');
   const [dosageUnit, setDosageUnit] = useState<string>(medication ? `${medication.frequency.dosageUnit}` : '');
   const [cycle, setCycle] = useState<string>(medication ? `${medication.frequency.cycle}` : '');
+  const [medicationId, setMedicationId] = useState<string>(medication ? `${medication.frequency.medicationId}` : '');
   const [times, setTimes] = useState<string[]>(medication ? medication.frequency.times : ['00:00']);
   const [startDate, setStartDate] = useState<string>(medication ? medication.startDate : dayjs().format('YYYY-MM-DD'));
   const [endDate, setEndDate] = useState<string>(medication ? medication.endDate : dayjs().format('YYYY-MM-DD'));
@@ -68,7 +69,6 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   const [emailAlert, setEmailAlert] = useState<string>(medication ? medication.emailAlert : 'on');
   const [pushAlert, setPushAlert] = useState<string>(medication ? medication.pushAlert : 'on');
   const [calendarPopupOptions, setCalendarPopupOptions] = useState({ opened: false, type: 0 });
-
   useEffect(() => {
     if (!medication) return;
     
@@ -76,6 +76,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
     setDosage(medication?.frequency.dosage ? `${medication.frequency.dosage}` : '');
     setDosageUnit(medication?.frequency.dosageUnit ? `${medication.frequency.dosageUnit}` : '');
     setCycle(medication?.frequency.cycle ? `${medication.frequency.cycle}` : '');
+    setMedicationId(medication?.frequency.medicationId ? `${medication.frequency.medicationId}` : '');
     setTimes(medication?.frequency.times ? medication?.frequency.times : ['00:00']);
     setStock(medication?.stock ? `${medication.stock}` : '');
     setThreshold(medication?.threshold ? `${medication.threshold}` : '');
@@ -193,7 +194,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
     }
   }
 
-  const handleMedicationAdd = (): void => {
+  const handleMedicationAdd = async (): Promise<void> => {
     let errors: {[k: string]: string} = {};
     if (name.length === 0) {
       errors['name'] = t('message.alert_input_name');
@@ -256,17 +257,19 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       endDate: endDate,
       image: '',
       frequency: {
+        medicationId: parseInt(medicationId, 10),
         dosage: parseInt(dosage, 10),
         dosageUnit: parseInt(dosageUnit, 10),
         cycle: parseInt(cycle, 10),
         times: times
       }
     }
-
+    console.log('------------@@@@@@@@@@----------', data);
     if (medication) {
       // update
-      data['id'] = medication.id;
-      const ret = updateMedication(data);
+      data.id = medication.id;
+      data.frequency.id = medication.frequency.id;
+      const ret = await updateMedication(data, appState.user?.id);
       if (ret) {
         router.back();
         showToast(t('message.alert_save_success'));
@@ -274,7 +277,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         showToast(t('message.alert_save_fail'));
       }
     } else {
-      const ret = addMedication(data);
+      const ret = await addMedication(data, appState.user?.id);
       if (ret) {
         router.back();
         showToast(t('message.alert_save_success'));
@@ -639,7 +642,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               trackColor={{ false: '#eee', true: '#0066ff' }}
               ios_backgroundColor={'#0066ff'}
               thumbColor={pushAlert === 'on' ? '#fff' : '#999'}
-              value={pushAlert === 'on'}
+              value={pushAlert === 'on  '}
               onValueChange={(v) => setPushAlert(v ? 'on' : 'off')}
             />
           </View>

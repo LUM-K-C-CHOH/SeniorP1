@@ -31,6 +31,7 @@ export default function MedicationEditScreen() {
       .then((res: TResponse) => {
         if (res.success) {
           const find = res.data.find((v: IMedication) => v.id === parseInt(params.id as string, 10));
+          console.log("find---------------", find);
           setMedication(find);
         } else {
 

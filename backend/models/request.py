@@ -1,4 +1,4 @@
-# Request Modes 
+# Request Models 
 # RTHA
 #
 # Created by Thornton on 03/02/2025
@@ -17,19 +17,19 @@ class Medication(BaseModel):
   user_id: str
   name: str
   image: str
-  name: str
   stock: int
-  startDate: str
-  endDate: str
+  start_date: str
+  end_date: str
   threshold: int
-  pushAlert: str
-  emailAlert: str
+  push_alert: str
+  email_alert: str
   
 class Frequency(BaseModel):
   id: int
+  medication_id: int
   user_id: str
   dosage: int
-  dosageUnit: int
+  dosage_unit: int
   cycle: int
   times: List[str]
 
@@ -39,7 +39,7 @@ class Appointment(BaseModel):
   name: str
   phone: str
   image: str
-  scheduledTime: str
+  scheduled_time: str
   description: str
   location: str
 
@@ -51,7 +51,7 @@ class Notification(BaseModel):
   var2: str
   var3: str
   status: int
-  targetId: int
+  target_id: int
 
 class EmergencyContact(BaseModel):
   id: int

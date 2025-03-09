@@ -71,12 +71,12 @@ export default function AppointmentScreen() {
     setDeleteConfirmPopupOptions({ opened: true, id });
   }
 
-  const handleDeleteConfrim = (): void => {
+  const handleDeleteConfrim = async (): Promise<void> => {
     const deleteId: number = deleteConfirmPopupOptions.id as number;
 
     if (deleteId < 0) return;
     
-    const ret = deleteAppointment(deleteId)
+    const ret = await deleteAppointment(deleteId, appState.user?.id)
     if (ret) {
       const filter = appointmentList.filter(v => v.id !== deleteId);
       setAppointmentList([...filter]);

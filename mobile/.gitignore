@@ -9,8 +9,8 @@ dist/
 web-build/
 expo-env.d.ts
 
-#Android
-android
+# Android
+android/
 
 # Native
 *.orig.*

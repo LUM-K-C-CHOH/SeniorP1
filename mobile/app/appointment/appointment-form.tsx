@@ -64,7 +64,6 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
   const [orgContactList, setOrgContactList] = useState<IContact[]>([]);  
   const [errors, setErrors] = useState<{[k: string]: string}>({});
-
   useEffect(() => {
     if (initiatedRef.current) return;
 
@@ -162,7 +161,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     }
   }
 
-  const handleSchedule  = (): void => {
+  const handleSchedule  = async (): Promise<void> => {
     const errors: {[k: string]: string} = {};
 
     if (name.length === 0 || phone.length === 0) {
@@ -205,7 +204,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
 
     if (appointment) {
       data['id'] = appointment.id;
-      const ret = updateAppointment(data);
+      const ret = await updateAppointment(data, appState.user?.id);
       if (ret) {
         router.back();
         showToast(t('message.alert_save_success'));
@@ -213,7 +212,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         showToast(t('message.alert_save_fail'));
       }
     } else {
-      const ret = addAppointment(data);
+      const ret = await addAppointment(data, appState.user?.id);
       if (ret) {
         router.back();
         showToast(t('message.alert_save_success'));
@@ -222,7 +221,9 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
       }
     }
   }
-
+  const handleCalendar = async (): Promise<void> => {
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  }
   const handleContactPopupOpen = async (): Promise<void> => {
     const { status } = await Contacts.requestPermissionsAsync();
     if (status === 'granted') {
@@ -509,6 +510,17 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
           }
         </View>
       </Animated.ScrollView>
+      <View style={styles.actionWrapper}>
+        <CustomButton onPress={handleCalendar}>
+          <ThemedText
+            type="button"
+            darkColor={Colors.dark.defaultButtonText}
+            lightColor={Colors.light.defaultButtonText}
+          >
+            {t('appointment_manage.join_google_calendar')}
+          </ThemedText>
+        </CustomButton>
+      </View>
       <View style={styles.actionWrapper}>
         <CustomButton onPress={handleSchedule}>
           <ThemedText

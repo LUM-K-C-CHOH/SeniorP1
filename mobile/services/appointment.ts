@@ -11,15 +11,24 @@ import { addData, deleteData, getAllData, Tables, updateData } from './db';
 import { IAppointment } from '@/@types';
 import { SyncStatus } from '@/config/constants';
 
-export const appointmentSyncWithServer = async (): Promise<boolean> => {
+export const appointmentSyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(
-    '/appointment/list'
+    `/appointment/${userId}`
   )
     .then(response => {
       if (response.data.code === 0) {
         for (let i = 0; i < response.data.data.length; i++) {
           const d = response.data.data[i];
-          addData(Tables.APPOINTMENTS, { ...d, syncStatus: SyncStatus.SYNCED });
+          const data = {
+            id: d.id,
+            name: d.name,
+            phone: d.phone,
+            image: d.image,
+            scheduledTime: d.scheduled_time,
+            location: d.location,
+            description: d.description
+          }
+          addData(Tables.APPOINTMENTS, { ...data, syncStatus: SyncStatus.SYNCED });
         }
         return true;
       } else {
@@ -32,10 +41,20 @@ export const appointmentSyncWithServer = async (): Promise<boolean> => {
     });
 }
 
-export const appointmentSyncToServer = async (appointmentData: IAppointment[]): Promise<boolean> => {
+export const appointmentSyncToServer = async (appointmentData: IAppointment, userId?: string): Promise<boolean> => {
+  const data = {
+    id: appointmentData.id,
+    user_id: userId,
+    name: appointmentData.name,
+    phone: appointmentData.phone,
+    image: appointmentData.image,
+    scheduled_time: appointmentData.scheduledTime,
+    description: appointmentData.description,
+    location: appointmentData.location
+  }
   return axiosInstance.put(
-    '/appointment/update',
-    appointmentData,
+    '/appointment',
+    data,
   )
     .then(response => {
       if (response.data.code === 0) {
@@ -49,7 +68,51 @@ export const appointmentSyncToServer = async (appointmentData: IAppointment[]): 
       return false;
     });
 }
+export const deleteAppointmentSyncToServer = async (appointmentId: number, userId?: string): Promise<boolean> => {
+  return axiosInstance.delete(
+    `/appointment/${userId}/${appointmentId}`
+  )
+    .then(response => {
+      console.log(response)
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      return false;
+    });
+}
+export const addAppointmentSyncToServer = async (appointmentData: IAppointment, userId?: string): Promise<boolean> => {
+  const data = {
+    id: appointmentData.id,
+    user_id: userId,
+    name: appointmentData.name,
+    phone: appointmentData.phone,
+    image: appointmentData.image,
+    scheduled_time: appointmentData.scheduledTime,
+    description: appointmentData.description,
+    location: appointmentData.location
+  }
 
+  return axiosInstance.post(
+    '/appointment',
+    data,
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      return false;
+    });
+}
 export const getAppointmentList = async () => {
   try {
     const appointmentList = await getAllData(Tables.APPOINTMENTS);
@@ -91,9 +154,12 @@ export const getTodayAppointmentList = async () => {
   }
 }
 
-export const deleteAppointment = (appointmentId: number): boolean => {
+export const deleteAppointment = async (appointmentId: number, userId?: string): Promise<boolean> => {
   try {
     let ret = deleteData(Tables.APPOINTMENTS, appointmentId);    
+    if(ret){
+      await deleteAppointmentSyncToServer(appointmentId, userId)
+    }
     return ret;
   } catch (error) {
     console.error(error);
@@ -101,11 +167,19 @@ export const deleteAppointment = (appointmentId: number): boolean => {
   }
 }
 
-export const updateAppointment = (appointment: IAppointment): boolean => {  
+export const updateAppointment = async (appointment: IAppointment, userId?: string): Promise<boolean> => {  
   try {
     if (appointment.id) {
       let ret = updateData(Tables.APPOINTMENTS, appointment.id, { ...appointment, syncStatus: SyncStatus.UPDATED });
-      return ret;
+      if(ret){
+        let bret = await appointmentSyncToServer(appointment, userId);
+        if(bret){
+          updateData(Tables.APPOINTMENTS, appointment.id, { ...appointment, syncStatus: SyncStatus.SYNCED });
+          return true;
+        }
+        return true;
+      }
+      return false;
     } else {
       return false;
     }   
@@ -115,10 +189,20 @@ export const updateAppointment = (appointment: IAppointment): boolean => {
   }
 }
 
-export const addAppointment = (appointment: IAppointment): boolean => {
+export const addAppointment = async (appointment: IAppointment, userId?: string): Promise<boolean> => {
   try {
-    let ret = addData(Tables.APPOINTMENTS, { ...appointment, syncStatus: SyncStatus.ADDED });
-    return ret >= 0;
+    let appointmentId = addData(Tables.APPOINTMENTS, { ...appointment, syncStatus: SyncStatus.ADDED });
+    if(appointmentId){
+      appointment = {
+        ...appointment,
+        id: appointmentId
+      }
+      let bret = await addAppointmentSyncToServer(appointment, userId);
+      if(bret){
+        updateData(Tables.APPOINTMENTS, appointmentId, { ...appointment, syncStatus: SyncStatus.SYNCED });
+      }
+    }
+    return appointmentId >= 0;
   } catch (error) {
     console.error(error);
     return false;
