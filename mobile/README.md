@@ -14,12 +14,9 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 3. Start the app
 
    ```bash
-    npx expo start
+    npx expo run android
    ```
-   Or
-   ```bash
-    npm run start
-   ```
+  
 
 In the output, you'll find options to open the app in a
 
