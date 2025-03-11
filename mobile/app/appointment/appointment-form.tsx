@@ -29,11 +29,11 @@ import { ThemedInput } from '@/components/ThemedIntput';
 import { generateBoxShadowStyle, getMarkColorFromName, getMarkLabelFromName, showToast } from '@/utils';
 import { useTranslation } from 'react-i18next';
 import { CalendarIcon, LocationIcon, LocationPinIcon } from '@/utils/svgs';
-import { getContactList } from '@/services/contact';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
 import { useRouter } from 'expo-router';
 import { addAppointment, updateAppointment } from '@/services/appointment';
+import { linkToCalendar } from '@/services/google-calendar';
 
 type TAppointmentFormProps = {
   appointment?: IAppointment
@@ -50,20 +50,21 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const router = useRouter();
 
   const { t } = useTranslation();
-  const { appState } = useContext(ApplicationContext);
+  const { appState, setAppState } = useContext(ApplicationContext);
 
   const [name, setName] = useState<string>(appointment?.name?? '');
   const [phone, setPhone] = useState<string>(appointment?.phone?? '');
   const [image, setImage] = useState<string>(appointment?.image?? '');
-  const [selectedDate, setSelectedDate] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-  const [timeType, setTimeType] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('a') : TimeType.AM);
-  const [hour,setHour] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('hh') : '');
-  const [minute, setMinute] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('mm') : '');
+  const [selectedDate, setSelectedDate] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ssZ').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
+  const [timeType, setTimeType] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('a') : TimeType.AM);
+  const [hour,setHour] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('hh') : '');
+  const [minute, setMinute] = useState<string>((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('mm') : '');
   const [description, setDescription] = useState<string>(appointment?.description?? '');
   const [calendarPopupVisible, setCalendarPopupVisible] = useState<boolean>(false);
   const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
   const [orgContactList, setOrgContactList] = useState<IContact[]>([]);  
   const [errors, setErrors] = useState<{[k: string]: string}>({});
+
   useEffect(() => {
     if (initiatedRef.current) return;
 
@@ -77,10 +78,10 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     setName(appointment.name?? '');
     setPhone(appointment.phone?? '');
     setImage(appointment.image?? '');
-    setSelectedDate((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
-    setHour((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('hh') : '');
-    setMinute((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('mm') : '');
-    setTimeType((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('a') : TimeType.AM);
+    setSelectedDate((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ssZ').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
+    setHour((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('hh') : '');
+    setMinute((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('mm') : '');
+    setTimeType((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('a') : TimeType.AM);
     setDescription(appointment.description?? '');
 
   }, [appointment]);
@@ -161,7 +162,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     }
   }
 
-  const handleSchedule  = async (): Promise<void> => {
+  const checkValidation = () => {
     const errors: {[k: string]: string} = {};
 
     if (name.length === 0 || phone.length === 0) {
@@ -187,9 +188,18 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
       errors['description'] = t('message.alert_input_description');
     }
 
+    return errors;
+  }
+  const handleSchedule  = async (): Promise<void> => {
+    if (appState.lockScreen) return;
+
+    const errors: {[k: string]: string} = checkValidation();
     setErrors(errors);
 
     if (Object.keys(errors).length > 0) return;
+
+    let h = parseInt(hour, 10);
+    const m = parseInt(minute, 10);
 
     h += timeType === TimeType.AM ? 0 : 12;
     const scheduledTime = `${selectedDate} ${new String(h).padStart(2, '0')}:${new String(m).padStart(2, '0')}:00`;
@@ -204,7 +214,10 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
 
     if (appointment) {
       data['id'] = appointment.id;
+      setAppState({ ...appState, lockScreen: true });
       const ret = await updateAppointment(data, appState.user?.id);
+      setAppState({ ...appState, lockScreen: false });
+
       if (ret) {
         router.back();
         showToast(t('message.alert_save_success'));
@@ -221,8 +234,39 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
       }
     }
   }
+  
   const handleCalendar = async (): Promise<void> => {
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (appState.lockScreen) return;
+    
+    const errors: {[k: string]: string} = checkValidation();
+
+    setErrors(errors);
+
+    if (Object.keys(errors).length > 0) return;
+
+    let h = parseInt(hour, 10);
+    const m = parseInt(minute, 10);
+    
+    h += timeType === TimeType.AM ? 0 : 12;
+    const scheduledTime = `${selectedDate}T${new String(h).padStart(2, '0')}:${new String(m).padStart(2, '0')}:00Z`;
+    const data: IAppointment = {
+      name,
+      image,
+      phone,
+      scheduledTime,
+      description,
+      location: ''
+    }
+
+    setAppState({ ...appState, lockScreen: true });
+    const res = await linkToCalendar(data);
+    if (res.success) {
+      showToast(t('message.alert_link_google_calendar_success'));
+    } else {
+      showToast(res.message as string);
+    }
+
+    setAppState({ ...appState, lockScreen: false });
   }
   const handleContactPopupOpen = async (): Promise<void> => {
     const { status } = await Contacts.requestPermissionsAsync();

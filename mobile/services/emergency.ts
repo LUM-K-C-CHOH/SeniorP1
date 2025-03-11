@@ -101,7 +101,6 @@ export const deleteEmergencyContactGroup = async (idList: string, userId ?: stri
   try {
     const ret = deleteDataGroup(Tables.EMERGENCY_CONTACTS, idList);
     if(ret){
-      console.log('aaaaaaaaaaaaaaaaaaaaaa', ret, idList);
       await deleteEmergencyContactSyncToServer(idList, userId)
       return true;
     }

@@ -51,7 +51,7 @@ export default function MedicationScreen() {
   const backgroundColor = useThemeColor({}, 'background');
 
   const { t } = useTranslation();
-  const { appState } = useContext(ApplicationContext);
+  const { appState, setAppState } = useContext(ApplicationContext);
 
   const [initiatedParam, setInitiatedParam] = useState<boolean>(false);
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
@@ -128,6 +128,8 @@ export default function MedicationScreen() {
 
     if (deleteId < 0) return;
     
+    setAppState({ ...appState, lockScreen: true });
+
     const ret = await deleteMedication(deleteId, appState.user?.id)
     if (ret) {
       const filter = medicationList.filter(v => v.id !== deleteId);
@@ -136,6 +138,8 @@ export default function MedicationScreen() {
     } else {
       showToast(t('message.alert_delete_fail'));
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   const handleDeleteConfirmResult = (): void => {

@@ -111,7 +111,10 @@
     "alert_register_success": "Registered successfully.",
     "alert_exists_email": "The email was used by other members.",
     "alert_login_fail": "The email and password are not correct.",
-    "alert_forgot_password_success": "Sent the link to change the password to your email."
+    "alert_forgot_password_success": "Sent the link to change the password to your email.",
+    "alert_google_authentication_fail": "The google authentication is failed.",
+    "alert_link_google_calendar_fail": "The linking to the google calendar is failed.",
+    "alert_link_google_calendar_success": "The linking to the google calendar is succeed."
   },
   "dashboard": {
     "welcome_back": "Welcome Back",

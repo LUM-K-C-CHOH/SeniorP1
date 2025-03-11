@@ -105,8 +105,7 @@ export default function DashboardScreen() {
             darkColor={Colors.dark.grayText}
             lightColor={Colors.light.grayText}
           >
-            {t('dashboard.hi')}{', '}{'value'}
-            {/* {t('dashboard.hi')}{', '}{appState.user?.name} */}
+            {t('dashboard.hi')}{', '}{appState.user?.name}
           </ThemedText>
         </View>
         <View style={styles.rowWrapper}>

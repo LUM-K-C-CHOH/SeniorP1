@@ -9,7 +9,6 @@ import axiosInstance from './instance';
 import { addData, getAllData, Tables, updateAllData } from './db';
 import { ISetting } from '@/@types';
 import { InitialAppState, SyncStatus } from '@/config/constants';
-import { push } from 'expo-router/build/global-state/routing';
 
 export const userSettingSyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(
@@ -18,9 +17,9 @@ export const userSettingSyncWithServer = async (userId?: string): Promise<boolea
   .then(response => {
     if (response.data.code === 0) {
       const data = {
-        push: response.data.data[0].push,
-        font: response.data.data[0].font,
-        theme: response.data.data[0].theme,
+        push: response.data.data[0] ? response.data.data[0].push : 'on',
+        font: response.data.data[0] ? response.data.data[0].font : 'small',
+        theme: response.data.data[0] ? response.data.data[0].theme : 'light',
       }
         addData(Tables.SETTINGS, { ...data, syncStatus: SyncStatus.SYNCED });
         return true;
@@ -39,6 +38,7 @@ export const userSettingSyncToServer = async (settingData: ISetting, userId?: st
     ...settingData,
     user_id: userId 
   }
+  
   return axiosInstance.put(
     '/user/setting',
     data
@@ -65,6 +65,7 @@ export const getUserSetting = async (): Promise<ISetting> => {
       font: settingList[0].font,
       theme: settingList[0].theme
     }
+   
     return data as ISetting;
   } catch (error) {
     console.error(error);
@@ -74,7 +75,7 @@ export const getUserSetting = async (): Promise<ISetting> => {
 
 export const updateUserSetting = async (setting: ISetting, userId?: string): Promise<boolean> => {
   const ret = updateAllData(Tables.SETTINGS, { ...setting, syncStatus: SyncStatus.UPDATED });
-  if(!ret){
+  if(ret){
     let bret = await userSettingSyncToServer(setting, userId);
     if(bret){
       updateAllData(Tables.SETTINGS, { ...setting, syncStatus: SyncStatus.SYNCED });

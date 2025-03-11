@@ -8,16 +8,22 @@ import os
 import services.firebase 
 
 from fastapi import FastAPI, HTTPException, Query
-from models.request import Medication, Frequency, Setting, Appointment, EmergencyContact
+from models.request import Medication, Frequency, Setting, Appointment, EmergencyContact, Notification
 from firebase_admin import credentials, firestore
 from pydantic import BaseModel
 # Get Firestore database reference
 current_dir = os.path.dirname(os.path.abspath(__file__))
 key_path = os.path.join(current_dir, "firebaseServiceAccountKey.json")
-cred = credentials.Certificate(key_path)
-firebase_admin.initialize_app(cred)
 
-db = firestore.client()
+if not firebase_admin._apps:
+    cred = credentials.Certificate(key_path)
+    firebase_admin.initialize_app(cred)
+
+try:
+    db = firestore.client()
+except Exception as e:
+    print(f"Firestore client initialization failed: {e}")
+    
 app = FastAPI()
 
 @app.get("/")
@@ -337,4 +343,25 @@ def delete_emergency(user_id: str, request: EmergencyDeleteRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+@app.get("/notification/{user_id}")
+def get_notification_list(user_id: str):
+    try:
+        notifications_ref = db.collection("notifications").where("user_id", "==", user_id).stream()
+        notifications = [doc.to_dict() for doc in notifications_ref]
+        if not notifications:
+            return {"code": 0, "message": "No notifications found", "data": []}
+
+        return {"code": 0, "data": notifications}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     
+@app.put("/notification/update")
+def update_notification(notification: Notification):
+    try:
+        notification_data = notification.model_dump()
+        doc_ref = db.collection("notifications").add(notification_data)
+
+        return {"code": 0, "document_id": doc_ref[1].id}    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

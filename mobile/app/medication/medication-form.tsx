@@ -52,7 +52,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   const router = useRouter();
 
   const { t } = useTranslation();
-  const { appState } = useContext(ApplicationContext);
+  const { appState, setAppState } = useContext(ApplicationContext);
 
   const [errors, setErrors] = useState<{[k: string]: string}>({});
   const [timeErrors, setTimeErrors] = useState<string[]>(medication ? Array.from(new Array(medication.frequency.times.length), () => '') : ['']);
@@ -195,6 +195,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   }
 
   const handleMedicationAdd = async (): Promise<void> => {
+    if (appState.lockScreen) return;
+    
     let errors: {[k: string]: string} = {};
     if (name.length === 0) {
       errors['name'] = t('message.alert_input_name');
@@ -264,7 +266,9 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         times: times
       }
     }
-    console.log('------------@@@@@@@@@@----------', data);
+    
+    setAppState({ ...appState, lockScreen: true });
+
     if (medication) {
       // update
       data.id = medication.id;
@@ -285,6 +289,8 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         showToast(t('message.alert_save_fail'));
       }
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   const handleTimeAdd = (): void => {
@@ -642,7 +648,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
               trackColor={{ false: '#eee', true: '#0066ff' }}
               ios_backgroundColor={'#0066ff'}
               thumbColor={pushAlert === 'on' ? '#fff' : '#999'}
-              value={pushAlert === 'on  '}
+              value={pushAlert === 'on'}
               onValueChange={(v) => setPushAlert(v ? 'on' : 'off')}
             />
           </View>

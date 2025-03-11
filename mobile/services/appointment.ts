@@ -146,7 +146,7 @@ export const getTodayAppointmentList = async () => {
       description: v.description,
       location: v.location,
     }));
-    list = list.filter(v => dayjs(v.scheduledTime, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') === todayStr);
+    list = list.filter(v => dayjs(v.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('YYYY-MM-DD') === todayStr);
     return { success: true, data: list };
   } catch (error) {
     console.error(error);

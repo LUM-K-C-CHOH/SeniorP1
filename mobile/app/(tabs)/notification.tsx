@@ -35,7 +35,7 @@ export default function NotificationScreen() {
   const router = useRouter();
   const backgroundColor = useThemeColor({}, 'background');
 
-  const { appState } = useContext(ApplicationContext);
+  const { appState, setAppState } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -84,6 +84,8 @@ export default function NotificationScreen() {
   const handleContactDelete = (): void => {
     if (checkedIdList.length === 0) return;
 
+    setAppState({ ...appState, lockScreen: true });
+
     const idList = checkedIdList.join(',');
     const ret = deleteNotificationGroup(idList);
     if (ret) {
@@ -93,6 +95,8 @@ export default function NotificationScreen() {
     } else {
       showToast(t('message.alert_delete_fail'));
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   const handleDeleteConfirmResult = (): void => {

@@ -39,7 +39,7 @@ export default function EmergencyContactScreen() {
   const backgroundColor = useThemeColor({}, 'background');
 
   const { t } = useTranslation();
-  const { appState } = useContext(ApplicationContext);
+  const { appState, setAppState } = useContext(ApplicationContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [contactList, setContactList] = useState<IEmergencyContact[]>([]);
@@ -87,8 +87,11 @@ export default function EmergencyContactScreen() {
   }
 
   const handleContactDelete = async (): Promise<void> => {
-   if (checkedIdList.length === 0) return;
+    if (checkedIdList.length === 0) return;
+    if (appState.lockScreen) return;
    
+    setAppState({ ...appState, lockScreen: true });
+
     const idList = checkedIdList.join(',');
     const ret = await deleteEmergencyContactGroup(idList, appState.user?.id);
     if (ret) {
@@ -98,6 +101,8 @@ export default function EmergencyContactScreen() {
     } else {
       showToast(t('message.alert_delete_fail'));
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   const handleDeleteConfirmResult = (): void => {
@@ -163,10 +168,14 @@ export default function EmergencyContactScreen() {
   }
 
   const handleEmergencyContactAdd = async (index: number): Promise<void> => {
+    if (appState.lockScreen) return;
+
     const orgContact = orgContactList[index];
     const exist = checkExistFromEmerygencyContact(orgContact.phone);
 
     if (exist) return;
+
+    setAppState({ ...appState, lockScreen: true });
 
     const ret = await addEmergencyContact(orgContact, appState.user?.id);
     if (ret) {
@@ -175,6 +184,8 @@ export default function EmergencyContactScreen() {
     } else {
       showToast(t('message.alert_save_fail'));
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   type OrgContactItemProps = {

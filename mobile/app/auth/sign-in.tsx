@@ -68,7 +68,6 @@ export default function SignInScreen() {
 
     try {
       const resultLogIn: TResponse = await login(email, password);
-console.log(resultLogIn)
       if (resultLogIn.success) {
         const state = {
           ...appState,
@@ -78,6 +77,7 @@ console.log(resultLogIn)
         }
         
         const synced = await getStorageItem(KEY_DB_SYNCED);
+        
         if (synced !== 'true') {
           if (!lockedSync) {
             lockedSync = true;
