@@ -26,7 +26,7 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
               status: NotificationStatus.PENDING,
               targetId: medication.id as number,
             }
-            addNotification(notification);
+            addNotification(notification, appState.user?.id);
 
             if (appState.setting.push === 'off' || medication.pushAlert === 'off') {
               continue;

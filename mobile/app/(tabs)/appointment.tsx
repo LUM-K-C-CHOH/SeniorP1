@@ -30,7 +30,7 @@ import { Colors } from '@/config/constants';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
-  const { appState } = useContext(ApplicationContext);
+  const { appState, setAppState } = useContext(ApplicationContext);
 
   const initiatedRef = useRef<boolean>(false);
   const router = useRouter();
@@ -71,12 +71,14 @@ export default function AppointmentScreen() {
     setDeleteConfirmPopupOptions({ opened: true, id });
   }
 
-  const handleDeleteConfrim = (): void => {
+  const handleDeleteConfrim = async (): Promise<void> => {
     const deleteId: number = deleteConfirmPopupOptions.id as number;
 
     if (deleteId < 0) return;
     
-    const ret = deleteAppointment(deleteId)
+    setAppState({ ...appState, lockScreen: true });
+
+    const ret = await deleteAppointment(deleteId, appState.user?.id)
     if (ret) {
       const filter = appointmentList.filter(v => v.id !== deleteId);
       setAppointmentList([...filter]);
@@ -84,6 +86,8 @@ export default function AppointmentScreen() {
     } else {
       showToast(t('message.alert_delete_fail'));
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   const handleDeleteConfirmResult = (): void => {

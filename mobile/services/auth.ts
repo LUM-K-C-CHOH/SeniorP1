@@ -4,12 +4,15 @@
  * 
  * Created by Thornton on 01/23/2025
  */
-import { useState  } from 'react';
 import axiosInstance from './instance';
-import { Alert } from 'react-native';
-import { createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword  } from 'firebase/auth';
+
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword
+} from 'firebase/auth';
 import { auth, firestore} from '@/config/firebaseConfig';
-import { useRouter } from 'expo-router';
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export const login = async (

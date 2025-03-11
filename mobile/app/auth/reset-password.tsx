@@ -27,7 +27,7 @@ export default function VerifyCodeScreen() {
 
   const { t } = useTranslation();
 
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail] = useState<string>('happyheartshine727@gmail.com');
   const [codes, setCodes] = useState<string[]>(['', '', '', '']);
   const [codeErrors, setCodeErrors] = useState<string[]>(['', '', '', '']);
   const [errors, setErrors] = useState<{[k: string]: string}>({});

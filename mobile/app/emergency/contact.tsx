@@ -39,7 +39,7 @@ export default function EmergencyContactScreen() {
   const backgroundColor = useThemeColor({}, 'background');
 
   const { t } = useTranslation();
-  const { appState } = useContext(ApplicationContext);
+  const { appState, setAppState } = useContext(ApplicationContext);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [contactList, setContactList] = useState<IEmergencyContact[]>([]);
@@ -86,11 +86,14 @@ export default function EmergencyContactScreen() {
     }
   }
 
-  const handleContactDelete = (): void => {
-   if (checkedIdList.length === 0) return;
+  const handleContactDelete = async (): Promise<void> => {
+    if (checkedIdList.length === 0) return;
+    if (appState.lockScreen) return;
    
+    setAppState({ ...appState, lockScreen: true });
+
     const idList = checkedIdList.join(',');
-    const ret = deleteEmergencyContactGroup(idList);
+    const ret = await deleteEmergencyContactGroup(idList, appState.user?.id);
     if (ret) {
       const filter = contactList.filter(v => !checkedIdList.includes(v.id!));
       setContactList([...filter]);
@@ -98,6 +101,8 @@ export default function EmergencyContactScreen() {
     } else {
       showToast(t('message.alert_delete_fail'));
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   const handleDeleteConfirmResult = (): void => {
@@ -162,19 +167,25 @@ export default function EmergencyContactScreen() {
     return false;
   }
 
-  const handleEmergencyContactAdd = (index: number): void => {
+  const handleEmergencyContactAdd = async (index: number): Promise<void> => {
+    if (appState.lockScreen) return;
+
     const orgContact = orgContactList[index];
     const exist = checkExistFromEmerygencyContact(orgContact.phone);
 
     if (exist) return;
 
-    const ret = addEmergencyContact(orgContact);
+    setAppState({ ...appState, lockScreen: true });
+
+    const ret = await addEmergencyContact(orgContact, appState.user?.id);
     if (ret) {
       handleLoadData();
       showToast(t('message.alert_save_success'));
     } else {
       showToast(t('message.alert_save_fail'));
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   type OrgContactItemProps = {

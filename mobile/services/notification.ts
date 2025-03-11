@@ -6,19 +6,28 @@
  */
 import axiosInstance from './instance';
 
-import { addData, deleteDataGroup, getAllData, Tables } from './db';
+import { addData, deleteDataGroup, getAllData, Tables, updateData } from './db';
 import { SyncStatus } from '@/config/constants';
 import { INotification } from '@/@types';
 
-export const notificationSyncWithServer = async (): Promise<boolean> => {
+export const notificationSyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(
-    '/notification/list'
+    `/notification/${userId}`
   )
     .then(response => {
       if (response.data.code === 0) {
         for (let i = 0; i < response.data.data.length; i++) {
           const d = response.data.data[i];
-          addData(Tables.NOTIFICATIONS, { ...d, syncStatus: SyncStatus.SYNCED });
+          const data = {
+            id: d.id,
+            type: d.type,
+            status: d.status,
+            targetId: d.target_id,
+            var1: d.var1,
+            var2: d.var2,
+            var3: d.var3
+          }
+          addData(Tables.NOTIFICATIONS, { ...data, syncStatus: SyncStatus.SYNCED });
         }
         return true;
       } else {
@@ -31,10 +40,20 @@ export const notificationSyncWithServer = async (): Promise<boolean> => {
     });
 }
 
-export const notificationSyncToServer = async (notificationData: INotification[]): Promise<boolean> => {
+export const notificationSyncToServer = async (notificationData: INotification, userId?: string): Promise<boolean> => {
+  const data = {
+    id: notificationData.id,
+    user_id: userId,
+    type: notificationData.type,
+    status: notificationData.status,
+    target_id: notificationData.targetId,
+    var1: notificationData.var1,
+    var2: notificationData.var2,
+    var3: notificationData.var3
+  }
   return axiosInstance.put(
     '/notification/update',
-    notificationData
+    data
   )
     .then(response => {
       if (response.data.code === 0) {
@@ -68,10 +87,21 @@ export const getNotificationList = async () => {
   }
 }
 
-export const addNotification = (notification: INotification): boolean => {
+export const addNotification = async (notification: INotification, userId?: string): Promise<boolean> => {
   try {
-    let ret = addData(Tables.NOTIFICATIONS, { ...notification, syncStatus: SyncStatus.ADDED });
-    return ret >= 0;
+    let notificationId = addData(Tables.NOTIFICATIONS, { ...notification, syncStatus: SyncStatus.ADDED });
+    if(notificationId){
+      notification = {
+        ...notification,
+        id: notificationId
+      }
+      let bret = await notificationSyncToServer(notification, userId);
+      if(bret){
+        updateData(Tables.NOTIFICATIONS, notificationId, { ...notification, syncStatus: SyncStatus.SYNCED });
+        return true;
+      }
+    }
+    return false;
   } catch (error) {
     console.error(error);
     return false;

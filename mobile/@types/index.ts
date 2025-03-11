@@ -7,7 +7,7 @@ import { Icon } from "@expo/vector-icons/build/createIconSet";
  * Created by Thornton on 01/23/2025
  */
 export interface IUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
 }
@@ -27,6 +27,8 @@ export interface IAppState {
 }
 
 export type IFrequency = {
+  id?: number,
+  medicationId: number,
   dosage: number,
   dosageUnit: number,
   cycle: number,

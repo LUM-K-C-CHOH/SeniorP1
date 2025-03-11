@@ -51,7 +51,7 @@ export default function MedicationScreen() {
   const backgroundColor = useThemeColor({}, 'background');
 
   const { t } = useTranslation();
-  const { appState } = useContext(ApplicationContext);
+  const { appState, setAppState } = useContext(ApplicationContext);
 
   const [initiatedParam, setInitiatedParam] = useState<boolean>(false);
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
@@ -123,12 +123,14 @@ export default function MedicationScreen() {
     setDeleteConfirmPopupOptions({ opened: true, id });
   }
 
-  const handleDeleteConfrim = (): void => {
+  const handleDeleteConfrim = async(): Promise<void> => {
     const deleteId: number = deleteConfirmPopupOptions.id as number;
 
     if (deleteId < 0) return;
     
-    const ret = deleteMedication(deleteId)
+    setAppState({ ...appState, lockScreen: true });
+
+    const ret = await deleteMedication(deleteId, appState.user?.id)
     if (ret) {
       const filter = medicationList.filter(v => v.id !== deleteId);
       setMedicationList([...filter]);
@@ -136,6 +138,8 @@ export default function MedicationScreen() {
     } else {
       showToast(t('message.alert_delete_fail'));
     }
+
+    setAppState({ ...appState, lockScreen: false });
   }
 
   const handleDeleteConfirmResult = (): void => {
@@ -201,7 +205,7 @@ export default function MedicationScreen() {
     
   }
 
-  const handleReminderSettingSave = (): void => {
+  const handleReminderSettingSave = async (): Promise<void> => {
     const threshold = reminderSettingPanelOptions.threshold as string;
     const errors: {[k: string]: string} = {};
     
@@ -218,8 +222,8 @@ export default function MedicationScreen() {
     data.pushAlert = reminderSettingPanelOptions.pushAlert as string;
     data.emailAlert = reminderSettingPanelOptions.emailAlert as string;
     data.threshold = reminderSettingPanelOptions.threshold as number;
-    
-    const ret = updateMedication(data);
+    data.image = data.image ? data.image : '';
+    const ret = await updateMedication(data, appState.user?.id);
     if (ret) {
       medicationList[findIndex] = data;
       setMedicationList([...medicationList]);

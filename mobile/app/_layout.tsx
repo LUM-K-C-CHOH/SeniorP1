@@ -35,9 +35,9 @@ import { setupDatabase } from '@/services/db';
 import { registerBackgroundDBSyncTask } from '@/tasks/db-sync';
 import { registerBackgroundNotificationTask } from '@/tasks/notification';
 
-if (__DEV__) {
-  require('@/services/mock');
-}
+// if (__DEV__) {
+//   require('@/services/mock');
+// }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
