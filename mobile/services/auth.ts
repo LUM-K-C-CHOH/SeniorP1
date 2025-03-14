@@ -5,7 +5,7 @@
  * Created by Morgan on 01/23/2025
  */
 import axiosInstance from './instance';
-
+import { getAuth, EmailAuthProvider, reauthenticateWithCredential, updatePassword as firebaseUpdatePassword } from 'firebase/auth';
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -121,27 +121,48 @@ export const resetPassword = (
     });
 }
 
-export const updatePassword = (
+export const updatePassword = async (
+  email: string,
   currentPassword: string,
   newPassword: string
-) => {
-  return axiosInstance.post(
-    '/auth/reset-password',
-    {
-      currentPassword,
-      newPassword
-    },
-  )
-    .then(response => {
-      if (response.data.code === 0) {
-        return { success: true, data: response.data.data };
-      } else {
-        return { success: false, message: response.data.error };
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      return { success: false, message: error.message };
-    });
+): Promise<{code: number}> => {
+    // const user = auth.currentUser;
+
+    // if (!user || !user.email) {
+    //   throw new Error("No user is currently logged in.");
+    // }
+
+    // Create a credential with the user's current email and password
+    // const credential = EmailAuthProvider.credential(email, currentPassword);
+    // Re-authenticate the user
+  
+    // await reauthenticateWithCredential(credential.user, credential);
+    
+    // Update the password
+      return new Promise((resolve) => {
+        signInWithEmailAndPassword(auth, email, currentPassword)
+          .then(userCredential => {
+            const user = userCredential.user;
+  
+            if (!user) {
+              return resolve({ code: -1 });
+            }
+  
+            firebaseUpdatePassword(user, newPassword)
+              .then(res => {
+                console.log("Password updated successfully!", res);
+                return resolve({ code: 0 });
+              })
+              .catch(error => {
+                console.log("Error update password: ", error);
+                return resolve({ code: -2 });
+              })
+          })
+          .catch(error => {
+            console.log("Error login: ", error);
+            return resolve({ code: -1 });
+          });
+      });
+    
 }
 
