@@ -2,7 +2,7 @@
  * Main Layout for App
  * RTHA
  * 
- * Created by Thornton on 01/23/2025
+ * Created by Morgan on 01/23/2025
  */
 import React, { useState, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';

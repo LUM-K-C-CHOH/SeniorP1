@@ -2,7 +2,7 @@
  * index.tsx
  * RTHA
  * 
- * Created by Thornton on 01/23/2025
+ * Created by Morgan on 01/23/2025
  */
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import Animated from 'react-native-reanimated';

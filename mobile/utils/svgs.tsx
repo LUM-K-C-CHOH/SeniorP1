@@ -2,7 +2,7 @@
  * SVG Assets Definition
  * RTHA
  * 
- * Created by Thornton on 01/23/2025
+ * Created by Morgan on 01/23/2025
  */
 import Svg, { G, Path, Defs, ClipPath, Rect, Circle } from 'react-native-svg';
 

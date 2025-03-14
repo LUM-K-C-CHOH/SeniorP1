@@ -2,7 +2,7 @@
  * Edit Medication Screen
  * RTHA
  * 
- * Created by Thornton on 01/28/2025
+ * Created by Morgan on 01/28/2025
  */
 import React, { useEffect, useState, useRef } from 'react';
 import Header from '@/app/layout/header';

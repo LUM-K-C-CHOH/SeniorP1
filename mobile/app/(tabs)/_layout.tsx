@@ -2,7 +2,7 @@
  * Main Layout of Tab Screens
  * RTHA
  * 
- * Created by Thornton on 01/23/2025
+ * Created by Morgan on 01/23/2025
  */
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import TabBarBackground from '@/components/ui/TabBarBackground';

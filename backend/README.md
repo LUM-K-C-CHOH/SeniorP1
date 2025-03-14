@@ -9,7 +9,7 @@
  - Run below command in cmd.
   ```
   python -m venv venv
-  ./venv/Scripts/Activate
+  ./.venv/Scripts/Activate
   ```
 
 2. Install the dependency packages.

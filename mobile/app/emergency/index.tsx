@@ -2,7 +2,7 @@
  * Emergency Alert Screen
  * RTHA
  * 
- * Created by Thornton on 01/28/2025
+ * Created by Morgan on 01/28/2025
  */
 import React, { useState, useContext } from 'react';
 import Header from '@/app/layout/header';

@@ -2,7 +2,7 @@
  * Database Sychronization
  * RTHA
  * 
- * Created by Thornton on 02/24/2025
+ * Created by Morgan on 02/24/2025
  */
 import NetInfo from '@react-native-community/netinfo';
 

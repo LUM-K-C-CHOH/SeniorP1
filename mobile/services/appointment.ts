@@ -2,7 +2,7 @@
  * Appointment Service
  * RTHA
  * 
- * Created by Thornton on 02/06/2025
+ * Created by Morgan on 02/06/2025
  */
 import dayjs from 'dayjs';
 import axiosInstance from './instance';

@@ -2,7 +2,7 @@
  * Appointment List Screen
  * RTHA
  * 
- * Created by Thornton on 01/28/2025
+ * Created by Morgan on 01/28/2025
  */
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';

@@ -2,7 +2,7 @@
  * Medication Form
  * RTHA
  * 
- * Created by Thornton on 01/28/2025
+ * Created by Morgan on 01/28/2025
  */
 import React, { useState, useEffect, useContext } from 'react';
 import CustomButton from '@/components/CustomButton';
