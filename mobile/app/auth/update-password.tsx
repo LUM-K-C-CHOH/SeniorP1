@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Header from '@/app/layout/header';
 import CustomButton from '@/components/CustomButton';
 
@@ -13,18 +13,23 @@ import { ThemedInput } from '@/components/ThemedIntput';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@/config/constants';
+import { updatePassword } from '@/services/auth';
+import ApplicationContext from '@/context/ApplicationContext';
+import { showToast } from '@/utils';
 
 export default function UpdatePasswordScreen() {
   const backgroundColor = useThemeColor({}, 'background');
-
+  
+  const { appState, setAppState } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
   const [currentPassword, setCurrentPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<{[k: string]: string}>({});
+  
 
-  const handleUpdatePassword = (): void => {
+  const handleUpdatePassword = async(): Promise<void> => {
     let errors: {[k: string]: string} = {};
     
     if (currentPassword.length === 0) {
@@ -45,6 +50,29 @@ export default function UpdatePasswordScreen() {
     
     setErrors(errors);
     if (Object.keys(errors).length > 0) return;
+
+    if (!appState.user?.email) {
+      showToast(t('message.alert_invalid_user_info'));
+    } else {
+      setAppState({ ...appState, lockScreen: true });
+      const result = await updatePassword(appState.user?.email, currentPassword, newPassword);
+
+      if (result.code === 0) {
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+
+        showToast(t('message.alert_update_password_success'));
+      } else {
+        if (result.code === -1) {
+          showToast(t('message.alert_invalid_current_password'));
+          errors['currentPassword'] = t('message.alert_input_current_password');
+        } else {
+          showToast(t('message.alert_update_password_fail'));
+        }
+      }
+      setAppState({ ...appState, lockScreen: false });
+    }
   }
 
   return (
@@ -57,7 +85,7 @@ export default function UpdatePasswordScreen() {
             style={[errors.currentPassword&& styles.error]}
             placeholder="Current Password"
             value={currentPassword}
-            onChangeText={v => setNewPassword(v)}
+            onChangeText={v => setCurrentPassword(v)}
             secureTextEntry
           />
           {errors.currentPassword&& 

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "rtha",
+    "name": "RTHA powered by Cigna",
     "slug": "rtha",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -35,7 +35,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#d0d0d0"
         }
       ],
       "expo-localization",

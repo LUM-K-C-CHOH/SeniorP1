@@ -1,3 +1,9 @@
+/**
+ * DB Sync
+ * RTHA
+ * 
+ * Created by Morgn on 02/22/2025
+ */
 import i18next from 'i18next';
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
