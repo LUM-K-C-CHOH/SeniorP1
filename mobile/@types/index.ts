@@ -4,7 +4,7 @@ import { Icon } from "@expo/vector-icons/build/createIconSet";
  * Types Definition
  * RTHA
  * 
- * Created by Thornton on 01/23/2025
+ * Created by Morgan on 01/23/2025
  */
 export interface IUser {
   id: string;

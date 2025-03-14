@@ -3,7 +3,7 @@
  * Emergency Contact List Screen
  * RTHA
  * 
- * Created by Thornton on 02/10/2025
+ * Created by Morgan on 02/10/2025
  */
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';

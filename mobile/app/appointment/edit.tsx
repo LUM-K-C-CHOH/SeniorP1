@@ -2,7 +2,7 @@
  * Edit Appointment Screen
  * RTHA
  * 
- * Created by Thornton on 02/07/2025
+ * Created by Morgan on 02/07/2025
  */
 import React, { useEffect, useState, useRef } from 'react';
 import Animated from 'react-native-reanimated';

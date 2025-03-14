@@ -2,7 +2,7 @@
  * Firebase Config
  * RTHA
  * 
- * Created by Thornton on 02/26/2025
+ * Created by Morgan on 02/26/2025
  */
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';

@@ -2,7 +2,7 @@
  * Google Calendar Service
  * RTHA
  * 
- * Created by Thornton on 03/09/2025
+ * Created by Morgan on 03/09/2025
  */
 
 import React, { useEffect } from 'react';

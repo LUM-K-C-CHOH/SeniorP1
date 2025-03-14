@@ -2,7 +2,7 @@
  * Setting Screen
  * RTHA
  * 
- * Create by Thornton on 02/14/2025
+ * Create by Morgan on 02/14/2025
  */
 import React, { useContext } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';

@@ -2,7 +2,7 @@
  * Constants Definition
  * RTHA
  * 
- * Created by Thornton on 01/20/2025
+ * Created by Morgan on 01/20/2025
  */
 import { IAppState } from '@/@types';
 
