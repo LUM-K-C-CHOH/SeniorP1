@@ -54,6 +54,9 @@
   "contacts": "Contacts",
   "add": "Add",
   "already_added": "Already added",
+  "confirm_password": "Confirm Password",
+  "new_password": "New Password",
+  "current_password": "Current Password",
   "auth": {
     "sign_in": "Sign In",
     "sign_up": "Sign Up",
