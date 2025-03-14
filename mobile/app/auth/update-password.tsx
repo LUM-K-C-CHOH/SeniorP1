@@ -19,7 +19,7 @@ import { showToast } from '@/utils';
 
 export default function UpdatePasswordScreen() {
   const backgroundColor = useThemeColor({}, 'background');
-  
+
   const { appState, setAppState } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
@@ -83,7 +83,7 @@ export default function UpdatePasswordScreen() {
         <View style={styles.formGroup}>
           <ThemedInput
             style={[errors.currentPassword&& styles.error]}
-            placeholder="Current Password"
+            placeholder={t('current_password')}
             value={currentPassword}
             onChangeText={v => setCurrentPassword(v)}
             secureTextEntry
@@ -101,7 +101,7 @@ export default function UpdatePasswordScreen() {
         <View style={styles.formGroup}>
           <ThemedInput
             style={[errors.newPassword&& styles.error]}
-            placeholder="New Password"
+            placeholder={t('new_password')}
             value={newPassword}
             onChangeText={v => setNewPassword(v)}
             secureTextEntry
@@ -119,7 +119,7 @@ export default function UpdatePasswordScreen() {
         <View style={styles.formGroup}>
           <ThemedInput
             style={[errors.confirmPassword&& styles.error]}
-            placeholder="Confrim Password"
+            placeholder={t('confirm_password')}
             value={confirmPassword}
             onChangeText={v => setConfirmPassword(v)}
             secureTextEntry
