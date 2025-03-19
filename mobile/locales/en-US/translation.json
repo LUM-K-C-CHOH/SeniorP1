@@ -79,6 +79,7 @@
   },
   "message": {
     "confirm_delete": "Are you sure to delete it?",
+    "confirm_update": "Are you sure to update it?",
     "alert_threshold": "Threshold must be value in range ${range}.",
     "alert_select_schedule_date": "Please select a scheduled date.",
     "alert_select_provider": "Please select a provider",
@@ -96,6 +97,7 @@
     "alert_input_confirm_password": "Please enter confirm password.",
     "alert_not_match_password": "Please enter correct confirm password.",
     "alert_delete_success": "Deleted successfully.",
+    "alert_update_success": "Updated successfully.",
     "alert_input_dosage": "Please enter the dosage.",
     "alert_select_dosage_unit": "Please select the dosage unit.",
     "alert_select_cycle": "Please select the cycle.",
@@ -106,8 +108,11 @@
     "alert_add_time": "Please add the time.",
     "alert_select_unique_time": "Please select the time not overlapped.",
     "alert_save_success": "Saved successfully.",
-    "alert_save_fail": "Failed to save.",
+    "alert_update_fail": "Failed to update.",
     "alert_delete_fail": "Failed to delete.",
+    "alert_help_success": "Success! ${numbers} people got the message exactly.",
+    "alert_help_half_success": "Failed! ${numbers} people don't got the message exactly.",
+    "alert_help_fail": "Failed! Nobody got the message exactly",
     "alert_invalid_user_info": "Don't get user information. Please log in again",
     "hint_no_reserved_appointment_today": "No appointment reserved today.",
     "alert_location_permission_denied": "Permission to access location was denied.",
@@ -167,7 +172,10 @@
     "emergency_alert_released": "Emergency Alert Released",
     "text_3": "Your emergency contacts have been alerted from you.",
     "add_from_contact": "Add from Contact",
-    "confirm_delete": "Are you sure to delete ${count} emergency contacts?"
+    "confirm_delete": "Are you sure to delete ${count} emergency contacts?",
+    "send_emergency_message": "Send Emergency Message",
+    "update_contact": "Update Contact"
+
   },
   "notification_manage": {
     "low_stock_alert": "Low Stock Alert",

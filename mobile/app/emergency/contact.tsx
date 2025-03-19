@@ -12,7 +12,7 @@ import CustomButton from '@/components/CustomButton';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 import * as Contacts from 'expo-contacts';
 import Modal from 'react-native-modal';
-
+import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import {
   SafeAreaView,
@@ -26,13 +26,18 @@ import {
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon, PhoneIcon } from '@/utils/svgs';
+import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon, PhoneIcon, FlyIcon } from '@/utils/svgs';
 import { ThemedText } from '@/components/ThemedText';
-import { IEmergencyContact, TResponse } from '@/@types';
-import { getEmergencyContactList, deleteEmergencyContactGroup, addEmergencyContact } from '@/services/emergency';
+import { IEmergencyContact, TResponse} from '@/@types';
+import { getEmergencyContactList, deleteEmergencyContactGroup, addEmergencyContact, updateEmergencyContact } from '@/services/emergency';
 import { getMarkColorFromName, getMarkLabelFromName, showToast } from '@/utils';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Colors } from '@/config/constants';
+import { Colors, EmergencyType } from '@/config/constants';
+import { SelectList } from 'react-native-dropdown-select-list'
+
+import { CalendarIcon, CloseIcon, MinusIcon, PlusIcon, SearchIcon } from '@/utils/svgs';
+import { ThemedInput } from '@/components/ThemedIntput';
+
 
 export default function EmergencyContactScreen() {
   const initiatedRef = useRef<boolean>(false);
@@ -41,15 +46,22 @@ export default function EmergencyContactScreen() {
   const { t } = useTranslation();
   const { appState, setAppState } = useContext(ApplicationContext);
 
+  const [errors, setErrors] = useState<{[k: string]: string}>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [contactList, setContactList] = useState<IEmergencyContact[]>([]);
   const [orgContactList, setOrgContactList] = useState<IEmergencyContact[]>([]);
   const [selectableVisible, setSelectableVisible] = useState<boolean>(false);
   const [checkedIdList, setCheckedIdList] = useState<number[]>([]);
   const [deleteConfrimVisible, setDeleteConfirmVisible] = useState<boolean>(false);
+  const [updateConfirmVisible, setUpdateConfirmVisible] = useState<boolean>(false);
   const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
   const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
-
+  const [editPopupVisible, setEditPopupVisible] = useState<boolean>(false);
+  const [emergencyData, setEmergencyData] = useState<IEmergencyContact>();
+  const [name, setName] = useState<string>(emergencyData ? emergencyData.name : '');
+  const [phone, setPhone] = useState<string>(emergencyData ? emergencyData.phone : '');
+  const [type, setType] = useState<string>(emergencyData ? `${emergencyData.type}` : '');
+   
   useEffect(() => {
     if (initiatedRef.current) return;
 
@@ -63,11 +75,60 @@ export default function EmergencyContactScreen() {
         }
       });
   }, []);
-
+  useEffect(() => {
+    if(!emergencyData) return;
+    setName(emergencyData?.name ?? '');
+    setPhone(emergencyData?.phone ?? '');
+    setType(emergencyData?.type ?? '');
+  }, [emergencyData])
+  const typeList = [
+    { key: EmergencyType.DOCTOR, value: 'Doctor' },
+    { key: EmergencyType.NURSE, value: 'Nurse' }
+  ];
   const handleLongPress = (): void => {
     setSelectableVisible(true);
   }
+  const handleFormValueChange = (type: string, value: string): void => {
+    
+    if (type === 'name') {
+      setName(value);  
+      if (value.length > 0) {
+        const { name, ...rest } = errors;
+        setErrors(rest);
+      } else {
+        errors['name'] = t('message.alert_input_name');
+        setErrors({ ...errors });
+      }
+      return;
+    }
 
+    if (type === 'phone') {
+      setPhone(value);
+      if (value.length > 0) {
+        const { dosage, ...rest } = errors;
+        setErrors(rest);
+      } else {
+        errors['dosage'] = t('message.alert_input_dosage');
+        setErrors({ ...errors });
+      }
+
+      return;
+    }
+
+    if (type === 'type') {
+      let val = parseInt(value, 10);
+      setType(typeList[val - 1].value);
+      if (`${value}`.length > 0) {
+        const { type, ...rest } = errors;
+        setErrors(rest);
+      } else {
+        errors['type'] = t('message.alert_select_dosage_unit');
+        setErrors({ ...errors });
+      }
+      return;
+    }
+
+  }
   const handleStatusChange = (id: number, status: boolean): void => {
     if (status && !checkedIdList.includes(id)) {
       setCheckedIdList([...checkedIdList, id]);
@@ -103,6 +164,7 @@ export default function EmergencyContactScreen() {
     }
 
     setAppState({ ...appState, lockScreen: false });
+    setDeleteConfirmVisible(false);
   }
 
   const handleDeleteConfirmResult = (): void => {
@@ -158,7 +220,7 @@ export default function EmergencyContactScreen() {
   }
 
   const checkExistFromEmerygencyContact = (phone: string) => {
-    for (let i = 0; i < contactList.length; i++) {
+    for (let i = 0; i < contactList.length; i ++) {
       const op = contactList[i].phone;
       if (op.indexOf(phone) > -1)
         return true;
@@ -188,10 +250,43 @@ export default function EmergencyContactScreen() {
     setAppState({ ...appState, lockScreen: false });
   }
 
+  const handleEdit = (id?: number) => {
+    if(!id) return;
+    const find = contactList.find(v => v.id === id);
+    if(!find) return;
+    
+    setEmergencyData(find);
+    setEditPopupVisible(true);
+  }
+  
+  const handleContactUpdate = async(): Promise<void> => {
+    if (appState.lockScreen) return;
+    let data: IEmergencyContact = {
+      id: emergencyData?.id,
+      phone: phone,
+      name: name,
+      type: type || 'doctor',
+      image: emergencyData?.image || ""
+    }
+
+    setAppState({ ...appState, lockScreen: true });
+    const ret = await updateEmergencyContact(data, appState.user?.id);
+
+    if (ret) {
+      handleLoadData();
+      setUpdateConfirmVisible(false);
+      setEditPopupVisible(false);
+      showToast(t('message.alert_update_success'));
+    } else {
+      showToast(t('message.alert_update_fail'));
+    }
+
+    setAppState({ ...appState, lockScreen: false });
+  }
   type OrgContactItemProps = {
     index: number,
     name: string,
-    phone: string,
+    phone: string
   };
 
   type ContactItemProps = {
@@ -201,7 +296,7 @@ export default function EmergencyContactScreen() {
     checkedStatus: boolean,
   };
 
-  const OrgContactItem = ({ index, name, phone }: OrgContactItemProps): JSX.Element => {
+  const OrgContactItem = ({ index, name, phone}: OrgContactItemProps): JSX.Element => {
     return (
       <ThemedView
         style={[
@@ -213,7 +308,7 @@ export default function EmergencyContactScreen() {
       >
         <View>
           <ThemedText type="default">{name}</ThemedText>
-          <ThemedText
+          <ThemedText type="contactSize"
             darkColor={Colors.dark.grayText}
             lightColor={Colors.light.grayText}
           >
@@ -268,25 +363,33 @@ export default function EmergencyContactScreen() {
           </View>
           <View style={cstyles.infoWrapper}>
             <View style={cstyles.rowWrapper}>
-              <ThemedText type="default">
-                {name}
-              </ThemedText>
+              <ThemedText type="default"> {name} </ThemedText>
             </View>
             <View style={cstyles.rowWrapper}>
               <PhoneIcon color={appState.setting.theme === 'light' ? '#000' : '#fff'} />
-              <ThemedText type="default">
-                {phone}
-              </ThemedText>
+              <ThemedText type="default"> {phone} </ThemedText>
+            </View>
+            <View style={cstyles.rowWrapper}>
+              <FlyIcon color={appState.setting.theme === 'light' ? '#000' : '#fff'} />
+              <ThemedText type="default"> {type} </ThemedText>
             </View>
           </View>
-          {selectableVisible&&
-            <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
-              {checkedStatus
-                ? <CheckboxFilledIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
-                : <CheckboxBlankIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />
-              }
-            </TouchableOpacity>
-          }
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {selectableVisible ? (
+                <TouchableOpacity onPress={() => handleStatusChange(id, !checkedStatus)}>
+                  {checkedStatus 
+                    ? (<CheckboxFilledIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />)
+                    : (<CheckboxBlankIcon color={appState.setting.theme === 'light' ? '#1d1b20' : '#fff'} />)
+                  }
+                </TouchableOpacity>
+              ) : (
+              <TouchableOpacity onPress={() => handleEdit(id)} style={{ marginLeft: 9 }}>
+                <Ionicons name="create-outline" size={24} color={appState.setting.theme === 'light' ? '#000' : '#fff'} />
+              </TouchableOpacity>
+              )
+            }
+          </View>
         </ThemedView>
       </TouchableHighlight>
     );
@@ -325,6 +428,35 @@ export default function EmergencyContactScreen() {
         onCancel={handleDeleteConfirmResult}
         onConfirm={handleContactDelete}
       />
+
+      <ConfirmPanel
+        visible={updateConfirmVisible}
+        titleText={t('confirmation')}
+        positiveButtonText={t('yes')}
+        negativeButtonText={t('no')}
+        bodyText={t('message.confirm_update')}
+        // resultVisible={deleteConfirmResultVisible}
+        resultElement={
+          <ThemedView style={ConfirmResultStyle.container}>
+            <ThemedText style={ConfirmResultStyle.titleText}>
+              {t('message.alert_update_success')}
+            </ThemedText>
+            <View style={ConfirmResultStyle.iconWrapper}><CircleCheckIcon /></View>
+            <View style={ConfirmResultStyle.actionsWrapper}>
+              <ThemedText style={ConfirmResultStyle.labelText}>{t('click')}</ThemedText>
+              <TouchableOpacity
+                onPress={handleDeleteConfirmResult}
+              >
+                <ThemedText style={[ConfirmResultStyle.labelText, ConfirmResultStyle.linkText]}>{t('here')}</ThemedText>
+              </TouchableOpacity>
+              <ThemedText style={ConfirmResultStyle.labelText}>{t('to_continue')}</ThemedText>
+            </View>
+          </ThemedView>
+        }
+        onCancel={() => setUpdateConfirmVisible(false)}
+        onConfirm={handleContactUpdate}
+      />
+
       <Modal
         isVisible={contactPopupVisible}
         style={pstyles.container}
@@ -352,6 +484,145 @@ export default function EmergencyContactScreen() {
                                   />
             }
           />
+        </ThemedView>
+      </Modal>
+
+      <Modal
+        isVisible={editPopupVisible}
+        style={pstyles.container}
+        animationIn={'zoomIn'}
+        animationOut={'zoomOut'}
+        onBackdropPress={() => setEditPopupVisible(false)}
+        onBackButtonPress={() => setEditPopupVisible(false)}
+        onSwipeComplete={() => setEditPopupVisible(false)}
+        animationInTiming={300}
+        animationOutTiming={300}
+      >
+        <ThemedView style={pstyles.contactWrapper}>
+          <View style={pstyles.titleWrapper}>
+            <ThemedText type="subtitle" style={pstyles.normalText}>
+              {t('emergency_control.emergency_contact')}
+            </ThemedText>
+          </View>
+          <View style={styles.formGroup}>
+            <ThemedText
+              type="default"
+              darkColor={Colors.dark.grayText}
+              lightColor={Colors.light.grayText}
+              style={styles.controlLabel}
+            >
+              {t('name')}{':'}
+            </ThemedText>
+            <View style={styles.formControlWrapper}>
+              <ThemedInput
+                style={[
+                  errors.name ? { borderColor: 'red' } : {}
+                ]}
+                type="default"
+                value={name}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={(v) => handleFormValueChange('name', v)}
+              />
+              {errors.name&&
+                <ThemedText
+                  type="small"
+                  darkColor={Colors.dark.redText}
+                  lightColor={Colors.light.redText}
+                >
+                  {errors.name}
+                </ThemedText>
+              }
+            </View>
+          </View>
+          <View style={styles.formGroup}>
+            <ThemedText
+              type="default"
+              darkColor={Colors.dark.grayText}
+              lightColor={Colors.light.grayText}
+              style={styles.controlLabel}
+            >
+              {t('phone')}{':'}
+            </ThemedText>
+            <View style={styles.formControlWrapper}>
+              <ThemedInput
+                style={[
+                  errors.phone ? { borderColor: 'red' } : {}
+                ]}
+                type="default"
+                value={phone}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={(v) => handleFormValueChange('phone', v)}
+              />
+              {errors.phone&&
+                <ThemedText
+                  type="small"
+                  darkColor={Colors.dark.redText}
+                  lightColor={Colors.light.redText}
+                >
+                  {errors.phone}
+                </ThemedText>
+              }
+            </View>
+          </View>          
+          <View style={styles.formGroup}>
+            <ThemedText
+              type="default"
+              darkColor={Colors.dark.grayText}
+              lightColor={Colors.light.grayText}
+              style={styles.controlLabel}
+            >
+              {t('Role')}{':'}
+            </ThemedText>
+            <View style={styles.formControlWrapper}>
+              <SelectList
+                setSelected={(v: string) => handleFormValueChange('type', v)}
+                data={typeList}
+                save="key"
+                placeholder="--Select--"
+                searchPlaceholder=""
+                searchicon={<SearchIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
+                closeicon={<CloseIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
+                defaultOption={typeList.find(v => v.key === parseInt(type, 10))}
+                boxStyles={{
+                  borderColor: errors.type ? 'red' : appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
+                  paddingHorizontal: 10,
+                }}
+                inputStyles={{
+                  color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText,
+                }}
+                dropdownStyles={{
+                  borderColor: appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
+                }}
+                dropdownTextStyles={{
+                  color: appState.setting.theme === 'light' ? Colors.light.defaultControlText : Colors.dark.defaultControlText
+                }}
+              />
+              {errors.type&&
+                <ThemedText
+                  type="small"
+                  darkColor={Colors.dark.redText}
+                  lightColor={Colors.light.redText}
+                >
+                  {errors.type}
+                </ThemedText>
+              }
+            </View>
+          </View>
+
+          <View style={styles.action1Wrapper}>
+            <CustomButton onPress={() => setUpdateConfirmVisible(true)}>
+              <ThemedText
+                type="button"
+                darkColor={Colors.dark.defaultButtonText}
+                lightColor={Colors.light.defaultButtonText}
+              >
+                {t('emergency_control.update_contact')} 
+              </ThemedText>
+            </CustomButton>
+          </View>
+
         </ThemedView>
       </Modal>
       <GestureHandlerRootView style={[styles.container, { backgroundColor }]}>
@@ -428,8 +699,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  formGroup: {
+    flexDirection: 'row',
+    columnGap: 0,
+    marginTop: 25,
+    paddingHorizontal: 0,
+  },
+  controlLabel: {
+    width: 120,
+    marginTop: 12
+  },
+  formControlWrapper: {
+    flex: 1,
+  },
   actionWrapper: {
     alignItems: 'center',    
+    paddingHorizontal: 15,
+    paddingVertical: 15
+  },
+  action1Wrapper: {
+    alignItems: 'center',
+    marginTop: 30,
     paddingHorizontal: 15,
     paddingVertical: 15
   },
@@ -480,10 +770,18 @@ const pstyles = StyleSheet.create({
     minHeight: 300,
     paddingHorizontal: 15
   },
+  contactWrapper: {
+    width: '90%',
+    maxWidth: 450,
+    borderRadius: 10,
+    maxHeight: 500,
+    minHeight: 350,
+    paddingHorizontal: 15
+  },
   titleWrapper: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 15
+    marginTop: 20
   },
   normalText: {
     textAlign: 'center'

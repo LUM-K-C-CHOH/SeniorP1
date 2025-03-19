@@ -86,6 +86,10 @@ export const DosageUnitType = {
   ML: 3,
 }
 
+export const EmergencyType = {
+  DOCTOR: 1,
+  NURSE: 2
+}
 export const MedicationCycleType = {
   EVERYDAY: 1,
   TWODAYS: 2,
