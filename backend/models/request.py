@@ -1,7 +1,7 @@
 # Request Models 
 # RTHA
 #
-# Created by Thornton on 03/02/2025
+# Created by Morgan on 03/02/2025
 
 from pydantic import BaseModel
 from typing import List, Optional

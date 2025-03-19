@@ -5,7 +5,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'small' | 'title' | 'subtitle' | 'mediumTitle' | 'bigTitle' | 'defaultMedium' | 'link' | 'button';
+  type?: 'default' | 'small' | 'title' | 'subtitle' | 'mediumTitle' | 'bigTitle' | 'defaultMedium' | 'link' | 'button' | 'defaultSize' | 'contactSize';
 };
 
 export function ThemedText({
@@ -30,6 +30,8 @@ export function ThemedText({
         type === 'subtitle' ? styles.subtitle : undefined,
         type === 'link' ? styles.link : undefined,
         type === 'button' ? styles.button : undefined,
+        type === 'defaultSize' ? styles.defaultSize : undefined,
+        type === 'contactSize' ? styles.contactSize : undefined,
         style,
       ]}
       {...rest}
@@ -73,5 +75,13 @@ const styles = StyleSheet.create({
   button: {
     fontSize: 18,
     fontWeight: 500
+  },
+  defaultSize: {
+    width: 240,
+    flexWrap: "wrap"
+  },
+  contactSize: {
+    width: 140,
+    flexWrap: "wrap"
   }
 });

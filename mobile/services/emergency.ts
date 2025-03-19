@@ -49,7 +49,7 @@ export const emergencyContactSyncToServer = async (emergencyContactData: IEmerge
   )
     .then(response => {
       if (response.data.code === 0) {
-        return true;
+        return true; 
       } else {
         return false;
       }
@@ -124,6 +124,25 @@ export const addEmergencyContact = async (contact: IEmergencyContact, userId?: s
         updateData(Tables.EMERGENCY_CONTACTS, emergencyId, { ...contact, syncStatus: SyncStatus.SYNCED });
         return true;
       }
+    }
+    return false;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+export const updateEmergencyContact = async (contact: IEmergencyContact, userId?: string): Promise<boolean> => {
+  try {
+    if(!contact?.id) return false;
+    let emergencyId = updateData(Tables.EMERGENCY_CONTACTS, contact?.id, { ...contact, syncStatus: SyncStatus.UPDATED });
+    if(emergencyId){
+      let bret = await emergencyContactSyncToServer(contact, userId);
+      if(bret){
+        updateData(Tables.EMERGENCY_CONTACTS, contact?.id , { ...contact, syncStatus: SyncStatus.SYNCED });
+        return true;
+      }
+      return true;
     }
     return false;
   } catch (error) {

@@ -2,15 +2,20 @@
 # Main Etrypoint 
 # RTHA
 #
-# Created by Thornton on 03/01/2025
+# Created by Morgan on 03/01/2025
 import firebase_admin
 import os
 import services.firebase 
+import re
 
 from fastapi import FastAPI, HTTPException, Query
 from models.request import Medication, Frequency, Setting, Appointment, EmergencyContact, Notification
 from firebase_admin import credentials, firestore
 from pydantic import BaseModel
+from typing import List
+
+from sendTwilio import send_sms
+
 # Get Firestore database reference
 current_dir = os.path.dirname(os.path.abspath(__file__))
 key_path = os.path.join(current_dir, "firebaseServiceAccountKey.json")
@@ -29,7 +34,6 @@ app = FastAPI()
 @app.get("/")
 def root():
     users = services.firebase.get_firebase_users()
-
     return {"users": users}
 
 @app.get("/medication/{user_id}")
@@ -251,7 +255,6 @@ def get_setting_list(user_id: str):
         settings_ref = db.collection("settings").where("user_id", "==", user_id).stream()
         
         settings = [doc.to_dict() for doc in settings_ref]
-        print(settings)
         if not settings:
             return {"code": 0, "message": "No settings found", "data": []}
 
@@ -304,14 +307,36 @@ def get_emergency_list(user_id: str):
 @app.put("/emergency/contact/update")
 def update_emergency(emergency: EmergencyContact):
     try:
-        emergency_data = emergency.model_dump()
-        doc_ref = db.collection("emergencies").add(emergency_data)
+        emergencies_ref = db.collection("emergencies")
+        
+        # Check if the emergency contact exists using user_id and id
+        query = (
+            emergencies_ref
+            .where("user_id", "==", emergency.user_id)
+            .where("id", "==", emergency.id)
+            .limit(1)
+            .stream()
+        )
 
-        return {"code": 0, "document_id": doc_ref[1].id}    
+        emergency_doc = next(query, None)
+        emergency_data = emergency.model_dump()
+
+        if emergency_doc:
+            # Update existing emergency contact
+            emergency_doc.reference.update(emergency_data)
+            return {"code": 0, "message": "Emergency contact updated successfully!"}
+        else:
+            # Add new emergency contact if not found
+            doc_ref = emergencies_ref.add(emergency_data)
+            return {"code": 1, "message": "Emergency contact not found, so it was added.", "document_id": doc_ref[1].id}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
 class EmergencyDeleteRequest(BaseModel):
     contactList: str
+
 @app.delete("/emergency/contact/{user_id}")
 def delete_emergency(user_id: str, request: EmergencyDeleteRequest):
     try:
@@ -328,9 +353,7 @@ def delete_emergency(user_id: str, request: EmergencyDeleteRequest):
                 .limit(1)
                 .stream()
             )
-            print(query)
             emergency_doc = next(query, None)
-            print(emergency_doc)
             if emergency_doc:
                 emergency_doc.reference.delete()
                 deleted_count += 1
@@ -363,5 +386,42 @@ def update_notification(notification: Notification):
         doc_ref = db.collection("notifications").add(notification_data)
 
         return {"code": 0, "document_id": doc_ref[1].id}    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def format_phone_number(phone: str) -> str:
+    cleaned = re.sub(r"[^\d]", "", phone)  # Remove all non-numeric characters
+    return f"+{cleaned}"  # Add the '+' sign
+
+
+
+class EmergencyRequest(BaseModel):
+    emergencyData: List[str]
+    currentAddress: List[str]
+@app.post("/sendEmergency")
+def send_emergency(data: EmergencyRequest):
+    try:
+        if data.currentAddress[0]:
+            message_body = f"A human is in danger. Location: {data.currentAddress}, Please help me." 
+        else:
+            message_body = f"A human is in danger. Please help me." 
+        # Loop through each phone number and send SMS
+        responses = []
+        for phone in data.emergencyData:
+            formatted_phone = format_phone_number(phone)  # Convert to +E.164 format
+            response = send_sms(formatted_phone, message_body)
+            responses.append(response)
+        # Check if all messages were sent successfully
+        failed_messages = [res for res in responses if res["code"] != 0]
+
+        if failed_messages:
+            return {
+                "code": 1,
+                "message": len(failed_messages),
+                "details": failed_messages
+            }
+        return {"code": 0, "message": len(responses)}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

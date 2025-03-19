@@ -288,7 +288,7 @@ export default function MedicationScreen() {
         style={[styles.backRightBtn, styles.backRightBtnLeft]}
         onPress={() => handleEditRow(rowMap, data.item.id)}
       >
-        <EditIcon />
+        <EditIcon />  
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.backRightBtn, styles.backRightBtnRight]}

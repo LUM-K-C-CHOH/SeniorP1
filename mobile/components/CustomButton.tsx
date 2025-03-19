@@ -19,7 +19,7 @@ const CustomButton = (props: TCustomButtonProps): JSX.Element => {
   let st: any = [
     styles.buttonWrapper,
     {
-      backgroundColor: bgColor?? '#0066ff',          
+      backgroundColor: bgColor?? '#0066ff',
     }
   ];
   if (size?.width) st.push({ width: size.width });
