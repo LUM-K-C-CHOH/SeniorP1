@@ -21,11 +21,11 @@ import {
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
-import { deleteNotificationGroup, getNotificationList } from '@/services/notification';
+import { deleteNotificationGroup, getNotificationList, updateNotification } from '@/services/notification';
 import { INotification, TResponse } from '@/@types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon } from '@/utils/svgs';
-import { Colors, NotificationType } from '@/config/constants';
+import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon, DotIcon } from '@/utils/svgs';
+import { Colors, NotificationStatus, NotificationType } from '@/config/constants';
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { showToast } from '@/utils';
@@ -153,8 +153,19 @@ export default function NotificationScreen() {
       })
       .catch(error => {
         setIsLoading(false);
-        console.error(error);
+        console.log(error);
       });
+  }
+
+  const handleNotificationPopupVisible = async (notification: INotification): Promise<void> => {
+    if (notification.status === NotificationStatus.PENDING) {
+      const new_ = { ...notification, status: NotificationStatus.SENT };
+      const ret = await updateNotification(new_, appState.user?.id);
+      if (ret) {
+        handleLoadData();
+      }
+    }   
+    setNotificationPopupOptions({ opened: true, notification });
   }
 
   type NotificationItemProps = {
@@ -171,7 +182,7 @@ export default function NotificationScreen() {
     return (
       <TouchableHighlight
         onLongPress={handleLongPress}
-        onPress={() => setNotificationPopupOptions({ opened: true, notification })}
+        onPress={() => handleNotificationPopupVisible(notification)}
       >
         <ThemedView
           style={[
@@ -184,6 +195,9 @@ export default function NotificationScreen() {
           <View
             style={nstyles.typeWrapper}
           >
+            {notification.type === NotificationStatus.PENDING&&
+              <DotIcon color="red" width={18} height={18} />
+            }
             <ThemedText
               type="small"
               style={nstyles.typeText}

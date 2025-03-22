@@ -28,7 +28,7 @@ export const userSettingSyncWithServer = async (userId?: string): Promise<boolea
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -51,7 +51,7 @@ export const userSettingSyncToServer = async (settingData: ISetting, userId?: st
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -68,7 +68,7 @@ export const getUserSetting = async (): Promise<ISetting> => {
    
     return data as ISetting;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return InitialAppState.setting;
   }
 }

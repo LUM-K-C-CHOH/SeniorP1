@@ -35,41 +35,10 @@ import { setupDatabase } from '@/services/db';
 import { registerBackgroundDBSyncTask } from '@/tasks/db-sync';
 import { registerBackgroundNotificationTask } from '@/tasks/notification';
 
-// if (__DEV__) {
-//   require('@/services/mock');
-// }
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-// Load the app state
-globalState.loadAppState();
-
-// Set up the local database
-getStorageItem(KEY_DB_INITIALIZED)
-  .then(async (res: string) => {
-    if (res !== 'true') {
-      console.log('db setup start');
-      await setupDatabase();
-      setStorageItem(KEY_DB_INITIALIZED, 'true');
-      console.log('db setup end');
-    }
-  })
-  .catch(error => {
-    console.error('db setup error', error);
-  });
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
-
 export default function RootLayout() {
-  // const colorScheme = useColorScheme();
-
   const router = useRouter();
   const path = usePathname();
   
@@ -83,30 +52,50 @@ export default function RootLayout() {
   }
   
   useEffect(() => {
-    const state = globalState.getAppState();
-    checkAuth();
-    
-    if (state.authenticated) {
-      requestPermissions();
-      registerBackgroundDBSyncTask();
-      registerBackgroundNotificationTask();
-    }
+    const initializeApp = async () => {
+      // Load the app state
+      await globalState.loadAppState();
+
+      // Set up the local database
+      const dbInitialized = await getStorageItem(KEY_DB_INITIALIZED);
+      if (dbInitialized !== 'true') {
+        console.log('db setup start');
+        await setupDatabase();
+        await setStorageItem(KEY_DB_INITIALIZED, 'true');
+        console.log('db setup end');
+      }
+
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: false,
+          shouldSetBadge: false,
+        }),
+      });
+
+      const state = globalState.getAppState();
+      checkAuth();
+      
+      if (state.authenticated) {
+        await requestPermissions();
+        registerBackgroundDBSyncTask();
+        registerBackgroundNotificationTask();
+      }
+
+      if (loaded) {
+        SplashScreen.hideAsync();
+        setAppContext({
+          ...appContext,
+          appState: state
+        });
+      }
+    };
+
+    initializeApp();
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();
-  }, [path]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-
-      const state = globalState.getAppState();
-      setAppContext({
-        ...appContext,
-        appState: state
-      });
-    }
-  }, [loaded]);
+  }, [path, loaded]);
 
   const handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (nextAppState === 'active') {
@@ -126,13 +115,9 @@ export default function RootLayout() {
 
   const checkAuth = async (): Promise<void> => {
     const state = globalState.getAppState();
+    console.log('check auth...', state.authenticated, path);
     if (!state.authenticated && path.indexOf('auth') < 0) {
-      // console.log(path);
       router.replace('/auth/sign-in');
-    } else {
-      if (state.authenticated) {
-        
-      }
     }
   }
 
@@ -147,55 +132,9 @@ export default function RootLayout() {
     logout,
   });
 
-  useEffect(() => {
-    checkAuth();
-  }, [appContext]);
-
-  // if (!loaded) {
-  //   return null;
-  // }
-  
-  // This code souldn't be placed here. Let's put it into the appropriate place in later.
-
-  // const makeCall = (phoneNumber: string) => {
-  //   if (Platform.OS === 'android') {
-  //     Linking.openURL(`tel:${phoneNumber}`);
-  //   } else {
-  //     Linking.openURL(`telprompt:${phoneNumber}`);
-  //   }
-  // };
-
-  // let tapCount = 0;
-  // let tapTimeout: NodeJS.Timeout;
-
-  // const handleEmergencyPress = () => {
-  //   tapCount++;
-  //   if (tapTimeout) {
-  //     clearTimeout(tapTimeout);
-  //   }
-  //   tapTimeout = setTimeout(() => {
-  //     if (tapCount === 1) {
-  //       makeCall('1234567890'); // Call caregiver
-  //     } else if (tapCount === 2) {
-  //       makeCall('0987654321'); // Call nurse
-  //     } else if (tapCount === 3) {
-  //       makeCall('1122334455'); // Call doctor
-  //     }
-  //     tapCount = 0;
-  //   }, 500);
-  // };
-
-  // const handleEmergencyLongPress = (duration: number) => {
-  //   if (duration >= 5000) {
-  //     makeCall('911'); // Call police
-  //   } else if (duration >= 2000) {
-  //     makeCall('119'); // Call ambulance
-  //   }
-  // };
-
   return (
     <ApplicationContextProvider value={appContext}>
-        {appContext.appState.lockScreen&&
+        {appContext.appState.lockScreen &&
           <View
             style={{
               position: 'absolute',

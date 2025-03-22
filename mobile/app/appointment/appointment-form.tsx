@@ -35,6 +35,7 @@ import { useRouter } from 'expo-router';
 import { addAppointment, updateAppointment } from '@/services/appointment';
 import { linkToCalendar } from '@/services/google-calendar';
 
+
 type TAppointmentFormProps = {
   appointment?: IAppointment
 };
@@ -69,7 +70,6 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     if (initiatedRef.current) return;
 
     initiatedRef.current = true;
-
   }, []);
 
   useEffect(() => {
@@ -83,7 +83,6 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     setMinute((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('mm') : '');
     setTimeType((appointment?.scheduledTime && appointment.scheduledTime.length > 0) ? dayjs(appointment.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('a') : TimeType.AM);
     setDescription(appointment.description?? '');
-
   }, [appointment]);
 
   const handleCalendarPopupVisible = (visible: boolean): void => {
@@ -345,7 +344,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             keyExtractor={item => `${item.id}`}
           />
         </ThemedView>
-      </Modal>
+      </Modal>  
       <Animated.ScrollView>
         <View style={styles.providerWrapper}>
           <ThemedText
@@ -561,7 +560,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
             darkColor={Colors.dark.defaultButtonText}
             lightColor={Colors.light.defaultButtonText}
           >
-            {t('appointment_manage.join_google_calendar')}
+            {t('appointment_manage.link_google_calendar')}
           </ThemedText>
         </CustomButton>
       </View>

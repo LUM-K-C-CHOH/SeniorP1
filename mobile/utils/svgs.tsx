@@ -410,6 +410,20 @@ export const CloseIcon = (props: IconProps) => {
   );
 }
 
+export const DoctorIcon = (props: IconProps) => {
+  const { color = '#454b60', width = 48, height = 48 } = props;
+  return (
+    <Svg width={width} height={height} viewBox="0 0 48 48">
+      <Path fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M24 10c-11.257 0-18.015 6.748-19.625 8.558a.92.92 0 0 0-.148.982l7.326 17.397c.236.561.917.794 1.467.532C14.824 36.608 18.876 35 24 35s9.176 1.608 10.98 2.47c.55.261 1.231.028 1.467-.533l7.326-17.397a.92.92 0 0 0-.148-.982C42.015 16.748 35.257 10 24 10m-4 14.001h8M24 20v8"/>
+    </Svg>
+  );
+}
 
-
-
+export const DotIcon = (props: IconProps) => {
+  const { color = '#454b60', width = 24, height = 24 } = props;
+  return (
+    <Svg width={width} height={height} viewBox="0 0 24 24">
+      <Path fill={color} d="M12 10a2 2 0 0 0-2 2a2 2 0 0 0 2 2c1.11 0 2-.89 2-2a2 2 0 0 0-2-2"/>
+    </Svg>
+  );
+}

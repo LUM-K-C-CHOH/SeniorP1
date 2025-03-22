@@ -54,7 +54,6 @@ def get_medication_list(user_id: str):
 def add_medication(medication: Medication):
     try:
         medication_data = medication.model_dump()
-        print(medication_data)
         doc_ref = db.collection("medications").add(medication_data)
 
         return {"code": 0, "document_id": doc_ref[1].id}    
@@ -87,6 +86,35 @@ def update_medication(medication: Medication):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.put("/medication/update/list")
+def update_medication(medications: List[Medication], user_id: str):
+    try:
+        medications_ref = db.collection("medications")
+        for medication in medications:
+            query = (
+                medications_ref
+                .where("user_id", "==", user_id)
+                .where("id", "==", medication.id)
+                .limit(1)
+                .stream()
+            )
+
+            medication_doc = next(query, None)
+
+            if medication_doc:
+                # Update the document
+                medication_doc.reference.update(medication.model_dump())
+            else:
+                # Add new medication if not found
+                medications_ref.add(medication.model_dump())
+
+        return {"code": 0, "message": "Medications updated successfully!"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    
 @app.delete("/medication/{user_id}/{medication_id}")
 def delete_medication(user_id: str, medication_id: int):
     try:
@@ -125,7 +153,6 @@ def get_frequency_list(user_id: str):
 def add_frequency(frequency: Frequency):
     try:
         frequency_data = frequency.model_dump()
-        print(frequency_data)
         doc_ref = db.collection("frequencies").add(frequency_data)
 
         return {"code": 0, "document_id": doc_ref[1].id}    
@@ -157,6 +184,36 @@ def update_medication_frequency(frequency: Frequency):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/medication/frequency/update/list")
+def update_medication_frequency_list(frequencies: List[Frequency], user_id: str):
+    try:
+        frequencies_ref = db.collection("frequencies")
+        for frequency in frequencies:
+            query = (
+                frequencies_ref
+                .where("user_id", "==", user_id)
+                .where("id", "==", frequency.id)
+                .limit(1)
+                .stream()
+            )
+
+            frequency_doc = next(query, None)
+
+            if frequency_doc:
+                # Update the existing document
+                frequency_doc.reference.update(frequency.model_dump())
+            else:
+                # Add new frequency if not found
+                frequencies_ref.add(frequency.model_dump())
+
+        return {"code": 0, "message": "Frequencies updated successfully!"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 @app.delete("/medication/frequency/{user_id}/{frequency_id}")
 def delete_frequency(user_id: str, frequency_id: int):
@@ -196,7 +253,6 @@ def get_appointment_list(user_id: str):
 def add_appointment(appointment: Appointment):
     try:
         appointment_data = appointment.model_dump()
-        print(appointment_data)
         doc_ref = db.collection("appointments").add(appointment_data)
 
         return {"code": 0, "document_id": doc_ref[1].id}    
@@ -228,6 +284,36 @@ def update_appointment(appointment: Appointment):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/appointment/list")
+def update_appointment_list(appointments: List[Appointment], user_id: str):
+    try:
+        appointments_ref = db.collection("appointments")
+        for appointment in appointments:
+            query = (
+                appointments_ref
+                .where("user_id", "==", user_id)
+                .where("id", "==", appointment.id)
+                .limit(1)
+                .stream()
+            )
+
+            appointment_doc = next(query, None)
+
+            if appointment_doc:
+                # Update the existing appointment
+                appointment_doc.reference.update(appointment.model_dump())
+            else:
+                # Add new appointment if not found
+                appointments_ref.add(appointment.model_dump())
+
+        return {"code": 0, "message": "Appointments updated successfully!"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 @app.delete("/appointment/{user_id}/{appointment_id}")
 def delete_appointment(user_id: str, appointment_id: int):
@@ -334,6 +420,39 @@ def update_emergency(emergency: EmergencyContact):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.put("/emergency/contact/update/list")
+def update_emergency_list(emergencies: List[EmergencyContact], user_id: str):
+    try:
+        emergencies_ref = db.collection("emergencies")
+        for emergency in emergencies:
+            # Check if the emergency contact exists using user_id and id
+            query = (
+                emergencies_ref
+                .where("user_id", "==", user_id)
+                .where("id", "==", emergency.id)
+                .limit(1)
+                .stream()
+            )
+
+            emergency_doc = next(query, None)
+            emergency_data = emergency.model_dump()
+
+            if emergency_doc:
+                # Update existing emergency contact
+                emergency_doc.reference.update(emergency_data)
+            else:
+                # Add new emergency contact if not found
+                emergencies_ref.add(emergency_data)
+
+        return {"code": 0, "message": "Emergency contacts updated successfully!"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
 class EmergencyDeleteRequest(BaseModel):
     contactList: str
 
@@ -388,7 +507,18 @@ def update_notification(notification: Notification):
         return {"code": 0, "document_id": doc_ref[1].id}    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.put("/notification/update/list")
+def update_notification_list(notifications: List[Notification], user_id: str):
+    try:
+        notifications_ref = db.collection("notifications")
+        for notification in notifications:
+            notification_data = notification.model_dump()
+            doc_ref = notifications_ref.add(notification_data)
 
+        return {"code": 0, "message": "Notifications updated successfully!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 def format_phone_number(phone: str) -> str:
     cleaned = re.sub(r"[^\d]", "", phone)  # Remove all non-numeric characters

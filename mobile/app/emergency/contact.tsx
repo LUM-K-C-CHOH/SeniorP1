@@ -26,7 +26,7 @@ import {
 import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon, PhoneIcon, FlyIcon } from '@/utils/svgs';
+import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon, PhoneIcon, FlyIcon, DoctorIcon } from '@/utils/svgs';
 import { ThemedText } from '@/components/ThemedText';
 import { IEmergencyContact, TResponse} from '@/@types';
 import { getEmergencyContactList, deleteEmergencyContactGroup, addEmergencyContact, updateEmergencyContact } from '@/services/emergency';
@@ -35,7 +35,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors, EmergencyType } from '@/config/constants';
 import { SelectList } from 'react-native-dropdown-select-list'
 
-import { CalendarIcon, CloseIcon, MinusIcon, PlusIcon, SearchIcon } from '@/utils/svgs';
+import { CloseIcon, SearchIcon } from '@/utils/svgs';
 import { ThemedInput } from '@/components/ThemedIntput';
 
 
@@ -53,14 +53,10 @@ export default function EmergencyContactScreen() {
   const [selectableVisible, setSelectableVisible] = useState<boolean>(false);
   const [checkedIdList, setCheckedIdList] = useState<number[]>([]);
   const [deleteConfrimVisible, setDeleteConfirmVisible] = useState<boolean>(false);
-  const [updateConfirmVisible, setUpdateConfirmVisible] = useState<boolean>(false);
   const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
   const [contactPopupVisible, setContactPopupVisible] = useState<boolean>(false);
   const [editPopupVisible, setEditPopupVisible] = useState<boolean>(false);
   const [emergencyData, setEmergencyData] = useState<IEmergencyContact>();
-  const [name, setName] = useState<string>(emergencyData ? emergencyData.name : '');
-  const [phone, setPhone] = useState<string>(emergencyData ? emergencyData.phone : '');
-  const [type, setType] = useState<string>(emergencyData ? `${emergencyData.type}` : '');
    
   useEffect(() => {
     if (initiatedRef.current) return;
@@ -75,23 +71,19 @@ export default function EmergencyContactScreen() {
         }
       });
   }, []);
-  useEffect(() => {
-    if(!emergencyData) return;
-    setName(emergencyData?.name ?? '');
-    setPhone(emergencyData?.phone ?? '');
-    setType(emergencyData?.type ?? '');
-  }, [emergencyData])
+
   const typeList = [
+    { key: EmergencyType.PERSON, value: 'Person' },
     { key: EmergencyType.DOCTOR, value: 'Doctor' },
-    { key: EmergencyType.NURSE, value: 'Nurse' }
+    { key: EmergencyType.NURSE, value: 'Nurse' },    
   ];
   const handleLongPress = (): void => {
     setSelectableVisible(true);
   }
-  const handleFormValueChange = (type: string, value: string): void => {
-    
+
+  const handleFormValueChange = (type: string, value: string): void => {    
     if (type === 'name') {
-      setName(value);  
+      setEmergencyData({ ...emergencyData!, name: value });
       if (value.length > 0) {
         const { name, ...rest } = errors;
         setErrors(rest);
@@ -103,7 +95,7 @@ export default function EmergencyContactScreen() {
     }
 
     if (type === 'phone') {
-      setPhone(value);
+      setEmergencyData({ ...emergencyData!, phone: value });  
       if (value.length > 0) {
         const { dosage, ...rest } = errors;
         setErrors(rest);
@@ -116,8 +108,7 @@ export default function EmergencyContactScreen() {
     }
 
     if (type === 'type') {
-      let val = parseInt(value, 10);
-      setType(typeList[val - 1].value);
+      setEmergencyData({ ...emergencyData!, type: value });  
       if (`${value}`.length > 0) {
         const { type, ...rest } = errors;
         setErrors(rest);
@@ -127,8 +118,8 @@ export default function EmergencyContactScreen() {
       }
       return;
     }
-
   }
+
   const handleStatusChange = (id: number, status: boolean): void => {
     if (status && !checkedIdList.includes(id)) {
       setCheckedIdList([...checkedIdList, id]);
@@ -187,7 +178,7 @@ export default function EmergencyContactScreen() {
       })
       .catch(error => {
         setIsLoading(false);
-        console.error(error);
+        console.log(error);
       });
   }
 
@@ -250,7 +241,7 @@ export default function EmergencyContactScreen() {
     setAppState({ ...appState, lockScreen: false });
   }
 
-  const handleEdit = (id?: number) => {
+  const handleEditPopupVisible = (id?: number) => {
     if(!id) return;
     const find = contactList.find(v => v.id === id);
     if(!find) return;
@@ -259,23 +250,17 @@ export default function EmergencyContactScreen() {
     setEditPopupVisible(true);
   }
   
-  const handleContactUpdate = async(): Promise<void> => {
+  const handleEmergencyContactUpdate = async(): Promise<void> => {
     if (appState.lockScreen) return;
-    let data: IEmergencyContact = {
-      id: emergencyData?.id,
-      phone: phone,
-      name: name,
-      type: type || 'doctor',
-      image: emergencyData?.image || ""
-    }
+    if (!emergencyData) return;
+
+    setEditPopupVisible(false);
 
     setAppState({ ...appState, lockScreen: true });
-    const ret = await updateEmergencyContact(data, appState.user?.id);
+    const ret = await updateEmergencyContact(emergencyData, appState.user?.id);
 
     if (ret) {
-      handleLoadData();
-      setUpdateConfirmVisible(false);
-      setEditPopupVisible(false);
+      handleLoadData();     
       showToast(t('message.alert_update_success'));
     } else {
       showToast(t('message.alert_update_fail'));
@@ -283,6 +268,7 @@ export default function EmergencyContactScreen() {
 
     setAppState({ ...appState, lockScreen: false });
   }
+
   type OrgContactItemProps = {
     index: number,
     name: string,
@@ -293,6 +279,7 @@ export default function EmergencyContactScreen() {
     id: number,
     name: string,
     phone: string,
+    type: string,
     checkedStatus: boolean,
   };
 
@@ -338,7 +325,7 @@ export default function EmergencyContactScreen() {
     );
   }
 
-  const ContactItem = ({ id, name, phone, checkedStatus }: ContactItemProps): JSX.Element => {
+  const ContactItem = ({ id, name, phone, type, checkedStatus }: ContactItemProps): JSX.Element => {
     return (
       <TouchableHighlight onLongPress={handleLongPress}>
         <ThemedView
@@ -370,8 +357,8 @@ export default function EmergencyContactScreen() {
               <ThemedText type="default"> {phone} </ThemedText>
             </View>
             <View style={cstyles.rowWrapper}>
-              <FlyIcon color={appState.setting.theme === 'light' ? '#000' : '#fff'} />
-              <ThemedText type="default"> {type} </ThemedText>
+              <DoctorIcon width={18} height={18} color={appState.setting.theme === 'light' ? '#000' : '#fff'} />
+              <ThemedText type="default"> {typeList.find(v => v.key === type)?.value} </ThemedText>
             </View>
           </View>
 
@@ -384,7 +371,7 @@ export default function EmergencyContactScreen() {
                   }
                 </TouchableOpacity>
               ) : (
-              <TouchableOpacity onPress={() => handleEdit(id)} style={{ marginLeft: 9 }}>
+              <TouchableOpacity onPress={() => handleEditPopupVisible(id)} style={{ marginLeft: 9 }}>
                 <Ionicons name="create-outline" size={24} color={appState.setting.theme === 'light' ? '#000' : '#fff'} />
               </TouchableOpacity>
               )
@@ -427,34 +414,6 @@ export default function EmergencyContactScreen() {
         }
         onCancel={handleDeleteConfirmResult}
         onConfirm={handleContactDelete}
-      />
-
-      <ConfirmPanel
-        visible={updateConfirmVisible}
-        titleText={t('confirmation')}
-        positiveButtonText={t('yes')}
-        negativeButtonText={t('no')}
-        bodyText={t('message.confirm_update')}
-        // resultVisible={deleteConfirmResultVisible}
-        resultElement={
-          <ThemedView style={ConfirmResultStyle.container}>
-            <ThemedText style={ConfirmResultStyle.titleText}>
-              {t('message.alert_update_success')}
-            </ThemedText>
-            <View style={ConfirmResultStyle.iconWrapper}><CircleCheckIcon /></View>
-            <View style={ConfirmResultStyle.actionsWrapper}>
-              <ThemedText style={ConfirmResultStyle.labelText}>{t('click')}</ThemedText>
-              <TouchableOpacity
-                onPress={handleDeleteConfirmResult}
-              >
-                <ThemedText style={[ConfirmResultStyle.labelText, ConfirmResultStyle.linkText]}>{t('here')}</ThemedText>
-              </TouchableOpacity>
-              <ThemedText style={ConfirmResultStyle.labelText}>{t('to_continue')}</ThemedText>
-            </View>
-          </ThemedView>
-        }
-        onCancel={() => setUpdateConfirmVisible(false)}
-        onConfirm={handleContactUpdate}
       />
 
       <Modal
@@ -519,7 +478,7 @@ export default function EmergencyContactScreen() {
                   errors.name ? { borderColor: 'red' } : {}
                 ]}
                 type="default"
-                value={name}
+                value={emergencyData?.name}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 onChangeText={(v) => handleFormValueChange('name', v)}
@@ -550,7 +509,7 @@ export default function EmergencyContactScreen() {
                   errors.phone ? { borderColor: 'red' } : {}
                 ]}
                 type="default"
-                value={phone}
+                value={emergencyData?.phone}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 onChangeText={(v) => handleFormValueChange('phone', v)}
@@ -584,7 +543,7 @@ export default function EmergencyContactScreen() {
                 searchPlaceholder=""
                 searchicon={<SearchIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
                 closeicon={<CloseIcon color={appState.setting.theme === 'light' ? '#454b60' : '#aaa'} />}
-                defaultOption={typeList.find(v => v.key === parseInt(type, 10))}
+                defaultOption={typeList.find(v => v.key === emergencyData?.type)}
                 boxStyles={{
                   borderColor: errors.type ? 'red' : appState.setting.theme === 'light' ? Colors.light.defaultControlBorder : Colors.dark.defaultControlBorder,
                   paddingHorizontal: 10,
@@ -612,7 +571,7 @@ export default function EmergencyContactScreen() {
           </View>
 
           <View style={styles.action1Wrapper}>
-            <CustomButton onPress={() => setUpdateConfirmVisible(true)}>
+            <CustomButton onPress={() => handleEmergencyContactUpdate()}>
               <ThemedText
                 type="button"
                 darkColor={Colors.dark.defaultButtonText}
@@ -671,6 +630,7 @@ export default function EmergencyContactScreen() {
                           id={item.id!}
                           name={item.name}
                           phone={item.phone}
+                          type={item.type as string}
                           checkedStatus={checkedIdList.includes(item.id!)}
                         />
           }

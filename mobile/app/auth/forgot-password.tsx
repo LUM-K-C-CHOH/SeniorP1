@@ -60,9 +60,9 @@ export default function ForgotPasswordScreen() {
         lockScreen: false
       });
 
-      showToast(t('messages.alert_forgot_password_success'));
+      showToast(t('message.alert_forgot_password_success'));
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   }
 

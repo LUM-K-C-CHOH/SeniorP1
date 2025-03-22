@@ -26,7 +26,7 @@ import {
   KEY_DB_SYNCED,
 } from '@/config/constants';
 import { showToast, validateEmail } from '@/utils';
-import { getStorageItem } from '@/utils/storage';
+import { getStorageItem, setStorageItem } from '@/utils/storage';
 import { getUserSetting } from '@/services/setting';
 import { syncLocalDatabaseWithRemote } from '@/services/sync';
 let lockedSync = false;
@@ -95,6 +95,7 @@ export default function SignInScreen() {
               user: resultLogIn.data,
               setting: setting
             });
+            setStorageItem('USER_ID', resultLogIn.data.id);
           } else {
               setAppState(state);
           }

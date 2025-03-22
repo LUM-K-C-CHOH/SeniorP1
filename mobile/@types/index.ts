@@ -42,6 +42,7 @@ export interface IMedication {
   frequency: IFrequency,
   startDate: string,
   endDate: string,
+  stockDate: string,
   threshold: number,
   pushAlert: string,
   emailAlert: string,
@@ -74,7 +75,7 @@ export interface INotification {
   var2: string,
   var3: string,
   status: number,
-  targetId: number,
+  targetId: any,
 }
 
 export type TResponse = {

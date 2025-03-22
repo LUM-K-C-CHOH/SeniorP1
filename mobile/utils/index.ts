@@ -53,7 +53,14 @@ export const getMarkLabelFromName = (name: string): string => {
   const s = arr.reduce((acc, cur) => `${acc}${cur[0].toUpperCase()}`, '');
   return s;
 }
-
+export const getMedicationMarkLabelFromName = (name: string): string => {
+  if (name.trim().length === 0) {
+    return '';
+  }
+  const arr = name.split(' ');
+  const s = arr.reduce((acc, cur) => `${acc}${cur[0].toUpperCase()}${acc}${cur[1].toUpperCase()}`, '');
+  return s;
+}
 export const getMarkColorFromName = (name: string): {[k: string]: string} => {
   if (name.trim().length === 0) {
     return { bgColor: '#eee', textColor: '#000' };
@@ -72,7 +79,24 @@ export const getMarkColorFromName = (name: string): {[k: string]: string} => {
   const textcolor = luminance > 0.5 ? "#333" : "#eee";
   return { bgColor: bgcolor, textColor: textcolor };
 }
+export const getMedicationMarkColorFromName = (name: string): {[k: string]: string} => {
+  if (name.trim().length === 0) {
+    return { bgColor: '#eee', textColor: '#000' };
+  }
+  // const arr = name.split(' ');
+  // const s = arr.reduce((acc, cur) => `${acc}${cur[0].toUpperCase()}`, '');
+  const hash = (name[0].charCodeAt(0) * 69892959 + name[1].charCodeAt(0)) % 16777215;
 
+  const bgcolor = `#${hash.toString(16).padStart(6, '0')}`;
+
+  const r = parseInt(bgcolor.substring(1, 3), 16);
+  const g = parseInt(bgcolor.substring(3, 5), 16);
+  const b = parseInt(bgcolor.substring(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+  const textcolor = luminance > 0.5 ? "#333" : "#eee";
+  return { bgColor: bgcolor, textColor: textcolor };
+}
 export const validateEmail = (email: string): boolean => {
   return !!String(email)
     .toLowerCase()

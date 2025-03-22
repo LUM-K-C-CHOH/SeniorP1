@@ -36,7 +36,7 @@ export const appointmentSyncWithServer = async (userId?: string): Promise<boolea
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -64,10 +64,33 @@ export const appointmentSyncToServer = async (appointmentData: IAppointment, use
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
+
+
+
+export const appointmentListSyncToServer = async (appointmentData: IAppointment[], userId?: string): Promise<boolean> => {
+
+  return axiosInstance.put(
+    '/appointment/list',
+    {appointmentData, userId}
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      return false;
+    });
+}
+
+
 export const deleteAppointmentSyncToServer = async (appointmentId: number, userId?: string): Promise<boolean> => {
   return axiosInstance.delete(
     `/appointment/${userId}/${appointmentId}`
@@ -81,7 +104,7 @@ export const deleteAppointmentSyncToServer = async (appointmentId: number, userI
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -109,7 +132,7 @@ export const addAppointmentSyncToServer = async (appointmentData: IAppointment, 
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -127,7 +150,7 @@ export const getAppointmentList = async () => {
     }));
     return { success: true, data: list };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { success: true, message: error instanceof Error ? error.message : 'unknown error' };
   }
   
@@ -149,7 +172,7 @@ export const getTodayAppointmentList = async () => {
     list = list.filter(v => dayjs(v.scheduledTime, 'YYYY-MM-DDTHH:mm:ss:Z').format('YYYY-MM-DD') === todayStr);
     return { success: true, data: list };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -162,7 +185,7 @@ export const deleteAppointment = async (appointmentId: number, userId?: string):
     }
     return ret;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
@@ -184,7 +207,7 @@ export const updateAppointment = async (appointment: IAppointment, userId?: stri
       return false;
     }   
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
@@ -204,7 +227,7 @@ export const addAppointment = async (appointment: IAppointment, userId?: string)
     }
     return appointmentId >= 0;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
