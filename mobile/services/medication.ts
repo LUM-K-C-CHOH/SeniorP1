@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import { IFrequency, IMedication } from '@/@types';
 import { MedicationCycleType, SyncStatus } from '@/config/constants';
 import { addData, deleteData, getAllData, Tables, updateData } from '@/services/db';
+import { useId } from 'react';
 
 export const frequencySyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(
@@ -35,7 +36,7 @@ export const frequencySyncWithServer = async (userId?: string): Promise<boolean>
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -62,10 +63,33 @@ export const frequencySyncToServer = async (frequencyData: IFrequency, userId?: 
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
+
+
+
+export const frequencyListSyncToServer = async (frequencyData: IFrequency[], userId?: string): Promise<boolean> => {
+
+  return axiosInstance.put(
+    '/medication/frequency/update/list',
+    {frequencyData, userId}
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      return false;
+    });
+}
+
+
 export const addFrequencySyncToServer = async (frequencyData: IFrequency, userId?: string): Promise<boolean> => {
   const data = {
     id: frequencyData.id,
@@ -88,7 +112,7 @@ export const addFrequencySyncToServer = async (frequencyData: IFrequency, userId
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -104,7 +128,7 @@ export const deleteFrequencySyncToServer = async (frequencyId: number, userId?: 
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -125,6 +149,7 @@ export const medicationSyncWithServer = async (userId?: string): Promise<boolean
             emailAlert: d.email_alert,
             startDate: d.start_date,
             endDate: d.end_date,
+            stockDate: d.stock_date,
             pushAlert: d.push_alert
           }
           addData(Tables.MEDICATIONS, { ...data, syncStatus: SyncStatus.SYNCED });
@@ -135,7 +160,7 @@ export const medicationSyncWithServer = async (userId?: string): Promise<boolean
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -149,6 +174,7 @@ export const addMedicationSyncToServer = async (medicationData: IMedication, use
     stock: medicationData.stock,
     start_date: medicationData.startDate,
     end_date: medicationData.endDate,
+    stock_date: medicationData.stockDate,
     threshold: medicationData.threshold,
     push_alert: medicationData.pushAlert,
     email_alert: medicationData.emailAlert
@@ -177,16 +203,17 @@ export const medicationSyncToServer = async (medicationData: IMedication, userId
     stock: medicationData.stock,
     start_date: medicationData.startDate,
     end_date: medicationData.endDate,
+    stock_date: medicationData.stockDate,
     threshold: medicationData.threshold,
     push_alert: medicationData.pushAlert,
     email_alert: medicationData.emailAlert
   }
+
   return axiosInstance.put(
     '/medication/update',
     data
   )
     .then(response => {
-      console.log(response)
       if (response.data.code === 0) {
         return true;
       } else {
@@ -194,17 +221,33 @@ export const medicationSyncToServer = async (medicationData: IMedication, userId
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
-
+export const medicationListSyncToServer = async (medicationData: IMedication[], userId?: string): Promise<boolean> => {
+  return axiosInstance.put(
+    '/medication/update/list',{
+      medicationData, userId
+    }
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      return false;
+    });
+}
 export const deleteMedicationSyncToServer = async (medicationId: number, userId?: string): Promise<boolean> => {
   return axiosInstance.delete(
     `/medication/${userId}/${medicationId}`
   )
     .then(response => {
-      console.log(response)
       if (response.data.code === 0) {
         return true;
       } else {
@@ -212,11 +255,12 @@ export const deleteMedicationSyncToServer = async (medicationId: number, userId?
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
-const getCombinedMedicationList = async (): Promise<IMedication[]> => {
+
+export const getCombinedMedicationList = async (): Promise<IMedication[]> => {
   const medicationList = await getAllData(Tables.MEDICATIONS);
   const frequencyList = await getAllData(Tables.FREQUENCIES);
   const resultList: IMedication[] = medicationList.map((v1: any) => {
@@ -229,6 +273,7 @@ const getCombinedMedicationList = async (): Promise<IMedication[]> => {
       miniStock: v1.mini_stock,
       startDate: v1.start_date,
       endDate: v1.end_date,
+      stockDate: v1.stock_date,
       threshold: v1.threshold,
       emailAlert: v1.email_alert,
       pushAlert: v1.push_alert,
@@ -250,7 +295,7 @@ export const getMedicationList = async () => {
     const resultList: IMedication[] = await getCombinedMedicationList();
     return { success: true, data: resultList };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -268,12 +313,12 @@ export const deleteMedication = async(medicationId: number, userId?: string): Pr
     }
     return ret;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
 
-export const updateMedication = async(medication: IMedication, userId?: string): Promise<boolean> => {  
+export const updateMedication = async(medication: IMedication, userId?: string): Promise<boolean> => { 
   try {
     if (medication.id) {
       const { frequency, ...rest } = medication;
@@ -305,7 +350,7 @@ export const updateMedication = async(medication: IMedication, userId?: string):
       return false;
     }   
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
@@ -347,7 +392,7 @@ export const addMedication = async (medication: IMedication, userId?: string): P
     }
     return false;    
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
@@ -386,7 +431,7 @@ export const getTodayMedicationList = async () => {
     }
     return { success: true, data: list };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -397,7 +442,7 @@ export const getRefillMedicationList = async () => {
     const list: IMedication[] = resultList.filter(v => v.stock < v.threshold);
     return { success: true, data: list };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -413,7 +458,7 @@ export const getMedicationSufficient = async () => {
       return { success: true, data: { sufficient: 0 } };
     }
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { success: true, data: { sufficient: 0 } };
   }
 }

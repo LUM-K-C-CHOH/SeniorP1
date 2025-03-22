@@ -93,23 +93,6 @@ export default function EmergencyScreen() {
   const handleBack = (): void => {
     router.back();
   }
-  // const handleLoadData = async (): Promise<void> => {
-  //   setIsLoading(true);
-  //   getEmergencyContactList()
-  //     .then((res: TResponse) => {
-  //       setIsLoading(false);
-
-  //       if (res.success) {
-  //         setContactList(res.data?? []);
-  //       } else {
-
-  //       }
-  //     })
-  //     .catch(error => {
-  //       setIsLoading(false);
-  //       console.error(error);
-  //     });
-  // }
   const handleSendEmergencyContact = async (): Promise<void> => {
     let data: String[] = [];
 
@@ -154,7 +137,6 @@ export default function EmergencyScreen() {
     if (data) {
       setOrgContactList(data);
     }
-
     setContactPopupVisible(true);
   }
 

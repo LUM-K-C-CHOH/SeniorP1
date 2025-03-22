@@ -33,7 +33,7 @@ export const emergencyContactSyncWithServer = async (userId?: string): Promise<b
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -55,10 +55,34 @@ export const emergencyContactSyncToServer = async (emergencyContactData: IEmerge
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
+
+
+
+export const emergencyContactListSyncToServer = async (emergencyContactData: IEmergencyContact[], userId?: string): Promise<boolean> => {
+
+  return axiosInstance.put(
+    '/emergency/contact/update/list',
+    {emergencyContactData, userId}
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true; 
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      return false;
+    });
+}
+
+
+
 export const deleteEmergencyContactSyncToServer = async (contactList: string, userId?: string): Promise<boolean> => {
   
   return axiosInstance.delete(
@@ -76,7 +100,7 @@ export const deleteEmergencyContactSyncToServer = async (contactList: string, us
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -92,7 +116,7 @@ export const getEmergencyContactList = async () => {
     }));
     return { success: true, data: list };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -106,7 +130,7 @@ export const deleteEmergencyContactGroup = async (idList: string, userId ?: stri
     }
     return ret;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
@@ -115,6 +139,7 @@ export const addEmergencyContact = async (contact: IEmergencyContact, userId?: s
   try {
     let emergencyId = addData(Tables.EMERGENCY_CONTACTS, { ...contact, syncStatus: SyncStatus.ADDED });
     if(emergencyId){
+      console.log("emergencyId", emergencyId);
       contact = {
         ...contact,
         id: emergencyId
@@ -124,10 +149,11 @@ export const addEmergencyContact = async (contact: IEmergencyContact, userId?: s
         updateData(Tables.EMERGENCY_CONTACTS, emergencyId, { ...contact, syncStatus: SyncStatus.SYNCED });
         return true;
       }
+      return true;
     }
     return false;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
@@ -146,7 +172,7 @@ export const updateEmergencyContact = async (contact: IEmergencyContact, userId?
     }
     return false;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }

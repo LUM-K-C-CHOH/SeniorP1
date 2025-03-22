@@ -20,6 +20,7 @@ class Medication(BaseModel):
   stock: int
   start_date: str
   end_date: str
+  stock_date: str
   threshold: int
   push_alert: str
   email_alert: str

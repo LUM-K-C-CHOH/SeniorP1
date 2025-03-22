@@ -42,7 +42,12 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
-import { getDosageUnitString, showToast } from '@/utils';
+import {
+  getDosageUnitString,
+  showToast,
+  getMedicationMarkColorFromName,
+  getMedicationMarkLabelFromName
+} from '@/utils';
 
 export default function MedicationScreen() {
   const initiatedRef = useRef<boolean>(false);
@@ -241,41 +246,52 @@ export default function MedicationScreen() {
         }
       ]}
     >
-      <Image source={{ uri: data.item.image }} width={60} height={60}/>
-      <View style={styles.infoWrapper}>
-        <View style={{ flexGrow: 1 }}>
-          <ThemedText
-            type="defaultMedium"
-            darkColor={Colors.dark.grayText}
-            lightColor={Colors.light.grayText}
-          >
-            {data.item.name}
+      <View style={{rowGap: 5}}> 
+        <View style={[styles.logoWrapper, { backgroundColor: getMedicationMarkColorFromName(data.item.name?? 'N').bgColor }]}>
+          <ThemedText style={[{ color: getMedicationMarkColorFromName(data.item.name?? 'N').textColor }]}>
+            {getMedicationMarkLabelFromName(data.item.name?? 'N/A')}
           </ThemedText>
-          <View style={styles.itemTextWrapper}>
-            <PillIcon color={appState.setting.theme === 'light' ? Colors.light.defaultIcon : Colors.light.defaultIcon}/>
-            <ThemedText type="default">{data.item.frequency.dosage}{getDosageUnitString(data.item.frequency.dosageUnit)}</ThemedText>
-            <ThemedText>{'•'}</ThemedText>
-            <ThemedText type="default">{`${data.item.frequency.times.length} / ${data.item.frequency.cycle}d`}</ThemedText>
-          </View>
-          <View style={styles.itemTextWrapper}>
-            <StockIcon color={getColorByLevel(data.item.stock)} />
-            <ThemedText
-              type="default"
-              style={{ color: getColorByLevel(data.item.stock) }}
-            >
-              {`${data.item.stock} Tablets`}
-            </ThemedText>
-          </View>
         </View>
-        <View style={{ rowGap: 5 }}>
-          <View style={{ flexDirection: 'row', columnGap: 5 }}>
-            <BellIcon color={appState.setting.theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
-            <FlyIcon color={appState.setting.theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
+      </View>
+      <View style={styles.infoWrapper}>
+        <View style={styles.infoWrapper}>
+          
+          <View style={{ flexGrow: 1 }}>
+            <View style={styles.itemTextWrapper}>
+              <ThemedText
+                type="defaultMedium"
+                darkColor={Colors.dark.grayText}
+                lightColor={Colors.light.grayText}
+              >
+                {data.item.name}
+              </ThemedText>
+            </View>
+            <View style={styles.itemTextWrapper}>
+              <PillIcon color={appState.setting.theme === 'light' ? Colors.light.defaultIcon : Colors.light.defaultIcon}/>
+              <ThemedText type="default">{data.item.frequency.dosage}{getDosageUnitString(data.item.frequency.dosageUnit)}</ThemedText>
+              <ThemedText>{'•'}</ThemedText>
+              <ThemedText type="default">{`${data.item.frequency.times.length} / ${data.item.frequency.cycle}d`}</ThemedText>
+            </View>
+            <View style={styles.itemTextWrapper}>
+              <StockIcon color={getColorByLevel(data.item.stock)} />
+              <ThemedText
+                type="default"
+                style={{ color: getColorByLevel(data.item.stock) }}
+              >
+                {`${data.item.stock} ${getDosageUnitString(data.item.frequency.dosageUnit)}`}
+              </ThemedText>
+            </View>
           </View>
-          <View>
-            <TouchableOpacity onPress={() => handleReminderSettingVisible(true, data.item.id)}>
-              <SettingIcon color={appState.setting.theme === 'light' ? '#0066ff' : '#0066ff'} />
-            </TouchableOpacity>
+          <View style={{ rowGap: 5 }}>
+            <View style={{ flexDirection: 'row', columnGap: 5 }}>
+              <BellIcon color={appState.setting.theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
+              <FlyIcon color={appState.setting.theme === 'light' ? Colors.light.grayIcon : Colors.light.grayIcon} />
+            </View>
+            <View>
+              <TouchableOpacity onPress={() => handleReminderSettingVisible(true, data.item.id)}>
+                <SettingIcon color={appState.setting.theme === 'light' ? '#0066ff' : '#0066ff'} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
@@ -390,6 +406,7 @@ export default function MedicationScreen() {
               </ThemedText>
             </View>
             <View style={[rstyles.rowWrapper, rstyles.thretholdWrapper]}>
+
               <ThemedText type="default">{t('threshold')}:</ThemedText>
               <View style={{ flex: 1 }}>
                 <TextInput
@@ -530,6 +547,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     columnGap: 5,
+  },  
+  logoWrapper: {
+    width: 70,
+    height: 70,
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5
   },
   rowBack: {
     alignItems: 'center',

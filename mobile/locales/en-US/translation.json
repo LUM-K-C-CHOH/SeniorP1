@@ -31,6 +31,7 @@
   "stock_limitation": "Stock Limitation",
   "start_date": "Start Date",
   "end_date": "End Date",
+  "stock_date": "Stock Date",
   "need_help": "Need help",
   "check": "Check",
   "support": "Support",
@@ -105,9 +106,11 @@
     "alert_input_threshold": "Please enter the threshold.",
     "alert_select_start_date": "Please select the start date.",
     "alert_select_end_date": "Please select the end date.",
+    "alert_select_stock_date": "Please select the stock date.",
     "alert_add_time": "Please add the time.",
     "alert_select_unique_time": "Please select the time not overlapped.",
     "alert_save_success": "Saved successfully.",
+    "alert_save_fail": "Failed to save.",
     "alert_update_fail": "Failed to update.",
     "alert_delete_fail": "Failed to delete.",
     "alert_help_success": "Success! ${numbers} people got the message exactly.",
@@ -160,7 +163,7 @@
     "scheduled_time": "Scheduled Time",
     "description": "Description",
     "schedule": "Schedule",
-    "join_google_calendar": "Join Google Calendar" 
+    "link_google_calendar": "Link Google Calendar" 
   },
   "emergency_control": {
     "share_my_location": "Share my location",

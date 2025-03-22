@@ -292,7 +292,7 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
                 {week.map((day: TData, index2: number) =>
                   (day as TDay).status
                     ? <TouchableHighlight
-                        key={index1 * 10 + index2}
+                        key={(index1 + 1) * 10 + index2}
                         style={{ flex: 1, height: 40, borderRadius: 5 }}
                         onPress={() => handleDaySelect(day as TDay)}
                       >
@@ -315,7 +315,7 @@ const Calendar = ({ date, onSelectedDate }: TCalendarProps): JSX.Element => {
                           {isToday(day as TDay)&& <View style={styles.circle} />}
                         </ThemedView>
                       </TouchableHighlight>
-                    : <ThemedView style={styles.dayTextWrapper}>
+                    : <ThemedView key={(index1 + 1) * 10 + index2} style={styles.dayTextWrapper}>
                         <ThemedText                  
                           style={[
                             styles.dayText,

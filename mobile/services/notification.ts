@@ -9,6 +9,7 @@ import axiosInstance from './instance';
 import { addData, deleteDataGroup, getAllData, Tables, updateData } from './db';
 import { SyncStatus } from '@/config/constants';
 import { INotification } from '@/@types';
+import { useId } from 'react';
 
 export const notificationSyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(
@@ -35,7 +36,7 @@ export const notificationSyncWithServer = async (userId?: string): Promise<boole
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
@@ -63,10 +64,32 @@ export const notificationSyncToServer = async (notificationData: INotification, 
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return false;
     });
 }
+
+
+
+export const notificationListSyncToServer = async (notificationData: INotification[], userId?: string): Promise<boolean> => {
+
+  return axiosInstance.put(
+    '/notification/update/list',
+    {notificationData, userId}
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      return false;
+    });
+}
+
 
 export const getNotificationList = async () => {
   try {
@@ -82,7 +105,7 @@ export const getNotificationList = async () => {
     }));
     return { success: true, data: list };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { success: false, message: error instanceof Error ? error.message : 'unknown error' };
   }
 }
@@ -103,17 +126,35 @@ export const addNotification = async (notification: INotification, userId?: stri
     }
     return false;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }
+
+export const updateNotification = async (notification: INotification, userId?: string): Promise<boolean> => {
+  try {
+    let ret = updateData(Tables.NOTIFICATIONS, notification.id as number, { ...notification, syncStatus: SyncStatus.UPDATED });
+    if(ret){
+      let bret = await notificationSyncToServer(notification, userId);
+      if(bret){
+        updateData(Tables.NOTIFICATIONS, notification.id as number, { ...notification, syncStatus: SyncStatus.SYNCED });
+        return true;
+      }
+    }
+    return false;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
 
 export const deleteNotificationGroup = (idList: string): boolean => {
   try {
     const ret = deleteDataGroup(Tables.NOTIFICATIONS, idList);
     return ret;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return false;
   }
 }

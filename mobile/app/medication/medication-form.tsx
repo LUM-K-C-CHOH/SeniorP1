@@ -57,12 +57,14 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
   const [errors, setErrors] = useState<{[k: string]: string}>({});
   const [timeErrors, setTimeErrors] = useState<string[]>(medication ? Array.from(new Array(medication.frequency.times.length), () => '') : ['']);
   const [name, setName] = useState<string>(medication ? medication.name : '');
+  const [image, setImage] = useState<string>(medication?.image?? '');
   const [dosage, setDosage] = useState<string>(medication ? `${medication.frequency.dosage}` : '');
   const [dosageUnit, setDosageUnit] = useState<string>(medication ? `${medication.frequency.dosageUnit}` : '');
   const [cycle, setCycle] = useState<string>(medication ? `${medication.frequency.cycle}` : '');
   const [medicationId, setMedicationId] = useState<string>(medication ? `${medication.frequency.medicationId}` : '');
   const [times, setTimes] = useState<string[]>(medication ? medication.frequency.times : ['00:00']);
   const [startDate, setStartDate] = useState<string>(medication ? medication.startDate : dayjs().format('YYYY-MM-DD'));
+  const [stockDate, setStockDate] = useState<string>(medication ? medication.stockDate : dayjs().format('YYYY-MM-DD'));
   const [endDate, setEndDate] = useState<string>(medication ? medication.endDate : dayjs().format('YYYY-MM-DD'));
   const [stock, setStock] = useState<string>(medication ? `${medication.stock}` : '');
   const [threshold, setThreshold] = useState<string>(medication ? `${medication.threshold}` : '');
@@ -73,6 +75,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
     if (!medication) return;
     
     setName(medication?.name?? '');
+    setImage(medication.image?? '');
     setDosage(medication?.frequency.dosage ? `${medication.frequency.dosage}` : '');
     setDosageUnit(medication?.frequency.dosageUnit ? `${medication.frequency.dosageUnit}` : '');
     setCycle(medication?.frequency.cycle ? `${medication.frequency.cycle}` : '');
@@ -83,6 +86,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
     setEmailAlert(medication?.emailAlert ? medication.emailAlert : '');
     setPushAlert(medication?.pushAlert ? medication.pushAlert : '');
     setStartDate((medication?.startDate && medication.startDate.length > 0) ? medication.startDate : dayjs().format('YYYY-MM-DD'));
+    setStockDate((medication?.stockDate && medication.stockDate.length > 0) ? medication.stockDate : dayjs().format('YYYY-MM-DD'));
     setEndDate((medication?.endDate && medication.endDate.length > 0) ? medication.endDate : dayjs().format('YYYY-MM-DD'));
     setTimeErrors(medication?.frequency.times ? Array.from(new Array(medication.frequency.times.length), () => '') : ['']);
   }, [medication]);
@@ -257,6 +261,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       emailAlert: emailAlert,
       startDate: startDate,
       endDate: endDate,
+      stockDate: stockDate,
       image: '',
       frequency: {
         medicationId: parseInt(medicationId, 10),
@@ -274,6 +279,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       data.id = medication.id;
       data.frequency.id = medication.frequency.id;
       const ret = await updateMedication(data, appState.user?.id);
+      medication.stockDate = "";
       if (ret) {
         router.back();
         showToast(t('message.alert_save_success'));
@@ -281,6 +287,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
         showToast(t('message.alert_save_fail'));
       }
     } else {
+      data.stockDate = "";
       const ret = await addMedication(data, appState.user?.id);
       if (ret) {
         router.back();

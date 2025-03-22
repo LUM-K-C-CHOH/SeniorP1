@@ -8,15 +8,19 @@ import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 
 import { syncLocalUpdatesToServer } from '@/services/sync';
+import { getStorageItem } from '@/utils/storage';
 
 const BACKGROUND_DB_SYNC_TASK = 'background-db-sync';
 TaskManager.defineTask(BACKGROUND_DB_SYNC_TASK, async () => {
+  const userId = await getStorageItem('USER_ID');
+  console.log('-----------', userId);
   try {
-    await syncLocalUpdatesToServer();
-
+    if(userId) {
+      await syncLocalUpdatesToServer(userId);
+    }
     return BackgroundFetch.BackgroundFetchResult.NewData;
   } catch (error) {
-    console.error("background db sync failed:", error);
+    console.log("background db sync failed:", error);
     return BackgroundFetch.BackgroundFetchResult.Failed;
   }
 });
@@ -43,7 +47,7 @@ export const registerBackgroundDBSyncTask = async () => {
     
     if (!isRegistered) {
       await BackgroundFetch.registerTaskAsync(BACKGROUND_DB_SYNC_TASK, {
-        minimumInterval: 60, // Run every 1 minute
+        minimumInterval: 3600 * 12, // Run every 12 hours
         stopOnTerminate: false,
         startOnBoot: true,
       });
@@ -52,7 +56,7 @@ export const registerBackgroundDBSyncTask = async () => {
       console.log("background db sync already registered.");
     }
   } catch (error) {
-    console.error("failed to register background db sync:", error);
+    console.log("failed to register background db sync:", error);
   }
 }
 

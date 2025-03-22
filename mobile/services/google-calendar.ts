@@ -15,8 +15,8 @@ import { t } from 'i18next';
 GoogleSignin.configure({
   webClientId: `746634592236-vf85rn84rraaq3b2git4ssalrdkromji.apps.googleusercontent.com`, 
   scopes: [
-    // 'https://www.googleapis.com/auth/calendar',
     'https://www.googleapis.com/auth/calendar.events',
+    'https://www.googleapis.com/auth/calendar.readonly'
   ],
 });
 
@@ -28,7 +28,7 @@ const checkCurrentUser = async () => {
       getCurrentUser();
     }
   } catch (error) {
-    console.error('Check user error:', error);
+    console.log('Check user error:', error);
   }
 };
 
@@ -37,7 +37,7 @@ const getCurrentUser = async () => {
     const currentUser = GoogleSignin.getCurrentUser();
     user = currentUser;
   } catch (error) {
-    console.error('Get current user error:', error);
+    console.log('Get current user error:', error);
   }
 }
 
@@ -57,7 +57,7 @@ const signIn = async () => {
     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
       console.log('Play services not available');
     } else {
-      console.error('Sign-in error:', error);
+      console.log('Sign-in error:', error);
     }
     return null;
   }
@@ -69,7 +69,7 @@ const signOut = async () => {
     await GoogleSignin.signOut();
     user = null;
   } catch (error) {
-    console.error('Sign out error:', error);
+    console.log('Sign out error:', error);
   }
 }
 
@@ -112,6 +112,28 @@ const createGoogleCalendarEvent = async (accessToken ?: string, data?: IAppointm
     return { success: false, message: error instanceof Error ? error.message : 'unknown' };
   }    
 }
+const   getGoogleCalendarEvent = async(accessToken ?: string) => {
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?key=${process.env.EXPO_PUBLIC_GOOGLE_API_KEY}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    const result = await response.json();
+    if (result.error) {
+      console.log('google calendar event reuslt: ', result.error.errors, accessToken);
+      await signOut();
+      return { success: false, message: t('message.alert_link_google_calendar_fail') };
+    }
+    return { success: true, message: result.items };
+  } catch (error) {}
+}
 
 export const linkToCalendar = async (data: IAppointment): Promise<TResponse> => {
   const token = await signIn();
@@ -122,4 +144,12 @@ export const linkToCalendar = async (data: IAppointment): Promise<TResponse> => 
   // Send these tokens to your backend for verification
   const res = createGoogleCalendarEvent(token, data);
   return res;
+}
+export const getToCalendar = async() => {
+  const token = await signIn();
+  if (!token) {
+    return { success: false, message: t('message.alert_google_authentication_fail') };
+  }
+  const resDate = getGoogleCalendarEvent(token);
+  return resDate;
 }

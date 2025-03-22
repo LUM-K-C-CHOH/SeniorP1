@@ -18,7 +18,7 @@ export const getContactList = () => {
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return { success: false, message: error.message };
     });
 }

@@ -72,6 +72,7 @@ export const setupDatabase = async () => {
         push_alert VARCHAR(10) NOT NULL,
         start_date VARCHAR(20) NOT NULL,
         end_date VARCHAR(20) NOT NULL,
+        stock_date VARCHAR(20) NOT NULL,
         sync_status VARCHAR(10),
         created_at DATETIME,
         updated_at DATETIME
@@ -123,6 +124,9 @@ export const setupDatabase = async () => {
   });  
 }
 
+// Ensure setupDatabase is called during app initialization
+setupDatabase();
+
 export const addData = (table: string, data: any): number => {
   let fieldNames: string[] = [];
   let bindValues: string[] = [];
@@ -144,7 +148,7 @@ export const addData = (table: string, data: any): number => {
       data.push
     ];
   } else if (table === Tables.MEDICATIONS) {
-    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date'];
+    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date', 'stock_date'];
     dataValues = [
       data.name,
       data.image,
@@ -153,7 +157,8 @@ export const addData = (table: string, data: any): number => {
       data.emailAlert,
       data.pushAlert,
       data.startDate,
-      data.endDate
+      data.endDate,
+      data.stockDate
     ];
   } else if (table === Tables.FREQUENCIES) {
     fieldNames = ['medication_id', 'dosage', 'dosage_unit', 'cycle', 'times'];
@@ -265,7 +270,7 @@ export const updateData = (table: string, id: number, data: any, whereField: str
       data.push,
     ];
   } else if (table === Tables.MEDICATIONS) {
-    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date'];
+    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date', 'stock_date'];
     dataValues = [
       data.name,
       data.image,
@@ -275,6 +280,7 @@ export const updateData = (table: string, id: number, data: any, whereField: str
       data.pushAlert,
       data.startDate,
       data.endDate,
+      data.stockDate
     ];
   } else if (table === Tables.FREQUENCIES) {
     fieldNames = ['dosage', 'dosage_unit', 'cycle', 'times'];
@@ -349,7 +355,7 @@ export const updateAllData = (table: string, data: any): boolean => {
       data.push,
     ];
   } else if (table === Tables.MEDICATIONS) {
-    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date'];
+    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date', 'stock_date'];
     dataValues = [
       data.name,
       data.image,
@@ -359,6 +365,7 @@ export const updateAllData = (table: string, data: any): boolean => {
       data.pushAlert,
       data.startDate,
       data.endDate,
+      data.stockDate
     ];
   } else if (table === Tables.FREQUENCIES) {
     fieldNames = ['dosage', 'dosage_unit', 'cycle', 'times'];

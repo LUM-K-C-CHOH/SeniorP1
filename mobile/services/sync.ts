@@ -5,7 +5,6 @@
  * Created by Morgan on 02/24/2025
  */
 import NetInfo from '@react-native-community/netinfo';
-
 import { getAllUnSyncedData, Tables, updateAllData, updateAllDataToSynced } from "./db";
 import { getStorageItem, setStorageItem } from '@/utils/storage';
 import {
@@ -18,11 +17,10 @@ import {
   KEY_DB_SYNCED_SETTING
 } from '@/config/constants';
 import { userSettingSyncWithServer, userSettingSyncToServer } from './setting';
-import { frequencySyncWithServer, medicationSyncWithServer, frequencySyncToServer, medicationSyncToServer } from './medication';
-import { appointmentSyncWithServer, appointmentSyncToServer } from './appointment';
-import { emergencyContactSyncWithServer, emergencyContactSyncToServer } from './emergency';
-import { notificationSyncWithServer, notificationSyncToServer } from './notification';
-
+import { frequencySyncWithServer, medicationSyncWithServer, medicationListSyncToServer, frequencyListSyncToServer } from './medication';
+import { appointmentSyncWithServer, appointmentListSyncToServer } from './appointment';
+import { emergencyContactSyncWithServer, emergencyContactListSyncToServer } from './emergency';
+import { notificationSyncWithServer, notificationListSyncToServer } from './notification';
 export const syncLocalDatabaseWithRemote = async (userId?: string) => {
   const settingSyncedStatus = await getStorageItem(KEY_DB_SYNCED_SETTING);
   let retSetting = true;
@@ -72,7 +70,7 @@ export const syncLocalDatabaseWithRemote = async (userId?: string) => {
   return ret;
 }
 
-export const syncLocalUpdatesToServer = async () => {
+export const syncLocalUpdatesToServer = async (user_id: string) => {
   const netInfo = await NetInfo.fetch();
   if (!netInfo.isConnected) {
     console.log('database sync: no internet connection.');
@@ -86,7 +84,7 @@ export const syncLocalUpdatesToServer = async () => {
   const emergencyContactList = await getAllUnSyncedData(Tables.EMERGENCY_CONTACTS);
   const notificationList = await getAllUnSyncedData(Tables.NOTIFICATIONS);
 
-  if (settingData) {
+  if (settingData[0]) {
     const ret = await userSettingSyncToServer(settingData);
     if (ret) {
       updateAllDataToSynced(Tables.SETTINGS);
@@ -94,35 +92,35 @@ export const syncLocalUpdatesToServer = async () => {
   }
   
   if (medicationList.length > 0) {
-    const ret = await medicationSyncToServer(medicationList);
+    const ret = await medicationListSyncToServer(medicationList, user_id);
     if (ret) {
       updateAllDataToSynced(Tables.MEDICATIONS);
     }
   }
   
   if (frequencyList.length > 0) {
-    const ret = await frequencySyncToServer(frequencyList);
+    const ret = await frequencyListSyncToServer(frequencyList, user_id);
     if (ret) {
       updateAllDataToSynced(Tables.FREQUENCIES);
     }
   }
 
   if (appointmentList.length > 0) {
-    const ret = await appointmentSyncToServer(appointmentList);
+    const ret = await appointmentListSyncToServer(appointmentList, user_id);
     if (ret) {
       updateAllDataToSynced(Tables.FREQUENCIES);
     }
   }
 
   if (emergencyContactList.length > 0) {
-    const ret = await emergencyContactSyncToServer(emergencyContactList);
+    const ret = await emergencyContactListSyncToServer(emergencyContactList, user_id);
     if (ret) {
       updateAllDataToSynced(Tables.EMERGENCY_CONTACTS);
     }
   }
 
   if (notificationList.length > 0) {
-    const ret = await notificationSyncToServer(notificationList);
+    const ret = await notificationListSyncToServer(notificationList, user_id);
     if (ret) {
       updateAllDataToSynced(Tables.NOTIFICATIONS);
     }

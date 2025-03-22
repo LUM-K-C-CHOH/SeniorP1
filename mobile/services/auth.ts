@@ -59,7 +59,7 @@ export const register = async (
     await sendEmailVerification(user);
     return { success: true, data: user };
   } catch (error) {
-    console.error('Error registering user:', error);
+    console.log('Error registering user:', error);
     return { success: false, message: error};
   }
 }
@@ -70,7 +70,7 @@ export const sendVerificationCode = async (
   try {
     await sendPasswordResetEmail(auth, email);
   } catch (error: any) {
-    console.error("Error sending reset email", error);
+    console.log("Error sending reset email", error);
   }
 }
 
@@ -92,7 +92,7 @@ export const verifyCode = (
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return { success: false, message: error.message };
     });
 }
@@ -116,7 +116,7 @@ export const resetPassword = (
       }
     })
     .catch(error => {
-      console.error(error);
+      console.log(error);
       return { success: false, message: error.message };
     });
 }
