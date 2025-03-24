@@ -7,6 +7,7 @@
 import React from 'react';
 import { TextInput, StyleSheet, type TextInputProps } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useFontSizeRatio } from '@/hooks/useFontSize';
 
 export type ThemedTextProps = TextInputProps & {
   lightColor?: string;
@@ -27,6 +28,7 @@ export function ThemedInput({
 }: ThemedTextProps) {
   const textColor = useThemeColor({ light: lightColor, dark: darkColor }, 'defaultControlText');
   const borderColor = useThemeColor({ light: borderLightColor, dark: borderDarkColor }, 'defaultControlBorder');
+  const fzRatio = useFontSizeRatio();
 
   return (
     <TextInput
@@ -34,7 +36,7 @@ export function ThemedInput({
       style={[
         { color: textColor },
         { borderColor: borderColor },
-        type === 'default' ? styles.default : undefined,
+        type === 'default' ? { ...styles.default, fontSize: styles.default.fontSize * fzRatio} : undefined,
         style,
       ]}
       {...rest}
