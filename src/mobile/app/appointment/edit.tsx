@@ -4,8 +4,8 @@
  * 
  * Created by Morgan on 02/07/2025
  */
-import React, { useEffect, useState, useRef } from 'react';
-import Animated from 'react-native-reanimated';
+import React, { useEffect, useState, useRef, useContext } from 'react';
+import ApplicationContext from '@/context/ApplicationContext';
 import Header from '@/app/layout/header';
 import AppointmentForm from '@/app/appointment/appointment-form';
 
@@ -19,16 +19,19 @@ import { IAppointment, TResponse } from '@/@types';
 export default function AppointmentEditScreen() {
   const params = useLocalSearchParams();
   const initiatedRef = useRef<boolean>(false);
+  
+  const { appState } = useContext(ApplicationContext);
 
   const [appointment, setAppointment] = useState<IAppointment>()
 
   useEffect(() => {
     if (initiatedRef.current) return;
     if (!params.id) return;
+    if (!appState.user?.id) return;
 
     initiatedRef.current = true;
 
-    getAppointmentList()
+    getAppointmentList(appState.user.id)
       .then((res: TResponse) => {
         if (res.success) {
           const find = res.data.find((v: IAppointment) => v.id === parseInt(params.id as string, 10));

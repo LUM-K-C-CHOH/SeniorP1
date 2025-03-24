@@ -140,8 +140,7 @@ export const deleteEmergencyContactGroup = async (idList: string, userId ?: stri
 export const addEmergencyContact = async (contact: IEmergencyContact): Promise<boolean> => {
   try {
     let emergencyId = addData(Tables.EMERGENCY_CONTACTS, { ...contact, syncStatus: SyncStatus.ADDED });
-    if(emergencyId){
-      console.log("emergencyId", emergencyId);
+    if (emergencyId) {
       contact = {
         ...contact,
         id: emergencyId

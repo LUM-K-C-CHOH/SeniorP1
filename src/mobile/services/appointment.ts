@@ -216,6 +216,7 @@ export const updateAppointment = async (appointment: IAppointment): Promise<bool
 
 export const addAppointment = async (appointment: IAppointment): Promise<boolean> => {
   try {
+    console.log('add appointment', appointment);
     let appointmentId = addData(Tables.APPOINTMENTS, { ...appointment, syncStatus: SyncStatus.ADDED });
     if(appointmentId){
       appointment = {

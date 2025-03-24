@@ -130,9 +130,6 @@ export const setupDatabase = async () => {
   });  
 }
 
-// Ensure setupDatabase is called during app initialization
-setupDatabase();
-
 export const addData = (table: string, data: any): number => {
   let fieldNames: string[] = [];
   let bindValues: string[] = [];
@@ -192,6 +189,7 @@ export const addData = (table: string, data: any): number => {
   } else if (table === Tables.EMERGENCY_CONTACTS) {
     fieldNames = ['user_id', 'name', 'phone', 'image', 'type'];
     dataValues = [
+      data.userId,
       data.name,
       data.phone,
       data.image,

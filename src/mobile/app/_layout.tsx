@@ -38,6 +38,31 @@ import { registerBackgroundNotificationTask } from '@/tasks/notification';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+// Load the app state
+globalState.loadAppState();
+
+// Set up the local database
+getStorageItem(KEY_DB_INITIALIZED)
+  .then(async (res: string) => {
+    if (res !== 'true') {
+      console.log('db setup start');
+      await setupDatabase();
+      await setStorageItem(KEY_DB_INITIALIZED, 'true');
+      console.log('db setup end');
+    }
+  })
+  .catch(error => {
+    console.error('db setup error', error);
+  });
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function RootLayout() {
   const router = useRouter();
   const path = usePathname();
@@ -52,46 +77,22 @@ export default function RootLayout() {
   }
   
   useEffect(() => {
-    const initializeApp = async () => {
-      // Load the app state
-      await globalState.loadAppState();
+    const state = globalState.getAppState();
+    checkAuth();
+    
+    if (state.authenticated) {
+      requestPermissions();
+      registerBackgroundDBSyncTask();
+      registerBackgroundNotificationTask();
+    }
 
-      // Set up the local database
-      const dbInitialized = await getStorageItem(KEY_DB_INITIALIZED);
-      if (dbInitialized !== 'true') {
-        console.log('db setup start');
-        await setupDatabase();
-        await setStorageItem(KEY_DB_INITIALIZED, 'true');
-        console.log('db setup end');
-      }
-
-      Notifications.setNotificationHandler({
-        handleNotification: async () => ({
-          shouldShowAlert: true,
-          shouldPlaySound: false,
-          shouldSetBadge: false,
-        }),
+    if (loaded) {
+      SplashScreen.hideAsync();
+      setAppContext({
+        ...appContext,
+        appState: state
       });
-
-      const state = globalState.getAppState();
-      checkAuth();
-      
-      if (state.authenticated) {
-        await requestPermissions();
-        registerBackgroundDBSyncTask();
-        registerBackgroundNotificationTask();
-      }
-
-      if (loaded) {
-        SplashScreen.hideAsync();
-        setAppContext({
-          ...appContext,
-          appState: state
-        });
-      }
-    };
-
-    initializeApp();
+    }
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();
