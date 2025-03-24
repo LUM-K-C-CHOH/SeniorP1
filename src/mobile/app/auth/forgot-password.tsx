@@ -53,17 +53,18 @@ export default function ForgotPasswordScreen() {
       lockScreen: true
     });
 
-    try {
-      await sendVerificationCode(email);
-      setAppState({
-        ...appState,
-        lockScreen: false
-      });
-
+    const ret = await sendVerificationCode(email);
+    setAppState({
+      ...appState,
+      lockScreen: false
+    });
+    
+    if (ret) {
       showToast(t('message.alert_forgot_password_success'));
-    } catch (error) {
-      console.log(error);
+    } else {
+      showToast(t('message.alert_forgot_password_fail'));
     }
+    
   }
 
   return (

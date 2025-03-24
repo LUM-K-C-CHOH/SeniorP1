@@ -21,6 +21,7 @@ import {
 import { Stack } from 'expo-router';
 import Header from './layout/header';
 import { updateUserSetting } from '@/services/setting';
+import { ISetting } from '@/@types';
 
 export default function SettingScreen() {
   const backgroundColor = useThemeColor({}, 'background');
@@ -31,7 +32,7 @@ export default function SettingScreen() {
   const handleColorThemeChange = (mode: 'light'|'dark'): void => {
     if (mode === appState.setting.theme) return;
 
-    const setting = {
+    const setting: ISetting = {
       ...appState.setting,
       theme: mode
     };
@@ -40,13 +41,13 @@ export default function SettingScreen() {
       ...appState,
       setting
     });
-    updateUserSetting(setting, appState.user?.id);
+    updateUserSetting(setting);
   }
 
   const handleFontSizeChange = (mode: 'small'|'normal'|'large'): void => {
     if (mode === appState.setting.font) return;
 
-    const setting = {
+    const setting: ISetting = {
       ...appState.setting,
       font: mode
     };
@@ -56,13 +57,13 @@ export default function SettingScreen() {
       setting
     });
 
-    updateUserSetting(setting, appState.user?.id);
+    updateUserSetting(setting);
   }
 
   const handlePushChange = (mode: 'on'|'off'): void => {
     if (mode === appState.setting.push) return;
 
-    const setting = {
+    const setting: ISetting = {
       ...appState.setting,
       push: mode
     };
@@ -72,7 +73,7 @@ export default function SettingScreen() {
       setting
     });
 
-    updateUserSetting(setting, appState.user?.id);
+    updateUserSetting(setting);
   }
 
   return (

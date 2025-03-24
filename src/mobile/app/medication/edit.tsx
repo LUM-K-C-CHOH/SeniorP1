@@ -4,7 +4,8 @@
  * 
  * Created by Morgan on 01/28/2025
  */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
+import ApplicationContext from '@/context/ApplicationContext';
 import Header from '@/app/layout/header';
 import MedicationForm from '@/app/medication/medication-form';
 
@@ -19,15 +20,18 @@ export default function MedicationEditScreen() {
   const params = useLocalSearchParams();
   const initiatedRef = useRef<boolean>(false);
 
+  const { appState } = useContext(ApplicationContext);
+  
   const [medication, setMedication] = useState<IMedication>()
 
   useEffect(() => {
     if (initiatedRef.current) return;
     if (!params.id) return;
+    if (!appState.user?.id) return;
 
     initiatedRef.current = true;
 
-    getMedicationList()
+    getMedicationList(appState.user.id)
       .then((res: TResponse) => {
         if (res.success) {
           const find = res.data.find((v: IMedication) => v.id === parseInt(params.id as string, 10));

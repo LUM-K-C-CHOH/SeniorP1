@@ -48,10 +48,11 @@ export default function NotificationScreen() {
 
   useEffect(() => {
     if (initiatedRef.current) return;
+    if (!appState.user?.id) return;
 
     initiatedRef.current = true;
 
-    getNotificationList()
+    getNotificationList(appState.user.id)
       .then((res: TResponse) => {
         if (res.success) {
           setNotificationList(res.data);
@@ -140,8 +141,10 @@ export default function NotificationScreen() {
   }
 
   const handleLoadData = async (): Promise<void> => {
+    if (!appState.user?.id) return;
+
     setIsLoading(true);
-    getNotificationList()
+    getNotificationList(appState.user.id)
       .then((res: TResponse) => {
         setIsLoading(false);
 
@@ -160,7 +163,7 @@ export default function NotificationScreen() {
   const handleNotificationPopupVisible = async (notification: INotification): Promise<void> => {
     if (notification.status === NotificationStatus.PENDING) {
       const new_ = { ...notification, status: NotificationStatus.SENT };
-      const ret = await updateNotification(new_, appState.user?.id);
+      const ret = await updateNotification(new_);
       if (ret) {
         handleLoadData();
       }

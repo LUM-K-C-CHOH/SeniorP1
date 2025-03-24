@@ -21,6 +21,7 @@ export const appointmentSyncWithServer = async (userId?: string): Promise<boolea
           const d = response.data.data[i];
           const data = {
             id: d.id,
+            userId: d.user_id,
             name: d.name,
             phone: d.phone,
             image: d.image,
@@ -41,10 +42,10 @@ export const appointmentSyncWithServer = async (userId?: string): Promise<boolea
     });
 }
 
-export const appointmentSyncToServer = async (appointmentData: IAppointment, userId?: string): Promise<boolean> => {
+export const appointmentSyncToServer = async (appointmentData: IAppointment): Promise<boolean> => {
   const data = {
     id: appointmentData.id,
-    user_id: userId,
+    user_id: appointmentData.userId,
     name: appointmentData.name,
     phone: appointmentData.phone,
     image: appointmentData.image,
@@ -71,7 +72,7 @@ export const appointmentSyncToServer = async (appointmentData: IAppointment, use
 
 
 
-export const appointmentListSyncToServer = async (appointmentData: IAppointment[], userId?: string): Promise<boolean> => {
+export const appointmentListSyncToServer = async (appointmentData: IAppointment[], userId: string): Promise<boolean> => {
 
   return axiosInstance.put(
     '/appointment/list',
@@ -108,10 +109,10 @@ export const deleteAppointmentSyncToServer = async (appointmentId: number, userI
       return false;
     });
 }
-export const addAppointmentSyncToServer = async (appointmentData: IAppointment, userId?: string): Promise<boolean> => {
+export const addAppointmentSyncToServer = async (appointmentData: IAppointment): Promise<boolean> => {
   const data = {
     id: appointmentData.id,
-    user_id: userId,
+    user_id: appointmentData.userId,
     name: appointmentData.name,
     phone: appointmentData.phone,
     image: appointmentData.image,
@@ -136,11 +137,12 @@ export const addAppointmentSyncToServer = async (appointmentData: IAppointment, 
       return false;
     });
 }
-export const getAppointmentList = async () => {
+export const getAppointmentList = async (userId: string) => {
   try {
-    const appointmentList = await getAllData(Tables.APPOINTMENTS);
+    const appointmentList = await getAllData(Tables.APPOINTMENTS, userId);
     const list = appointmentList.map((v: any) => ({
       id: v.id,
+      userId: v.user_id,
       name: v.name,
       phone: v.phone,
       image: v.image,
@@ -156,10 +158,10 @@ export const getAppointmentList = async () => {
   
 }
 
-export const getTodayAppointmentList = async () => {
+export const getTodayAppointmentList = async (userId: string) => {
   const todayStr = dayjs().format('YYYY-MM-DD');
   try {
-    const appointmentList = await getAllData(Tables.APPOINTMENTS);
+    const appointmentList = await getAllData(Tables.APPOINTMENTS, userId);
     let list: IAppointment[] = appointmentList.map((v: any) => ({
       id: v.id,
       name: v.name,
@@ -190,12 +192,12 @@ export const deleteAppointment = async (appointmentId: number, userId?: string):
   }
 }
 
-export const updateAppointment = async (appointment: IAppointment, userId?: string): Promise<boolean> => {  
+export const updateAppointment = async (appointment: IAppointment): Promise<boolean> => {  
   try {
     if (appointment.id) {
       let ret = updateData(Tables.APPOINTMENTS, appointment.id, { ...appointment, syncStatus: SyncStatus.UPDATED });
       if(ret){
-        let bret = await appointmentSyncToServer(appointment, userId);
+        let bret = await appointmentSyncToServer(appointment);
         if(bret){
           updateData(Tables.APPOINTMENTS, appointment.id, { ...appointment, syncStatus: SyncStatus.SYNCED });
           return true;
@@ -212,15 +214,16 @@ export const updateAppointment = async (appointment: IAppointment, userId?: stri
   }
 }
 
-export const addAppointment = async (appointment: IAppointment, userId?: string): Promise<boolean> => {
+export const addAppointment = async (appointment: IAppointment): Promise<boolean> => {
   try {
+    console.log('add appointment', appointment);
     let appointmentId = addData(Tables.APPOINTMENTS, { ...appointment, syncStatus: SyncStatus.ADDED });
     if(appointmentId){
       appointment = {
         ...appointment,
         id: appointmentId
       }
-      let bret = await addAppointmentSyncToServer(appointment, userId);
+      let bret = await addAppointmentSyncToServer(appointment);
       if(bret){
         updateData(Tables.APPOINTMENTS, appointmentId, { ...appointment, syncStatus: SyncStatus.SYNCED });
       }

@@ -191,6 +191,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   }
   const handleSchedule  = async (): Promise<void> => {
     if (appState.lockScreen) return;
+    if (!appState.user?.id) return;
 
     const errors: {[k: string]: string} = checkValidation();
     setErrors(errors);
@@ -203,6 +204,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     h += timeType === TimeType.AM ? 0 : 12;
     const scheduledTime = `${selectedDate} ${new String(h).padStart(2, '0')}:${new String(m).padStart(2, '0')}:00`;
     const data: IAppointment = {
+      userId: appState.user.id,
       name,
       image,
       phone,
@@ -214,7 +216,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     if (appointment) {
       data['id'] = appointment.id;
       setAppState({ ...appState, lockScreen: true });
-      const ret = await updateAppointment(data, appState.user?.id);
+      const ret = await updateAppointment(data);
       setAppState({ ...appState, lockScreen: false });
 
       if (ret) {
@@ -224,7 +226,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
         showToast(t('message.alert_save_fail'));
       }
     } else {
-      const ret = await addAppointment(data, appState.user?.id);
+      const ret = await addAppointment(data);
       if (ret) {
         router.back();
         showToast(t('message.alert_save_success'));
@@ -236,7 +238,8 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   
   const handleCalendar = async (): Promise<void> => {
     if (appState.lockScreen) return;
-    
+    if (!appState.user?.id) return;
+
     const errors: {[k: string]: string} = checkValidation();
 
     setErrors(errors);
@@ -249,6 +252,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
     h += timeType === TimeType.AM ? 0 : 12;
     const scheduledTime = `${selectedDate}T${new String(h).padStart(2, '0')}:${new String(m).padStart(2, '0')}:00Z`;
     const data: IAppointment = {
+      userId: appState.user.id,
       name,
       image,
       phone,

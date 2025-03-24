@@ -13,6 +13,7 @@ export interface IUser {
 }
 
 export interface ISetting {
+  userId: string,
   theme: 'dark'|'light',
   font: 'small'|'normal'|'large',
   push: 'on'|'off'
@@ -28,6 +29,7 @@ export interface IAppState {
 
 export type IFrequency = {
   id?: number,
+  userId: string,
   medicationId: number,
   dosage: number,
   dosageUnit: number,
@@ -36,6 +38,7 @@ export type IFrequency = {
 }
 export interface IMedication {
   id?: number,
+  userId: string,
   image: string,
   name: string,
   stock: number,
@@ -50,6 +53,7 @@ export interface IMedication {
 
 export interface IAppointment {
   id?: number,
+  userId: string,
   name: string,
   phone: string,
   image: string,
@@ -66,10 +70,12 @@ export interface IContact {
 }
 
 export interface IEmergencyContact extends IContact {
+  userId: string,
   type?: string
 }
 export interface INotification {
   id?: number,
+  userId: string,
   type: number,
   var1: string,
   var2: string,

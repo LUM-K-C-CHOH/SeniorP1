@@ -127,6 +127,7 @@
     "alert_update_password_success": "Password is updated successfully.",
     "alert_update_password_fail": "Password is updated failed.",
     "alert_forgot_password_success": "Sent the link to change the password to your email.",
+    "alert_forgot_password_fail": "Failed to send the link to your email.",
     "alert_google_authentication_fail": "The google authentication is failed.",
     "alert_link_google_calendar_fail": "The linking to the google calendar is failed.",
     "alert_link_google_calendar_success": "The linking to the google calendar is succeed."

@@ -69,8 +69,10 @@ export const sendVerificationCode = async (
 ) => {
   try {
     await sendPasswordResetEmail(auth, email);
+    return true;
   } catch (error: any) {
     console.log("Error sending reset email", error);
+    return false;
   }
 }
 

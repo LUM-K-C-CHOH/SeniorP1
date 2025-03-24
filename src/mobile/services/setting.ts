@@ -17,6 +17,7 @@ export const userSettingSyncWithServer = async (userId?: string): Promise<boolea
   .then(response => {
     if (response.data.code === 0) {
       const data = {
+        userId: response.data.data[0] ? response.data.data[0].user_id : userId,
         push: response.data.data[0] ? response.data.data[0].push : 'on',
         font: response.data.data[0] ? response.data.data[0].font : 'small',
         theme: response.data.data[0] ? response.data.data[0].theme : 'light',
@@ -33,10 +34,10 @@ export const userSettingSyncWithServer = async (userId?: string): Promise<boolea
     });
 }
 
-export const userSettingSyncToServer = async (settingData: ISetting, userId?: string): Promise<boolean> => {
+export const userSettingSyncToServer = async (settingData: ISetting): Promise<boolean> => {
   const data = {
     ...settingData,
-    user_id: userId 
+    user_id: settingData.userId 
   }
   
   return axiosInstance.put(
@@ -56,11 +57,12 @@ export const userSettingSyncToServer = async (settingData: ISetting, userId?: st
     });
 }
 
-export const getUserSetting = async (): Promise<ISetting> => {
+export const getUserSetting = async (userId: string): Promise<ISetting> => {
   try {
-    const settingList: any = await getAllData(Tables.SETTINGS);
+    const settingList: any = await getAllData(Tables.SETTINGS, userId);
     
     const data: ISetting = {
+      userId: settingList[0].user_id,
       push: settingList[0].push,
       font: settingList[0].font,
       theme: settingList[0].theme
@@ -73,10 +75,10 @@ export const getUserSetting = async (): Promise<ISetting> => {
   }
 }
 
-export const updateUserSetting = async (setting: ISetting, userId?: string): Promise<boolean> => {
+export const updateUserSetting = async (setting: ISetting): Promise<boolean> => {
   const ret = updateAllData(Tables.SETTINGS, { ...setting, syncStatus: SyncStatus.UPDATED });
   if(ret){
-    let bret = await userSettingSyncToServer(setting, userId);
+    let bret = await userSettingSyncToServer(setting);
     if(bret){
       updateAllData(Tables.SETTINGS, { ...setting, syncStatus: SyncStatus.SYNCED });
       return true;

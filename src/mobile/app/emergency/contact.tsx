@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CheckboxBlankIcon, CheckboxFilledIcon, CircleCheckIcon, PhoneIcon, FlyIcon, DoctorIcon } from '@/utils/svgs';
 import { ThemedText } from '@/components/ThemedText';
-import { IEmergencyContact, TResponse} from '@/@types';
+import { IContact, IEmergencyContact, TResponse} from '@/@types';
 import { getEmergencyContactList, deleteEmergencyContactGroup, addEmergencyContact, updateEmergencyContact } from '@/services/emergency';
 import { getMarkColorFromName, getMarkLabelFromName, showToast } from '@/utils';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -49,7 +49,7 @@ export default function EmergencyContactScreen() {
   const [errors, setErrors] = useState<{[k: string]: string}>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [contactList, setContactList] = useState<IEmergencyContact[]>([]);
-  const [orgContactList, setOrgContactList] = useState<IEmergencyContact[]>([]);
+  const [orgContactList, setOrgContactList] = useState<IContact[]>([]);
   const [selectableVisible, setSelectableVisible] = useState<boolean>(false);
   const [checkedIdList, setCheckedIdList] = useState<number[]>([]);
   const [deleteConfrimVisible, setDeleteConfirmVisible] = useState<boolean>(false);
@@ -60,10 +60,11 @@ export default function EmergencyContactScreen() {
    
   useEffect(() => {
     if (initiatedRef.current) return;
+    if (!appState.user?.id) return;
 
     initiatedRef.current = true;
 
-    getEmergencyContactList()
+    getEmergencyContactList(appState.user.id)
       .then((res: TResponse) => {
         if (res.success) {
           setContactList(res.data?? []);          
@@ -165,8 +166,10 @@ export default function EmergencyContactScreen() {
   }
 
   const handleLoadData = async (): Promise<void> => {
+    if (!appState.user?.id) return;
+
     setIsLoading(true);
-    getEmergencyContactList()
+    getEmergencyContactList(appState.user.id)
       .then((res: TResponse) => {
         setIsLoading(false);
 
@@ -196,7 +199,7 @@ export default function EmergencyContactScreen() {
         ],
       });
 
-      let orgContactList: IEmergencyContact[] = data.map(v => ({
+      let orgContactList: IContact[] = data.map(v => ({
         name: v.name,
         image: v.image ? v.image.uri?? '' : '',
         type: v.contactType as string,
@@ -222,6 +225,7 @@ export default function EmergencyContactScreen() {
 
   const handleEmergencyContactAdd = async (index: number): Promise<void> => {
     if (appState.lockScreen) return;
+    if (!appState.user?.id) return;
 
     const orgContact = orgContactList[index];
     const exist = checkExistFromEmerygencyContact(orgContact.phone);
@@ -230,7 +234,11 @@ export default function EmergencyContactScreen() {
 
     setAppState({ ...appState, lockScreen: true });
 
-    const ret = await addEmergencyContact(orgContact, appState.user?.id);
+    const data = {
+      ...orgContact,
+      userId: appState.user.id
+    };
+    const ret = await addEmergencyContact(data);
     if (ret) {
       handleLoadData();
       showToast(t('message.alert_save_success'));
@@ -257,7 +265,7 @@ export default function EmergencyContactScreen() {
     setEditPopupVisible(false);
 
     setAppState({ ...appState, lockScreen: true });
-    const ret = await updateEmergencyContact(emergencyData, appState.user?.id);
+    const ret = await updateEmergencyContact(emergencyData);
 
     if (ret) {
       handleLoadData();     
