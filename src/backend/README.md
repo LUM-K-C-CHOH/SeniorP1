@@ -38,5 +38,3 @@ The Real-Time Health App (RTHA) Backend provides RESTful APIs for the mobile app
 ### Dependencies
 - **Google Firebase Admin SDK**: For cross-platform mobile app development.
 - **Twilio SDK**: For user authentication.
-
-You can copy and paste this text directly into your Markdown file. Let me know if you need any adjustments! 😊
