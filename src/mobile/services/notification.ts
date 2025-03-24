@@ -21,6 +21,7 @@ export const notificationSyncWithServer = async (userId?: string): Promise<boole
           const d = response.data.data[i];
           const data = {
             id: d.id,
+            userId: d.user_id,
             type: d.type,
             status: d.status,
             targetId: d.target_id,
@@ -41,10 +42,10 @@ export const notificationSyncWithServer = async (userId?: string): Promise<boole
     });
 }
 
-export const notificationSyncToServer = async (notificationData: INotification, userId?: string): Promise<boolean> => {
+export const notificationSyncToServer = async (notificationData: INotification): Promise<boolean> => {
   const data = {
     id: notificationData.id,
-    user_id: userId,
+    user_id: notificationData.userId,
     type: notificationData.type,
     status: notificationData.status,
     target_id: notificationData.targetId,
@@ -91,11 +92,12 @@ export const notificationListSyncToServer = async (notificationData: INotificati
 }
 
 
-export const getNotificationList = async () => {
+export const getNotificationList = async (userId: string) => {
   try {
-    const notificationList = await getAllData(Tables.NOTIFICATIONS);
+    const notificationList = await getAllData(Tables.NOTIFICATIONS, userId);
     const list: INotification[] = notificationList.map((v: any) => ({
       id: v.id,
+      userId: v.user_id,
       type: v.type,
       var1: v.var1,
       var2: v.var2,
@@ -110,7 +112,7 @@ export const getNotificationList = async () => {
   }
 }
 
-export const addNotification = async (notification: INotification, userId?: string): Promise<boolean> => {
+export const addNotification = async (notification: INotification): Promise<boolean> => {
   try {
     let notificationId = addData(Tables.NOTIFICATIONS, { ...notification, syncStatus: SyncStatus.ADDED });
     if(notificationId){
@@ -118,7 +120,7 @@ export const addNotification = async (notification: INotification, userId?: stri
         ...notification,
         id: notificationId
       }
-      let bret = await notificationSyncToServer(notification, userId);
+      let bret = await notificationSyncToServer(notification);
       if(bret){
         updateData(Tables.NOTIFICATIONS, notificationId, { ...notification, syncStatus: SyncStatus.SYNCED });
         return true;
@@ -131,11 +133,11 @@ export const addNotification = async (notification: INotification, userId?: stri
   }
 }
 
-export const updateNotification = async (notification: INotification, userId?: string): Promise<boolean> => {
+export const updateNotification = async (notification: INotification): Promise<boolean> => {
   try {
     let ret = updateData(Tables.NOTIFICATIONS, notification.id as number, { ...notification, syncStatus: SyncStatus.UPDATED });
     if(ret){
-      let bret = await notificationSyncToServer(notification, userId);
+      let bret = await notificationSyncToServer(notification);
       if(bret){
         updateData(Tables.NOTIFICATIONS, notification.id as number, { ...notification, syncStatus: SyncStatus.SYNCED });
         return true;

@@ -9,14 +9,14 @@ import * as TaskManager from 'expo-task-manager';
 
 import { syncLocalUpdatesToServer } from '@/services/sync';
 import { getStorageItem } from '@/utils/storage';
+import { getAppState } from '@/config/global';
 
 const BACKGROUND_DB_SYNC_TASK = 'background-db-sync';
 TaskManager.defineTask(BACKGROUND_DB_SYNC_TASK, async () => {
-  const userId = await getStorageItem('USER_ID');
-  console.log('-----------', userId);
+  const appState = getAppState();
   try {
-    if(userId) {
-      await syncLocalUpdatesToServer(userId);
+    if (appState.user?.id) {
+      await syncLocalUpdatesToServer(appState.user.id);
     }
     return BackgroundFetch.BackgroundFetchResult.NewData;
   } catch (error) {

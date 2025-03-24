@@ -200,6 +200,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
 
   const handleMedicationAdd = async (): Promise<void> => {
     if (appState.lockScreen) return;
+    if (!appState.user?.id) return;
     
     let errors: {[k: string]: string} = {};
     if (name.length === 0) {
@@ -254,6 +255,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
     if (tes.filter(v => v.length > 0).length > 0) return;
 
     let data: IMedication = {
+      userId: appState.user.id,
       name: name,
       stock: parseInt(stock, 10),
       threshold: parseInt(threshold, 10),
@@ -264,6 +266,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       stockDate: stockDate,
       image: '',
       frequency: {
+        userId: appState.user.id,
         medicationId: parseInt(medicationId, 10),
         dosage: parseInt(dosage, 10),
         dosageUnit: parseInt(dosageUnit, 10),
@@ -278,7 +281,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       // update
       data.id = medication.id;
       data.frequency.id = medication.frequency.id;
-      const ret = await updateMedication(data, appState.user?.id);
+      const ret = await updateMedication(data);
       medication.stockDate = "";
       if (ret) {
         router.back();
@@ -288,7 +291,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       }
     } else {
       data.stockDate = "";
-      const ret = await addMedication(data, appState.user?.id);
+      const ret = await addMedication(data);
       if (ret) {
         router.back();
         showToast(t('message.alert_save_success'));

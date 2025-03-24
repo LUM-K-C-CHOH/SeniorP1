@@ -43,9 +43,10 @@ export default function AppointmentScreen() {
   
   useEffect(() => {
     if (initiatedRef.current) return;
+    if (!appState.user?.id) return;
 
     initiatedRef.current = true;
-    getAppointmentList()
+    getAppointmentList(appState.user.id)
       .then((res: TResponse) => {
         if (res.success) {
           setAppointmentList(res.data?? []);
@@ -100,8 +101,10 @@ export default function AppointmentScreen() {
   }
 
   const handleLoadData = async (): Promise<void> => {
+    if (!appState.user?.id) return;
+
     setIsLoading(true);
-    getAppointmentList()
+    getAppointmentList(appState.user.id)
       .then((res: TResponse) => {
         setIsLoading(false);
 

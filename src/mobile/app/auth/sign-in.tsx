@@ -88,14 +88,13 @@ export default function SignInScreen() {
             lockedSync = false;
             console.log('db sync end');
 
-            const setting = await getUserSetting();
+            const setting = await getUserSetting(resultLogIn.data?.id);
 
             setAppState({
               ...state,
               user: resultLogIn.data,
               setting: setting
             });
-            setStorageItem('USER_ID', resultLogIn.data.id);
           } else {
               setAppState(state);
           }

@@ -39,10 +39,10 @@ import { getToCalendar } from './google-calendar';
 //   return resultList;
 // }
 
-export const eventMedicationNotification = async (id: string) => {
+export const eventMedicationNotification = async (userId: string) => {
   const currentDate = new Date().toISOString().split('T')[0];
   const one_day = 1000 * 60 * 60 * 24;
-  const resultList: IMedication[] = await getCombinedMedicationList();
+  const resultList: IMedication[] = await getCombinedMedicationList(userId);
 
   for (let i = 0; i < resultList.length; i++) {
     const eachList: IMedication = resultList[i];
@@ -74,10 +74,11 @@ export const eventMedicationNotification = async (id: string) => {
         image: "",
       };
 
-      updateMedication(data, id);
+      updateMedication(data);
 
       if (eachList.stock - dosageAmount < eachList.threshold) {
         const notification: INotification = {
+          userId: userId,
           type: NotificationType.MEDICATION,
           var1: `${eachList.name}`,
           var2: "",
@@ -85,7 +86,7 @@ export const eventMedicationNotification = async (id: string) => {
           status: NotificationStatus.PENDING,
           targetId: eachList.id as number,
         };
-        addNotification(notification, id);
+        addNotification(notification);
 
         Notifications.scheduleNotificationAsync({
           content: {
@@ -102,7 +103,7 @@ export const eventMedicationNotification = async (id: string) => {
   }
 };
 
-export const eventAppointmentNotification = async (id: string) => {
+export const eventAppointmentNotification = async (userId: string) => {
   let currentDate = new Date().toISOString().split('T')[0];
   let res = await getToCalendar();
 
@@ -114,6 +115,7 @@ export const eventAppointmentNotification = async (id: string) => {
 
     if (_eventDate === _cDate) {
       const notification: INotification = {
+        userId: userId,
         type: NotificationType.APPOINTMENT,
         var1: `${eachEvent.summary}`,
         var2: "",
@@ -122,7 +124,7 @@ export const eventAppointmentNotification = async (id: string) => {
         targetId: 11,
       };
 
-      addNotification(notification, id);
+      addNotification(notification);
 
       Notifications.scheduleNotificationAsync({
         content: {

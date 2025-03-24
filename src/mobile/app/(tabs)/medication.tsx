@@ -69,9 +69,10 @@ export default function MedicationScreen() {
 
   useEffect(() => {
     if (initiatedRef.current) return;
+    if (!appState.user?.id) return;
 
     initiatedRef.current = true;
-    getMedicationList()
+    getMedicationList(appState.user.id)
       .then((res: TResponse) => {
         if (res.success) {
           setMedicationList(res.data?? []);
@@ -157,8 +158,10 @@ export default function MedicationScreen() {
   }
 
   const handleLoadData = async (): Promise<void> => {
+    if (!appState.user?.id) return;
+
     setIsLoading(true);
-    getMedicationList()
+    getMedicationList(appState.user.id)
       .then((res: TResponse) => {
         setIsLoading(false);
 
@@ -228,7 +231,7 @@ export default function MedicationScreen() {
     data.emailAlert = reminderSettingPanelOptions.emailAlert as string;
     data.threshold = reminderSettingPanelOptions.threshold as number;
     data.image = data.image ? data.image : '';
-    const ret = await updateMedication(data, appState.user?.id);
+    const ret = await updateMedication(data);
     if (ret) {
       medicationList[findIndex] = data;
       setMedicationList([...medicationList]);

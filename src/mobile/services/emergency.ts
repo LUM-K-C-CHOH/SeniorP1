@@ -20,6 +20,7 @@ export const emergencyContactSyncWithServer = async (userId?: string): Promise<b
           const d = response.data.data[i];
           const data = {
             id: d.id,
+            userId: d.user_id,
             name: d.name,
             phone: d.phone,
             image: d.image,
@@ -38,10 +39,10 @@ export const emergencyContactSyncWithServer = async (userId?: string): Promise<b
     });
 }
 
-export const emergencyContactSyncToServer = async (emergencyContactData: IEmergencyContact, userId?: string): Promise<boolean> => {
+export const emergencyContactSyncToServer = async (emergencyContactData: IEmergencyContact): Promise<boolean> => {
   const data = {
     ...emergencyContactData,
-    user_id: userId
+    user_id: emergencyContactData.userId
   }
   return axiosInstance.put(
     '/emergency/contact/update',
@@ -62,7 +63,7 @@ export const emergencyContactSyncToServer = async (emergencyContactData: IEmerge
 
 
 
-export const emergencyContactListSyncToServer = async (emergencyContactData: IEmergencyContact[], userId?: string): Promise<boolean> => {
+export const emergencyContactListSyncToServer = async (emergencyContactData: IEmergencyContact[], userId: string): Promise<boolean> => {
 
   return axiosInstance.put(
     '/emergency/contact/update/list',
@@ -104,11 +105,12 @@ export const deleteEmergencyContactSyncToServer = async (contactList: string, us
       return false;
     });
 }
-export const getEmergencyContactList = async () => {
+export const getEmergencyContactList = async (userId: string) => {
   try {
-    const contactList = await getAllData(Tables.EMERGENCY_CONTACTS);
+    const contactList = await getAllData(Tables.EMERGENCY_CONTACTS, userId);
     const list: IEmergencyContact[] = contactList.map((v: any) => ({
       id: v.id,
+      userId: v.user_id,
       name: v.name,
       phone: v.phone,
       image: v.image,
@@ -135,7 +137,7 @@ export const deleteEmergencyContactGroup = async (idList: string, userId ?: stri
   }
 }
 
-export const addEmergencyContact = async (contact: IEmergencyContact, userId?: string): Promise<boolean> => {
+export const addEmergencyContact = async (contact: IEmergencyContact): Promise<boolean> => {
   try {
     let emergencyId = addData(Tables.EMERGENCY_CONTACTS, { ...contact, syncStatus: SyncStatus.ADDED });
     if(emergencyId){
@@ -144,7 +146,7 @@ export const addEmergencyContact = async (contact: IEmergencyContact, userId?: s
         ...contact,
         id: emergencyId
       }
-      let bret = await emergencyContactSyncToServer(contact, userId);
+      let bret = await emergencyContactSyncToServer(contact);
       if(bret){
         updateData(Tables.EMERGENCY_CONTACTS, emergencyId, { ...contact, syncStatus: SyncStatus.SYNCED });
         return true;
@@ -158,12 +160,12 @@ export const addEmergencyContact = async (contact: IEmergencyContact, userId?: s
   }
 }
 
-export const updateEmergencyContact = async (contact: IEmergencyContact, userId?: string): Promise<boolean> => {
+export const updateEmergencyContact = async (contact: IEmergencyContact): Promise<boolean> => {
   try {
     if(!contact?.id) return false;
     let emergencyId = updateData(Tables.EMERGENCY_CONTACTS, contact?.id, { ...contact, syncStatus: SyncStatus.UPDATED });
     if(emergencyId){
-      let bret = await emergencyContactSyncToServer(contact, userId);
+      let bret = await emergencyContactSyncToServer(contact);
       if(bret){
         updateData(Tables.EMERGENCY_CONTACTS, contact?.id , { ...contact, syncStatus: SyncStatus.SYNCED });
         return true;

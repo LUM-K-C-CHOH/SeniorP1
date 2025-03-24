@@ -70,19 +70,19 @@ export const syncLocalDatabaseWithRemote = async (userId?: string) => {
   return ret;
 }
 
-export const syncLocalUpdatesToServer = async (user_id: string) => {
+export const syncLocalUpdatesToServer = async (userId: string) => {
   const netInfo = await NetInfo.fetch();
   if (!netInfo.isConnected) {
     console.log('database sync: no internet connection.');
     return;
   }
 
-  const settingData = await getAllUnSyncedData(Tables.SETTINGS);
-  const medicationList = await getAllUnSyncedData(Tables.MEDICATIONS);
-  const frequencyList = await getAllUnSyncedData(Tables.FREQUENCIES);
-  const appointmentList = await getAllUnSyncedData(Tables.APPOINTMENTS);
-  const emergencyContactList = await getAllUnSyncedData(Tables.EMERGENCY_CONTACTS);
-  const notificationList = await getAllUnSyncedData(Tables.NOTIFICATIONS);
+  const settingData = await getAllUnSyncedData(Tables.SETTINGS, userId);
+  const medicationList = await getAllUnSyncedData(Tables.MEDICATIONS, userId);
+  const frequencyList = await getAllUnSyncedData(Tables.FREQUENCIES, userId);
+  const appointmentList = await getAllUnSyncedData(Tables.APPOINTMENTS, userId);
+  const emergencyContactList = await getAllUnSyncedData(Tables.EMERGENCY_CONTACTS, userId);
+  const notificationList = await getAllUnSyncedData(Tables.NOTIFICATIONS, userId);
 
   if (settingData[0]) {
     const ret = await userSettingSyncToServer(settingData);
@@ -92,35 +92,35 @@ export const syncLocalUpdatesToServer = async (user_id: string) => {
   }
   
   if (medicationList.length > 0) {
-    const ret = await medicationListSyncToServer(medicationList, user_id);
+    const ret = await medicationListSyncToServer(medicationList, userId);
     if (ret) {
       updateAllDataToSynced(Tables.MEDICATIONS);
     }
   }
   
   if (frequencyList.length > 0) {
-    const ret = await frequencyListSyncToServer(frequencyList, user_id);
+    const ret = await frequencyListSyncToServer(frequencyList, userId);
     if (ret) {
       updateAllDataToSynced(Tables.FREQUENCIES);
     }
   }
 
   if (appointmentList.length > 0) {
-    const ret = await appointmentListSyncToServer(appointmentList, user_id);
+    const ret = await appointmentListSyncToServer(appointmentList, userId);
     if (ret) {
       updateAllDataToSynced(Tables.FREQUENCIES);
     }
   }
 
   if (emergencyContactList.length > 0) {
-    const ret = await emergencyContactListSyncToServer(emergencyContactList, user_id);
+    const ret = await emergencyContactListSyncToServer(emergencyContactList, userId);
     if (ret) {
       updateAllDataToSynced(Tables.EMERGENCY_CONTACTS);
     }
   }
 
   if (notificationList.length > 0) {
-    const ret = await notificationListSyncToServer(notificationList, user_id);
+    const ret = await notificationListSyncToServer(notificationList, userId);
     if (ret) {
       updateAllDataToSynced(Tables.NOTIFICATIONS);
     }

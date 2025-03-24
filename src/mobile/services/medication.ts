@@ -22,6 +22,7 @@ export const frequencySyncWithServer = async (userId?: string): Promise<boolean>
           const d = response.data.data[i];
           const data = {
             id: d.id,
+            userId: d.user_id,
             medicationId: d.medication_id,
             dosage: d.dosage,
             dosageUnit: d.dosage_unit,
@@ -41,11 +42,11 @@ export const frequencySyncWithServer = async (userId?: string): Promise<boolean>
     });
 }
 
-export const frequencySyncToServer = async (frequencyData: IFrequency, userId?: string): Promise<boolean> => {
+export const frequencySyncToServer = async (frequencyData: IFrequency): Promise<boolean> => {
   const data = {
     id: frequencyData.id,
     medication_id: frequencyData.medicationId,
-    user_id: userId,
+    user_id: frequencyData.userId,
     dosage: frequencyData.dosage,
     dosage_unit: frequencyData.dosageUnit,
     times: frequencyData.times,
@@ -90,11 +91,11 @@ export const frequencyListSyncToServer = async (frequencyData: IFrequency[], use
 }
 
 
-export const addFrequencySyncToServer = async (frequencyData: IFrequency, userId?: string): Promise<boolean> => {
+export const addFrequencySyncToServer = async (frequencyData: IFrequency): Promise<boolean> => {
   const data = {
     id: frequencyData.id,
     medication_id: frequencyData.medicationId,
-    user_id: userId,
+    user_id: frequencyData.userId,
     dosage: frequencyData.dosage,
     dosage_unit: frequencyData.dosageUnit,
     times: frequencyData.times,
@@ -142,6 +143,7 @@ export const medicationSyncWithServer = async (userId?: string): Promise<boolean
           const d = response.data.data[i];
           const data = {
             id: d.id,
+            userId: d.user_id,
             name: d.name,
             image: d.image,
             stock: d.stock,
@@ -165,10 +167,10 @@ export const medicationSyncWithServer = async (userId?: string): Promise<boolean
     });
 }
 
-export const addMedicationSyncToServer = async (medicationData: IMedication, userId?: string): Promise<boolean> => {
+export const addMedicationSyncToServer = async (medicationData: IMedication): Promise<boolean> => {
   const data = {
     id: medicationData.id,
-    user_id: userId,
+    user_id: medicationData.userId,
     name: medicationData.name,
     image: medicationData.image,
     stock: medicationData.stock,
@@ -194,10 +196,10 @@ export const addMedicationSyncToServer = async (medicationData: IMedication, use
       return false;
     });
 }
-export const medicationSyncToServer = async (medicationData: IMedication, userId?: string): Promise<boolean> => {
+export const medicationSyncToServer = async (medicationData: IMedication): Promise<boolean> => {
   const data = {
     id: medicationData.id,
-    user_id: userId,
+    user_id: medicationData.userId,
     name: medicationData.name,
     image: medicationData.image,
     stock: medicationData.stock,
@@ -260,14 +262,15 @@ export const deleteMedicationSyncToServer = async (medicationId: number, userId?
     });
 }
 
-export const getCombinedMedicationList = async (): Promise<IMedication[]> => {
-  const medicationList = await getAllData(Tables.MEDICATIONS);
-  const frequencyList = await getAllData(Tables.FREQUENCIES);
+export const getCombinedMedicationList = async (userId: string): Promise<IMedication[]> => {
+  const medicationList = await getAllData(Tables.MEDICATIONS, userId);
+  const frequencyList = await getAllData(Tables.FREQUENCIES, userId);
   const resultList: IMedication[] = medicationList.map((v1: any) => {
     const f = frequencyList.find((v2: any) => v2.medication_id === v1.id);
 
     return {
       id: v1.id,
+      userId: v1.user_id,
       name: v1.name,
       stock: v1.stock,
       miniStock: v1.mini_stock,
@@ -279,6 +282,7 @@ export const getCombinedMedicationList = async (): Promise<IMedication[]> => {
       pushAlert: v1.push_alert,
       frequency: f ? {
         id: f.id,
+        userId: f.user_id,
         medicationId: f.medication_id,
         dosage: f.dosage,
         dosageUnit: f.dosage_unit,
@@ -290,9 +294,9 @@ export const getCombinedMedicationList = async (): Promise<IMedication[]> => {
   return resultList;
 }
 
-export const getMedicationList = async () => {
+export const getMedicationList = async (userId: string) => {
   try {
-    const resultList: IMedication[] = await getCombinedMedicationList();
+    const resultList: IMedication[] = await getCombinedMedicationList(userId);
     return { success: true, data: resultList };
   } catch (error) {
     console.log(error);
@@ -318,13 +322,13 @@ export const deleteMedication = async(medicationId: number, userId?: string): Pr
   }
 }
 
-export const updateMedication = async(medication: IMedication, userId?: string): Promise<boolean> => { 
+export const updateMedication = async(medication: IMedication): Promise<boolean> => { 
   try {
     if (medication.id) {
       const { frequency, ...rest } = medication;
       let medicationId = updateData(Tables.MEDICATIONS, medication.id, { ...rest, syncStatus: SyncStatus.UPDATED });
       if (medicationId) {
-        let bret = await medicationSyncToServer(medication, userId);
+        let bret = await medicationSyncToServer(medication);
         if(bret){
           updateData(
             Tables.MEDICATIONS,
@@ -334,7 +338,7 @@ export const updateMedication = async(medication: IMedication, userId?: string):
         }
         let frequencyId = updateData(Tables.FREQUENCIES, medication.id, { ...frequency, syncStatus: SyncStatus.UPDATED }, 'medication_id');
         if(frequencyId){
-          bret = await frequencySyncToServer(frequency, userId);
+          bret = await frequencySyncToServer(frequency);
           if(bret){
             updateData(
               Tables.FREQUENCIES,
@@ -355,7 +359,7 @@ export const updateMedication = async(medication: IMedication, userId?: string):
   }
 }
 
-export const addMedication = async (medication: IMedication, userId?: string): Promise<boolean> => {  
+export const addMedication = async (medication: IMedication): Promise<boolean> => {  
   try {
     const { frequency, ...rest } = medication;
     let medicationId = addData(Tables.MEDICATIONS, { ...rest, syncStatus: SyncStatus.ADDED });
@@ -367,7 +371,7 @@ export const addMedication = async (medication: IMedication, userId?: string): P
           ...medication,
           id: medicationId
         };
-        let bret = await addMedicationSyncToServer(medication, userId);
+        let bret = await addMedicationSyncToServer(medication);
         if (bret) {
           updateData(
             Tables.MEDICATIONS,
@@ -379,7 +383,7 @@ export const addMedication = async (medication: IMedication, userId?: string): P
             id: frequencyId,
             medicationId: medicationId
           }
-          bret = await addFrequencySyncToServer(medication.frequency, userId);
+          bret = await addFrequencySyncToServer(medication.frequency);
           updateData(
             Tables.FREQUENCIES,
             frequencyId,
@@ -397,10 +401,10 @@ export const addMedication = async (medication: IMedication, userId?: string): P
   }
 }
 
-export const getTodayMedicationList = async () => {
+export const getTodayMedicationList = async (userId: string) => {
   const todayStr = dayjs().format('YYYY-MM-DD');
   try {
-    const resultList: IMedication[] = await getCombinedMedicationList();
+    const resultList: IMedication[] = await getCombinedMedicationList(userId);
     const list: IMedication[] = [];
     for (let i = 0; i < resultList.length; i++) {
       const medication = resultList[i];
@@ -436,9 +440,9 @@ export const getTodayMedicationList = async () => {
   }
 }
 
-export const getRefillMedicationList = async () => {
+export const getRefillMedicationList = async (userId: string) => {
   try {
-    const resultList: IMedication[] = await getCombinedMedicationList();
+    const resultList: IMedication[] = await getCombinedMedicationList(userId);
     const list: IMedication[] = resultList.filter(v => v.stock < v.threshold);
     return { success: true, data: list };
   } catch (error) {
@@ -447,9 +451,9 @@ export const getRefillMedicationList = async () => {
   }
 }
 
-export const getMedicationSufficient = async () => {
+export const getMedicationSufficient = async (userId: string) => {
   try {
-    const resultList: IMedication[] = await getCombinedMedicationList();  
+    const resultList: IMedication[] = await getCombinedMedicationList(userId);  
     if (resultList.length > 0) {
       const sum = resultList.reduce((acc: number, cur: IMedication) => acc + (cur.stock >= cur.threshold ? 100 : cur.stock / cur.threshold * 100), 0);
       const sufficient = Math.floor(sum / resultList.length);

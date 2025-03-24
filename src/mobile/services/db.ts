@@ -38,6 +38,7 @@ export const setupDatabase = async () => {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS ${Tables.SETTINGS} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id VARCHAR(255) NOT NULL,
         theme VARCHAR(10) NOT NULL,
         font VARCHAR(10) NOT NULL,
         push VARCHAR(10) NOT NULL,
@@ -50,6 +51,7 @@ export const setupDatabase = async () => {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS ${Tables.FREQUENCIES} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id VARCHAR(255) NOT NULL,
         medication_id INTEGER NOT NULL,
         dosage INTEGER NOT NULL,
         dosage_unit INTEGER NOT NULL,
@@ -64,6 +66,7 @@ export const setupDatabase = async () => {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS ${Tables.MEDICATIONS} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id VARCHAR(255) NOT NULL,
         image VARCHAR(255),
         name VARCHAR(50) NOT NULL,
         stock INTEGER NOT NULL,
@@ -82,6 +85,7 @@ export const setupDatabase = async () => {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS ${Tables.APPOINTMENTS} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id VARCHAR(255) NOT NULL,
         name VARCHAR(50) NOT NULL,
         phone VARCHAR(50) NOT NULL,
         image VARCHAR(255),
@@ -97,6 +101,7 @@ export const setupDatabase = async () => {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS ${Tables.EMERGENCY_CONTACTS} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id VARCHAR(255) NOT NULL,
         name VARCHAR(50) NOT NULL,
         phone VARCHAR(50) NOT NULL,
         image VARCHAR(255),
@@ -110,6 +115,7 @@ export const setupDatabase = async () => {
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS ${Tables.NOTIFICATIONS} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id VARCHAR(255) NOT NULL,
         type TINYINT NOT NULL,
         status TINYINT NOT NULL,
         target_id INTEGER NOT NULL,
@@ -141,15 +147,17 @@ export const addData = (table: string, data: any): number => {
       data.password
     ];
   } else if (table === Tables.SETTINGS) {
-    fieldNames = ['theme', 'font', 'push'];
+    fieldNames = ['user_id', 'theme', 'font', 'push'];
     dataValues = [
+      data.userId,
       data.theme,
       data.font,
       data.push
     ];
   } else if (table === Tables.MEDICATIONS) {
-    fieldNames = ['name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date', 'stock_date'];
+    fieldNames = ['user_id', 'name', 'image', 'stock', 'threshold', 'email_alert', 'push_alert', 'start_date', 'end_date', 'stock_date'];
     dataValues = [
+      data.userId,
       data.name,
       data.image,
       data.stock,
@@ -161,8 +169,9 @@ export const addData = (table: string, data: any): number => {
       data.stockDate
     ];
   } else if (table === Tables.FREQUENCIES) {
-    fieldNames = ['medication_id', 'dosage', 'dosage_unit', 'cycle', 'times'];
+    fieldNames = ['user_id', 'medication_id', 'dosage', 'dosage_unit', 'cycle', 'times'];
     dataValues = [
+      data.userId,
       data.medicationId,
       data.dosage,
       data.dosageUnit,
@@ -170,8 +179,9 @@ export const addData = (table: string, data: any): number => {
       data.times.join(',')
     ];
   } else if (table === Tables.APPOINTMENTS) {
-    fieldNames = ['name', 'phone', 'image', 'scheduled_time', 'location', 'description'];
+    fieldNames = ['user_id', 'name', 'phone', 'image', 'scheduled_time', 'location', 'description'];
     dataValues = [
+      data.userId,
       data.name,
       data.phone,
       data.image,
@@ -180,7 +190,7 @@ export const addData = (table: string, data: any): number => {
       data.description,
     ];
   } else if (table === Tables.EMERGENCY_CONTACTS) {
-    fieldNames = ['name', 'phone', 'image', 'type'];
+    fieldNames = ['user_id', 'name', 'phone', 'image', 'type'];
     dataValues = [
       data.name,
       data.phone,
@@ -188,8 +198,9 @@ export const addData = (table: string, data: any): number => {
       data.type,
     ];
   } else if (table === Tables.NOTIFICATIONS) {
-    fieldNames = ['type', 'status', 'target_id', 'var1', 'var2', 'var3'];
-    dataValues = [       
+    fieldNames = ['user_id', 'type', 'status', 'target_id', 'var1', 'var2', 'var3'];
+    dataValues = [  
+      data.userId,     
       data.type,
       data.status,
       data.targetId,
@@ -226,16 +237,16 @@ export const addData = (table: string, data: any): number => {
   return ret.lastInsertRowId;
 }
 
-export const getAllData = async (table: string): Promise<any> => {
+export const getAllData = async (table: string, userId: string): Promise<any> => {
   const all = await db.getAllAsync(
-    `SELECT * FROM ${table} WHERE sync_status <> '${SyncStatus.DELETED}'`
+    `SELECT * FROM ${table} WHERE sync_status <> '${SyncStatus.DELETED}' and user_id = '${userId}'`
   );
   return all;
 }
 
-export const getAllUnSyncedData = async (table: string): Promise<any> => {
+export const getAllUnSyncedData = async (table: string, userId: string): Promise<any> => {
   const all = await db.getAllAsync(
-    `SELECT * FROM ${table} WHERE sync_status <> '${SyncStatus.SYNCED}'`
+    `SELECT * FROM ${table} WHERE sync_status <> '${SyncStatus.SYNCED}' and user_id = '${userId}'`
   );
   return all;
 }
@@ -413,7 +424,7 @@ export const updateAllData = (table: string, data: any): boolean => {
   fieldNames.push('updated_at');
   bindValues = fieldNames.map((v: string, index: number) => index < fieldNames.length - 1 ? `${v}=?` : `${v}=DATETIME(\'now\')`);
   const ret = db.runSync(
-    `UPDATE ${table} SET ${bindValues.join(',')}`,
+    `UPDATE ${table} SET ${bindValues.join(',')} WHERE user_id = '${data.userId}'`,
     dataValues
   );
   return ret.changes > 0;

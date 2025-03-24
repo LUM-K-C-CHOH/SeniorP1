@@ -62,14 +62,16 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     if (initiated) return;
-    
+    if (!appState.authenticated) return;
+    if (!appState.user?.id) return;
+
     setInitiated(true);
 
     Promise.all([
-      getTodayAppointmentList(),
-      getTodayMedicationList(),
-      getRefillMedicationList(),
-      getMedicationSufficient()
+      getTodayAppointmentList(appState.user.id),
+      getTodayMedicationList(appState.user.id),
+      getRefillMedicationList(appState.user.id),
+      getMedicationSufficient(appState.user.id)
     ]).then((results: TResponse[]) => {
       if (results[0].success) {
         setAppointmentList(results[0].data);

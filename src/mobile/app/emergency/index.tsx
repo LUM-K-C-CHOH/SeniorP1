@@ -131,9 +131,11 @@ export default function EmergencyScreen() {
   }
 
   const handleGetOrgEmergencyContact = async (): Promise<void> => {
+    if (!appState.user?.id) return;
+
     setCheckedIdList([]);
     setCountdown(5);
-    const { data } = await getEmergencyContactList();
+    const { data } = await getEmergencyContactList(appState.user.id);
     if (data) {
       setOrgContactList(data);
     }
