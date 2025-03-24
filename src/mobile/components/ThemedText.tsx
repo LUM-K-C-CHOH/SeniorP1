@@ -1,6 +1,7 @@
 import { Text, type TextProps, StyleSheet } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useFontSizeRatio } from '@/hooks/useFontSize';
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
@@ -16,22 +17,23 @@ export function ThemedText({
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'defaultText');
+  const fzRatio = useFontSizeRatio();
 
   return (
     <Text
       style={[
         { color },
-        type === 'default' ? styles.default : undefined,
-        type === 'small' ? styles.small : undefined,
-        type === 'mediumTitle' ? styles.mediumTitle : undefined,
-        type === 'bigTitle' ? styles.bigTitle : undefined,
-        type === 'title' ? styles.title : undefined,
-        type === 'defaultMedium' ? styles.defaultMedium : undefined,
-        type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
-        type === 'button' ? styles.button : undefined,
-        type === 'defaultSize' ? styles.defaultSize : undefined,
-        type === 'contactSize' ? styles.contactSize : undefined,
+        type === 'default' ? { ...styles.default, fontSize: styles.default.fontSize * fzRatio} : undefined,
+        type === 'small' ? { ...styles.small, fontSize: styles.small.fontSize * fzRatio } : undefined,
+        type === 'mediumTitle' ? { ...styles.mediumTitle, fontSize: styles.mediumTitle.fontSize * fzRatio} : undefined,
+        type === 'bigTitle' ? { ...styles.bigTitle, fontSize: styles.bigTitle.fontSize * fzRatio} : undefined,
+        type === 'title' ? { ...styles.title, fontSize: styles.title.fontSize * fzRatio} : undefined,
+        type === 'defaultMedium' ? { ...styles.defaultMedium, fontSize: styles.defaultMedium.fontSize * fzRatio} : undefined,
+        type === 'subtitle' ? { ...styles.subtitle, fontSize: styles.subtitle.fontSize * fzRatio} : undefined,
+        type === 'link' ? { ...styles.link, fontSize: styles.link.fontSize * fzRatio} : undefined,
+        type === 'button' ? { ...styles.button, fontSize: styles.button.fontSize * fzRatio} : undefined,
+        type === 'defaultSize' ? { ...styles.defaultSize, fontSize: styles.defaultSize.fontSize * fzRatio} : undefined,
+        type === 'contactSize' ? { ...styles.contactSize, fontSize: styles.contactSize.fontSize * fzRatio} : undefined,
         style,
       ]}
       {...rest}
@@ -78,10 +80,12 @@ const styles = StyleSheet.create({
   },
   defaultSize: {
     width: 240,
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    fontSize: 16,
   },
   contactSize: {
     width: 140,
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    fontSize: 16
   }
 });
