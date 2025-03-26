@@ -65,7 +65,8 @@ export const InitialAppState: IAppState = {
   setting: {
     theme: 'light',
     font: 'normal',
-    push: 'on'
+    push: 'on',
+    userId: 'xyz'
   }
 }
 

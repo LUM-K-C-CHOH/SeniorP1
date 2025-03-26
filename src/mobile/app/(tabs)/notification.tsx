@@ -399,6 +399,9 @@ const nstyles = StyleSheet.create({
     columnGap: 10,
   },
   typeWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 5,
     width: 80,
   },
   typeText: {  
