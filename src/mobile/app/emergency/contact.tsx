@@ -142,11 +142,12 @@ export default function EmergencyContactScreen() {
   const handleContactDelete = async (): Promise<void> => {
     if (checkedIdList.length === 0) return;
     if (appState.lockScreen) return;
+    if (!appState.user?.id) return;
    
     setAppState({ ...appState, lockScreen: true });
 
     const idList = checkedIdList.join(',');
-    const ret = await deleteEmergencyContactGroup(idList, appState.user?.id);
+    const ret = await deleteEmergencyContactGroup(idList, appState.user.id);
     if (ret) {
       const filter = contactList.filter(v => !checkedIdList.includes(v.id!));
       setContactList([...filter]);

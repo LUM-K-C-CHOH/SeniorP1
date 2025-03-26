@@ -61,8 +61,6 @@ export const emergencyContactSyncToServer = async (emergencyContactData: IEmerge
     });
 }
 
-
-
 export const emergencyContactListSyncToServer = async (emergencyContactData: IEmergencyContact[], userId: string): Promise<boolean> => {
 
   return axiosInstance.put(
@@ -82,16 +80,13 @@ export const emergencyContactListSyncToServer = async (emergencyContactData: IEm
     });
 }
 
-
-
-export const deleteEmergencyContactSyncToServer = async (contactList: string, userId?: string): Promise<boolean> => {
+export const deleteEmergencyContactSyncToServer = async (contactList: string, userId: string): Promise<boolean> => {
   
   return axiosInstance.delete(
     `/emergency/contact/${userId}`,{
       data: {contactList},
       headers: { "Content-Type": "application/json" }
     }
-
   )
     .then(response => {
       if (response.data.code === 0) {
@@ -105,6 +100,7 @@ export const deleteEmergencyContactSyncToServer = async (contactList: string, us
       return false;
     });
 }
+
 export const getEmergencyContactList = async (userId: string) => {
   try {
     const contactList = await getAllData(Tables.EMERGENCY_CONTACTS, userId);
@@ -123,7 +119,7 @@ export const getEmergencyContactList = async (userId: string) => {
   }
 }
 
-export const deleteEmergencyContactGroup = async (idList: string, userId ?: string): Promise<boolean> => {
+export const deleteEmergencyContactGroup = async (idList: string, userId: string): Promise<boolean> => {
   try {
     const ret = deleteDataGroup(Tables.EMERGENCY_CONTACTS, idList);
     if(ret){

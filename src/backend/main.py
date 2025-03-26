@@ -457,22 +457,19 @@ class EmergencyDeleteRequest(BaseModel):
 def delete_emergency(user_id: str, request: EmergencyDeleteRequest):
     try:
         # Convert the contactList string to a list of IDs
-        emergency_ids = request.contactList.split(",")
+        emergency_ids = [int(id_str.strip()) for id_str in request.contactList.split(",")]
         emergencies_ref = db.collection("emergencies")
         deleted_count = 0
-        for emergency_id in emergency_ids:
-            emergency_id = int(emergency_id)
-            query = (
-                emergencies_ref
-                .where("user_id", "==", user_id)
-                .where("id", "==", emergency_id)
-                .limit(1)
-                .stream()
-            )
-            emergency_doc = next(query, None)
-            if emergency_doc:
-                emergency_doc.reference.delete()
-                deleted_count += 1
+
+        query = (
+            emergencies_ref
+            .where("user_id", "==", user_id)
+            .where("id", "in", emergency_ids)
+        )
+
+        for doc in query.stream():
+            doc.reference.delete()
+            deleted_count += 1
 
         if deleted_count == 0:
             raise HTTPException(status_code=404, detail="No matching emergencies found to delete.")
@@ -514,6 +511,34 @@ def update_notification_list(notifications: List[Notification], user_id: str):
             doc_ref = notifications_ref.add(notification_data)
 
         return {"code": 0, "message": "Notifications updated successfully!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+class NotificationDeleteRequest(BaseModel):
+    notificationIdList: str
+
+@app.delete("/notification/{user_id}")
+def delete_emergency(user_id: str, request: NotificationDeleteRequest):
+    try:
+        # Convert the notificationIdList string to a list of IDs
+        notification_ids = [int(id_str.strip()) for id_str in request.notificationIdList.split(",")]
+        notifications_ref = db.collection("notifications")
+        deleted_count = 0
+        query = (
+            notifications_ref
+            .where("user_id", "==", user_id)
+            .where("id", "in", notification_ids)
+        )
+
+        for doc in query.stream():
+            doc.reference.delete()
+            deleted_count += 1
+
+        if deleted_count == 0:
+            raise HTTPException(status_code=404, detail="No matching notifications found to delete.")
+
+        return {"code": 0, "message": f"{deleted_count} notifications deleted successfully!"}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

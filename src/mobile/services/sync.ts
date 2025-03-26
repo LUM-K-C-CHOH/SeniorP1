@@ -60,7 +60,7 @@ export const syncLocalDatabaseWithRemote = async (userId?: string) => {
   const notificationSyncedStatus = await getStorageItem(KEY_DB_SYNCED_NOTIFICATION);
   let retNotification = true;
   
-  if (notificationSyncedStatus === 'true') {
+  if (notificationSyncedStatus !== 'true') {
     retNotification = await notificationSyncWithServer(userId);
     setStorageItem(KEY_DB_SYNCED_NOTIFICATION, retNotification ? 'true' : 'false');
   }

@@ -84,13 +84,15 @@ export default function NotificationScreen() {
     }
   }
 
-  const handleNotificationDelete = (): void => {
+  const handleNotificationDelete = async (): Promise<void> => {
     if (checkedIdList.length === 0) return;
+    if (appState.lockScreen) return;
+    if (!appState.user?.id) return;
 
     setAppState({ ...appState, lockScreen: true });
 
     const idList = checkedIdList.join(',');
-    const ret = deleteNotificationGroup(idList);
+    const ret = await deleteNotificationGroup(idList, appState.user.id);
     if (ret) {
       const filter = notificationList.filter(v => !checkedIdList.includes(v.id as number));
       setNotificationList([...filter]);

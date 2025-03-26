@@ -95,10 +95,8 @@ export const eventMedicationNotification = async (userId: string) => {
         if (medication.pushAlert === 'on' && appState.setting.push === 'on') {
           Notifications.scheduleNotificationAsync({
             content: {
-              title: i18next.t("notification_manage.low_stock_alert"),
-              body: i18next.t("notification_manage.message_low_stock", {
-                var1: medication.name,
-              }),
+              title: i18next.t('notification_manage.low_stock_alert'),
+              body: i18next.t('notification_manage.message_low_stock').replace('${var1}', medication.name),
             },
             trigger: null,
           });

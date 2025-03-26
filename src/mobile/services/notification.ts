@@ -69,10 +69,7 @@ export const notificationSyncToServer = async (notificationData: INotification):
     });
 }
 
-
-
 export const notificationListSyncToServer = async (notificationData: INotification[], userId?: string): Promise<boolean> => {
-
   return axiosInstance.put(
     '/notification/update/list',
     {notificationData, userId}
@@ -90,6 +87,25 @@ export const notificationListSyncToServer = async (notificationData: INotificati
     });
 }
 
+export const deleteNotificationSyncToServer = async (notificationIdList: string, userId: string): Promise<boolean> => {  
+  return axiosInstance.delete(
+    `/notification/${userId}`,{
+      data: { notificationIdList },
+      headers: { "Content-Type": "application/json" }
+    }
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      return false;
+    });
+}
 
 export const getNotificationList = async (userId: string) => {
   try {
@@ -149,10 +165,13 @@ export const updateNotification = async (notification: INotification): Promise<b
   }
 }
 
-
-export const deleteNotificationGroup = (idList: string): boolean => {
+export const deleteNotificationGroup = async (idList: string, userId: string): Promise<boolean> => {
   try {
     const ret = deleteDataGroup(Tables.NOTIFICATIONS, idList);
+    if(ret){
+      await deleteNotificationSyncToServer(idList, userId)
+      return true;
+    }
     return ret;
   } catch (error) {
     console.log(error);
