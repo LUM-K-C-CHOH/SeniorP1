@@ -62,15 +62,15 @@ export default function SignUpScreen() {
       errors['email'] = t('message.alert_input_valid_email');
     }
 
-    if (!country || phone.length === 0) {
+    if (phone.length === 0) {
       errors['phone'] = t('message.alert_input_phone');
     } 
     
     if (country) {
-      let valid = isValidPhoneNumber(phone, country);
-      if (!valid) {
-        errors['phone'] = t('message.alert_input_valid_phone');
-      }
+      // let valid = isValidPhoneNumber(phone, country);
+      // if (!valid) {
+      //   errors['phone'] = t('message.alert_input_valid_phone');
+      // }
     } else {
       errors['phone'] = t('message.alert_select_country');
     }
