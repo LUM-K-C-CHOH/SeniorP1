@@ -68,12 +68,6 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const [errors, setErrors] = useState<{[k: string]: string}>({});
 
   useEffect(() => {
-    if (initiatedRef.current) return;
-
-    initiatedRef.current = true;
-  }, []);
-
-  useEffect(() => {
     if (!appointment) return;
    
     setName(appointment.name?? '');

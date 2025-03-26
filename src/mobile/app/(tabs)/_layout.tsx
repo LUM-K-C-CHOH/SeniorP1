@@ -4,12 +4,12 @@
  * 
  * Created by Morgan on 01/23/2025
  */
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef, useContext, useCallback } from 'react';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import ApplicationContext from '@/context/ApplicationContext';
 import Header from '@/app/layout/header';
 
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import {
   Platform,
   SafeAreaView,
@@ -35,19 +35,20 @@ export default function TabLayout() {
 
   const [unReadNotificationCount, setUnReadNotificationCount] = useState<number>(0);
 
+  const path = usePathname();
   useEffect(() => {
-    if (initiatedRef.current) return;
+    if (!appState.user?.id) return;
 
-    initiatedRef.current = true;
-
-    getNotificationList()
+    console.log('Tab layout focused');
+    
+    getNotificationList(appState.user.id)
       .then((res: TResponse) => {
         if (res.success) {          
           const count = res.data.reduce((acc: number, cur: INotification) => acc + (cur.status === NotificationStatus.PENDING ? 1 : 0), 0);
           setUnReadNotificationCount(count);
         }
-      })
-  }, []);
+      });
+  }, [path]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

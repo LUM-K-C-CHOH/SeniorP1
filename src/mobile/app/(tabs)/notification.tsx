@@ -165,6 +165,7 @@ export default function NotificationScreen() {
   }
 
   const handleNotificationPopupVisible = async (notification: INotification): Promise<void> => {
+    console.log(notification)
     if (notification.status === NotificationStatus.PENDING) {
       const new_ = { ...notification, status: NotificationStatus.SENT };
       const ret = await updateNotification(new_);
@@ -202,8 +203,8 @@ export default function NotificationScreen() {
           <View
             style={nstyles.typeWrapper}
           >
-            {notification.type === NotificationStatus.PENDING&&
-              <DotIcon color="red" width={18} height={18} />
+            {notification.status === NotificationStatus.PENDING&&
+              <DotIcon color="red" width={24} height={24} />
             }
             <ThemedText
               type="small"
@@ -400,7 +401,7 @@ const nstyles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    columnGap: 10,
+    columnGap: 30,
   },
   typeWrapper: {
     flexDirection: 'row',

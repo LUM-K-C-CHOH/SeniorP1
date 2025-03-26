@@ -55,6 +55,7 @@ export const eventMedicationNotification = async (userId: string) => {
     
     dayjs.extend(isBetween);
     if (dayjs(_cDate).isBetween(_sDate, _eDate)) {
+      console.log('start medication stock check...')
       if (eachList.stockDate === "") {
         stockDate = sDate;
       } else {

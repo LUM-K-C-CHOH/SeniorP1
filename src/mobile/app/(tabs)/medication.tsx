@@ -91,12 +91,20 @@ export default function MedicationScreen() {
     if (initiatedParam) return;
 
     setInitiatedParam(true);
-
+   
     const medicationId = parseInt(params.medicationId as string, 10);
     const find = medicationList.find((v: IMedication) => v.id === medicationId);
     
     if (find) {
-      setReminderSettingPanelOptions({ opened: true, id: medicationId });
+      setReminderSettingPanelOptions({
+        opened: true,
+        id: find.id as number,
+        name: find.name,
+        threshold: find.threshold?? 0,
+        emailAlert: find.emailAlert,
+        pushAlert: find.pushAlert,
+        saved: false
+      });
     }
   }, [params, medicationList]);
 
