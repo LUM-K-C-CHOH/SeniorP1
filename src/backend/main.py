@@ -9,12 +9,13 @@ import services.firebase
 import re
 
 from fastapi import FastAPI, HTTPException, Query
-from models.request import Medication, Frequency, Setting, Appointment, EmergencyContact, Notification
+from models.request import Medication, Frequency, Setting, Appointment, EmergencyContact, Notification, EmergencyRequest, MedicationEmail
 from firebase_admin import credentials, firestore
 from pydantic import BaseModel
 from typing import List
 
-from sendTwilio import send_sms
+from utility import send_sms, send_email
+
 
 # Get Firestore database reference
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -449,10 +450,6 @@ def update_emergency_list(emergencies: List[EmergencyContact], user_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-
-
-
 class EmergencyDeleteRequest(BaseModel):
     contactList: str
 
@@ -525,10 +522,6 @@ def format_phone_number(phone: str) -> str:
     return f"+{cleaned}"  # Add the '+' sign
 
 
-
-class EmergencyRequest(BaseModel):
-    emergencyData: List[str]
-    currentAddress: List[str]
 @app.post("/sendEmergency")
 def send_emergency(data: EmergencyRequest):
     try:
@@ -555,3 +548,13 @@ def send_emergency(data: EmergencyRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/sendEmail")
+def send_medication_email(body: MedicationEmail):
+    html_content = f"<div><p>Hi, <strong>{body.user_name}</strong></p><p>The stock of <strong>{body.medication_name}</strong> has reached its threshold.</p></div>"
+    ret = send_email(body.to_email, html_content)
+    if ret:
+        return {"code": 0}
+    else:
+        return {"code": -1}
+    
