@@ -31,6 +31,7 @@ import { CalendarIcon, CloseIcon, MinusIcon, PlusIcon, SearchIcon } from '@/util
 import { addMedication, updateMedication } from '@/services/medication';
 import { showToast } from '@/utils';
 import { useRouter } from 'expo-router';
+import { eventMedicationNotification } from '@/services/event';
 
 type TMedicationFormProps = {
   medication?: IMedication
@@ -284,6 +285,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       const ret = await updateMedication(data);
       medication.stockDate = "";
       if (ret) {
+        eventMedicationNotification(appState.user.id);
         router.back();
         showToast(t('message.alert_save_success'));
       } else {
@@ -293,6 +295,7 @@ export default function MedicationForm({ medication }: TMedicationFormProps) {
       data.stockDate = "";
       const ret = await addMedication(data);
       if (ret) {
+        eventMedicationNotification(appState.user.id);
         router.back();
         showToast(t('message.alert_save_success'));
       } else {

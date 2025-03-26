@@ -6,6 +6,10 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
+class EmergencyRequest(BaseModel):
+  emergencyData: List[str]
+  currentAddress: List[str]
+
 class Setting(BaseModel):
   user_id: str
   push: str
@@ -61,3 +65,8 @@ class EmergencyContact(BaseModel):
   phone: str
   image: str
   type: str
+
+class MedicationEmail(BaseModel):
+  user_name: str
+  to_email: str
+  medication_name: str

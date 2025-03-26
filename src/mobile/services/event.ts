@@ -3,11 +3,12 @@ import isBetween from 'dayjs/plugin/isBetween';
 import * as Notifications from 'expo-notifications';
 import i18next from 'i18next';
 
-import { getCombinedMedicationList, updateMedication } from '@/services/medication';
+import { getCombinedMedicationList, sendEmail, updateMedication } from '@/services/medication';
 import { IMedication, INotification } from '@/@types';
 import { NotificationStatus, NotificationType } from '@/config/constants';
 import { addNotification } from '@/services/notification';
 import { getToCalendar } from './google-calendar';
+import { getAppState } from '@/config/global';
 
 // const getCombinedMedicationList = async (): Promise<IMedication[]> => {
 //   const medicationList = await getAllData(Tables.MEDICATIONS);
@@ -42,12 +43,13 @@ import { getToCalendar } from './google-calendar';
 export const eventMedicationNotification = async (userId: string) => {
   const currentDate = new Date().toISOString().split('T')[0];
   const one_day = 1000 * 60 * 60 * 24;
-  const resultList: IMedication[] = await getCombinedMedicationList(userId);
+  const medicationList: IMedication[] = await getCombinedMedicationList(userId);
+  const appState = getAppState();
 
-  for (let i = 0; i < resultList.length; i++) {
-    const eachList: IMedication = resultList[i];
-    const sDate = eachList.startDate;
-    const eDate = eachList.endDate;
+  for (let i = 0; i < medicationList.length; i++) {
+    const medication: IMedication = medicationList[i];
+    const sDate = medication.startDate;
+    const eDate = medication.endDate;
     let stockDate: string | null = null;
     const _cDate = dayjs(currentDate).format('YYYY-MM-DD');
     const _sDate = dayjs(sDate).format('YYYY-MM-DD');
@@ -55,50 +57,61 @@ export const eventMedicationNotification = async (userId: string) => {
     
     dayjs.extend(isBetween);
     if (dayjs(_cDate).isBetween(_sDate, _eDate)) {
-      if (eachList.stockDate === "") {
+      console.log('start medication stock check...')
+      if (medication.stockDate === "") {
         stockDate = sDate;
       } else {
-        stockDate = eachList.stockDate;
+        stockDate = medication.stockDate;
       }
 
       const dosageAmount =
         (dayjs(_cDate).diff(dayjs(stockDate)) / one_day) *
-        eachList.frequency.dosage *
-        eachList.frequency.times.length /
-        eachList.frequency.cycle;
+        medication.frequency.dosage *
+        medication.frequency.times.length /
+        medication.frequency.cycle;
       stockDate = currentDate;
       const data = {
-        ...eachList,
+        ...medication,
         stockDate: stockDate,
-        stock: eachList.stock - dosageAmount,
-        image: "",
+        stock: medication.stock - dosageAmount,
+        image: '',
       };
 
       updateMedication(data);
 
-      if (eachList.stock - dosageAmount < eachList.threshold) {
+      if (medication.stock - dosageAmount < medication.threshold) {
         const notification: INotification = {
           userId: userId,
           type: NotificationType.MEDICATION,
-          var1: `${eachList.name}`,
+          var1: `${medication.name}`,
           var2: "",
           var3: "",
           status: NotificationStatus.PENDING,
-          targetId: eachList.id as number,
+          targetId: medication.id as number,
         };
+
         addNotification(notification);
 
-        Notifications.scheduleNotificationAsync({
-          content: {
-            title: i18next.t("notification_manage.low_stock_alert"),
-            body: i18next.t("notification_manage.message_low_stock", {
-              var1: eachList.name,
-            }),
-          },
-          trigger: null,
-        });
+        if (medication.pushAlert === 'on' && appState.setting.push === 'on') {
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: i18next.t("notification_manage.low_stock_alert"),
+              body: i18next.t("notification_manage.message_low_stock", {
+                var1: medication.name,
+              }),
+            },
+            trigger: null,
+          });
+        }
+
+        if (medication.emailAlert === 'on') {
+          sendEmail(medication.name, appState.user?.email as string, appState.user?.name as string)
+            .then(res => {
+              console.log('Send medication replenishment email', res);
+            }); 
+        }
       }
-      console.log(eachList);
+      console.log(medication);
     }
   }
 };
@@ -106,6 +119,7 @@ export const eventMedicationNotification = async (userId: string) => {
 export const eventAppointmentNotification = async (userId: string) => {
   let currentDate = new Date().toISOString().split('T')[0];
   let res = await getToCalendar();
+  const appState = getAppState();
 
   for (let i = 0; i < res?.message.length; i++) {
     let _cDate = dayjs(currentDate).format("YYYY-MM-DD");
@@ -126,15 +140,17 @@ export const eventAppointmentNotification = async (userId: string) => {
 
       addNotification(notification);
 
-      Notifications.scheduleNotificationAsync({
-        content: {
-          title: i18next.t("notification_manage.appointment_alert"),
-          body: i18next.t("notification_manage.message_appointment", {
-            var1: eachEvent.summary,
-          }),
-        },
-        trigger: null,
-      });
+      if (appState.setting.push === 'on') {
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: i18next.t("notification_manage.appointment_alert"),
+            body: i18next.t("notification_manage.message_appointment", {
+              var1: eachEvent.summary,
+            }),
+          },
+          trigger: null,
+        });
+      }
     }
   }
 }
