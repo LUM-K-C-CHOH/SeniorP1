@@ -549,7 +549,7 @@ def send_emergency(data: EmergencyRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.post("/sendEmail")
+@app.post("/medication/sendEmail")
 def send_medication_email(body: MedicationEmail):
     html_content = f"<div><p>Hi, <strong>{body.user_name}</strong></p><p>The stock of <strong>{body.medication_name}</strong> has reached its threshold.</p></div>"
     ret = send_email(body.to_email, html_content)
