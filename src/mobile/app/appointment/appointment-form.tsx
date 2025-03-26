@@ -34,6 +34,7 @@ import { Colors } from '@/config/constants';
 import { useRouter } from 'expo-router';
 import { addAppointment, updateAppointment } from '@/services/appointment';
 import { linkToCalendar } from '@/services/google-calendar';
+import { eventAppointmentNotification } from '@/services/event';
 
 
 type TAppointmentFormProps = {
@@ -164,7 +165,7 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
   const checkValidation = () => {
     const errors: {[k: string]: string} = {};
 
-    if (name.length === 0 || phone.length === 0) {
+    if (name.length === 0 && phone.length === 0) {
       errors['contact'] = t('message.alert_select_provider');
     }
 
@@ -220,14 +221,18 @@ export default function AppointmentForm({ appointment }: TAppointmentFormProps) 
       setAppState({ ...appState, lockScreen: false });
 
       if (ret) {
+        eventAppointmentNotification(appState.user.id);
         router.back();
         showToast(t('message.alert_save_success'));
       } else {
         showToast(t('message.alert_save_fail'));
       }
     } else {
+      setAppState({ ...appState, lockScreen: true });
       const ret = await addAppointment(data);
+      setAppState({ ...appState, lockScreen: false });
       if (ret) {
+        eventAppointmentNotification(appState.user.id);
         router.back();
         showToast(t('message.alert_save_success'));
       } else {

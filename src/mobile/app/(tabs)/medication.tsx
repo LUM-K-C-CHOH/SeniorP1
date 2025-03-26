@@ -38,7 +38,7 @@ import {
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
-import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
@@ -48,6 +48,7 @@ import {
   getMedicationMarkColorFromName,
   getMedicationMarkLabelFromName
 } from '@/utils';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function MedicationScreen() {
   const initiatedRef = useRef<boolean>(false);
@@ -67,24 +68,20 @@ export default function MedicationScreen() {
 
   const [reminderSettingErrors, setReminderSettingErrors] = useState<{[k: string]: string}>();
 
-  useEffect(() => {
-    if (initiatedRef.current) return;
-    if (!appState.user?.id) return;
-
-    initiatedRef.current = true;
-    getMedicationList(appState.user.id)
-      .then((res: TResponse) => {
-        if (res.success) {
-          setMedicationList(res.data?? []);
-        } else {
-
-        }
-      });
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       setInitiatedParam(false);
+
+      if (!appState.user?.id) return;
+      
+      console.log('Medication tab focused');
+
+      getMedicationList(appState.user.id)
+        .then((res: TResponse) => {
+          if (res.success) {
+            setMedicationList(res.data?? []);
+          }
+        });
     }, [])
   );
 

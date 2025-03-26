@@ -4,7 +4,7 @@
  * 
  * Created by Morgan on 01/28/2025
  */
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef, useCallback } from 'react';
 import ApplicationContext from '@/context/ApplicationContext';
 import CustomButton from '@/components/CustomButton';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
@@ -27,6 +27,7 @@ import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-han
 import { getDateString, getMarkColorFromName, getMarkLabelFromName, showToast } from '@/utils';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Colors } from '@/config/constants';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
@@ -41,20 +42,20 @@ export default function AppointmentScreen() {
   const [deleteConfirmPopupOptions, setDeleteConfirmPopupOptions] = useState<{[k: string]: boolean|number}>({ opened: false, id: -1 });
   const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
   
-  useEffect(() => {
-    if (initiatedRef.current) return;
-    if (!appState.user?.id) return;
+  useFocusEffect(
+    useCallback(() => {
+      if (!appState.user?.id) return;
+      
+      console.log('Appointment tab focused');
 
-    initiatedRef.current = true;
-    getAppointmentList(appState.user.id)
-      .then((res: TResponse) => {
-        if (res.success) {
-          setAppointmentList(res.data?? []);
-        } else {
-  
-        }
-      });
-  }, []);
+      getAppointmentList(appState.user.id)
+        .then((res: TResponse) => {
+          if (res.success) {
+            setAppointmentList(res.data?? []);
+          }
+        });
+    }, [])
+  );
 
   const handleEditRow = (rowMap: RowMap<IAppointment>, id?: number): void => {
     if (!id) return;
@@ -102,6 +103,7 @@ export default function AppointmentScreen() {
 
   const handleLoadData = async (): Promise<void> => {
     if (!appState.user?.id) return;
+    if (isLoading) return;
 
     setIsLoading(true);
     getAppointmentList(appState.user.id)

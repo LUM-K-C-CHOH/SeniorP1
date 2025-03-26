@@ -150,6 +150,8 @@ export default function EmergencyContactScreen() {
     if (ret) {
       const filter = contactList.filter(v => !checkedIdList.includes(v.id!));
       setContactList([...filter]);
+      setCheckedIdList([]);
+      setSelectableVisible(false);
       setDeleteConfirmResultVisible(true);
     } else {
       showToast(t('message.alert_delete_fail'));
