@@ -4,7 +4,7 @@
  * 
  * Created by Morgan on 01/28/2025
  */
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import ConfirmPanel, { ConfirmResultStyle } from '@/components/ConfrimPanel';
 import Modal from 'react-native-modal';
 import ApplicationContext from '@/context/ApplicationContext';
@@ -29,6 +29,7 @@ import { Colors, NotificationStatus, NotificationType } from '@/config/constants
 import { useRouter } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { showToast } from '@/utils';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function NotificationScreen() {
   const initiatedRef = useRef<boolean>(false);
@@ -46,19 +47,20 @@ export default function NotificationScreen() {
   const [deleteConfirmResultVisible, setDeleteConfirmResultVisible] = useState<boolean>(false);
   const [notificationPopupOptions, setNotificationPopupOptions] = useState<{ opened: boolean, notification: INotification|null }>({ opened: false, notification: null });
 
-  useEffect(() => {
-    if (initiatedRef.current) return;
-    if (!appState.user?.id) return;
+  useFocusEffect(
+    useCallback(() => {
+      if (!appState.user?.id) return;
+      
+      console.log('Notification tab focused');
 
-    initiatedRef.current = true;
-
-    getNotificationList(appState.user.id)
-      .then((res: TResponse) => {
-        if (res.success) {
-          setNotificationList(res.data);
-        }
-      })
-  }, []);
+      getNotificationList(appState.user.id)
+        .then((res: TResponse) => {
+          if (res.success) {
+            setNotificationList(res.data?? []);
+          }
+        });
+    }, [])
+  );
 
   const handleLongPress = (): void => {
     setSelectableVisible(true);
@@ -82,7 +84,7 @@ export default function NotificationScreen() {
     }
   }
 
-  const handleContactDelete = (): void => {
+  const handleNotificationDelete = (): void => {
     if (checkedIdList.length === 0) return;
 
     setAppState({ ...appState, lockScreen: true });
@@ -92,6 +94,8 @@ export default function NotificationScreen() {
     if (ret) {
       const filter = notificationList.filter(v => !checkedIdList.includes(v.id as number));
       setNotificationList([...filter]);
+      setCheckedIdList([]);
+      setSelectableVisible(false);
       setDeleteConfirmResultVisible(true);
     } else {
       showToast(t('message.alert_delete_fail'));
@@ -161,6 +165,7 @@ export default function NotificationScreen() {
   }
 
   const handleNotificationPopupVisible = async (notification: INotification): Promise<void> => {
+    console.log(notification)
     if (notification.status === NotificationStatus.PENDING) {
       const new_ = { ...notification, status: NotificationStatus.SENT };
       const ret = await updateNotification(new_);
@@ -198,8 +203,8 @@ export default function NotificationScreen() {
           <View
             style={nstyles.typeWrapper}
           >
-            {notification.type === NotificationStatus.PENDING&&
-              <DotIcon color="red" width={18} height={18} />
+            {notification.status === NotificationStatus.PENDING&&
+              <DotIcon color="red" width={24} height={24} />
             }
             <ThemedText
               type="small"
@@ -312,7 +317,7 @@ export default function NotificationScreen() {
           </ThemedView>
         }
         onCancel={handleDeleteConfirmResult}
-        onConfirm={handleContactDelete}
+        onConfirm={handleNotificationDelete}
       />
       <GestureHandlerRootView style={[styles.container, { backgroundColor }]}>
         {selectableVisible&&
@@ -396,7 +401,7 @@ const nstyles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    columnGap: 10,
+    columnGap: 30,
   },
   typeWrapper: {
     flexDirection: 'row',

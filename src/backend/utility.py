@@ -1,6 +1,8 @@
 import os
 from twilio.rest import Client
 from dotenv import load_dotenv
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, To
 
 load_dotenv()
 account_sid = os.getenv("TWILIO_ACCOUNT_SID")
@@ -19,3 +21,21 @@ def send_sms(to_phone: str, message_body: str):
     except Exception as e:
         print(f"Error sending SMS: {e}")
         return {"code": 1, "message": str(e)}
+
+def send_email(to_email: str, html_content: str):
+    api_key = os.getenv("SENDGRID_API_KEY")
+    message = Mail(
+        from_email = "noreply@ntro.io",
+        to_emails = to_email,
+        subject = "Medication Replenishment Alert",
+        is_multiple = True,
+        html_content = html_content
+    )
+    
+    try:
+        sg = SendGridAPIClient(api_key)
+        sg.send(message)
+        return True
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False

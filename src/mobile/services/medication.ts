@@ -10,7 +10,28 @@ import dayjs from 'dayjs';
 import { IFrequency, IMedication } from '@/@types';
 import { MedicationCycleType, SyncStatus } from '@/config/constants';
 import { addData, deleteData, getAllData, Tables, updateData } from '@/services/db';
-import { useId } from 'react';
+
+export const sendEmail = async (medicationName: string, userEmail: string, userName: string): Promise<boolean> => {
+  return axiosInstance.post(
+    `/medication/sendEmail`,
+    {
+      to_email: userEmail,
+      user_name: userName,
+      medication_name: medicationName
+    }
+  )
+    .then(response => {
+      if (response.data.code === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      return false;
+    });
+}
 
 export const frequencySyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(
