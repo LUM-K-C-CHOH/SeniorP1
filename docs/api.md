@@ -1,4 +1,4 @@
-# FastAPI Firebase Firestore API Documentation
+# RTHA API Documentation
 
 ## Overview
 This API is built with FastAPI and integrates with Firebase Firestore for storing and managing user data, medications, appointments, and settings. The API supports user authentication using Firebase Authentication and provides CRUD operations for managing resources.
