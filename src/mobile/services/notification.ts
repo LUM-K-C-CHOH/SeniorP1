@@ -9,7 +9,6 @@ import axiosInstance from './instance';
 import { addData, deleteDataGroup, getAllData, Tables, updateData } from './db';
 import { SyncStatus } from '@/config/constants';
 import { INotification } from '@/@types';
-import { useId } from 'react';
 
 export const notificationSyncWithServer = async (userId?: string): Promise<boolean> => {
   return axiosInstance.get(

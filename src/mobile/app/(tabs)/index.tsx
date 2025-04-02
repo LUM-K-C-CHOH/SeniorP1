@@ -4,7 +4,7 @@
  * 
  * Created by Morgan on 01/23/2025
  */
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import Animated from 'react-native-reanimated';
 import ApplicationContext from '@/context/ApplicationContext';
 import dayjs from 'dayjs';
@@ -38,7 +38,6 @@ import {
   getTodayMedicationList,
   getMedicationSufficient
 } from '@/services/medication';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -52,7 +51,7 @@ export default function DashboardScreen() {
   const [medicationList, setMedicationList] = useState<IMedication[]>([]);
   const [refillMedicationList, setRefillMedicationList] = useState<IMedication[]>([]);
   const [medicationSufficient, setMedicationSufficient] = useState<number>(0);
-  const [value, setValue] = useState();
+  
   useFocusEffect(   
     useCallback(() => {
       setInitiated(false);
@@ -60,38 +59,37 @@ export default function DashboardScreen() {
     
   );
 
-  useEffect(() => {
-    if (initiated) return;
-    if (!appState.authenticated) return;
-    if (!appState.user?.id) return;
+  useFocusEffect(
+    useCallback(() => {
+      if (!appState.authenticated) return;
+      if (!appState.user?.id) return;
+      
+      console.log('Home tab focused');
 
-    setInitiated(true);
-
-    Promise.all([
-      getTodayAppointmentList(appState.user.id),
-      getTodayMedicationList(appState.user.id),
-      getRefillMedicationList(appState.user.id),
-      getMedicationSufficient(appState.user.id)
-    ]).then((results: TResponse[]) => {
-      if (results[0].success) {
-        setAppointmentList(results[0].data);
-      }
-
-      if (results[1].success) {
-        setMedicationList(results[1].data);
-      }
-
-      if (results[2].success) {
-        setRefillMedicationList(results[2].data);
-      }
-
-      if (results[3].success) {
-        setMedicationSufficient(results[3].data.sufficient);
-      }
-    });
-
-
-  }, []);
+      Promise.all([
+        getTodayAppointmentList(appState.user.id),
+        getTodayMedicationList(appState.user.id),
+        getRefillMedicationList(appState.user.id),
+        getMedicationSufficient(appState.user.id)
+      ]).then((results: TResponse[]) => {
+        if (results[0].success) {
+          setAppointmentList(results[0].data);
+        }
+  
+        if (results[1].success) {
+          setMedicationList(results[1].data);
+        }
+  
+        if (results[2].success) {
+          setRefillMedicationList(results[2].data);
+        }
+  
+        if (results[3].success) {
+          setMedicationSufficient(results[3].data.sufficient);
+        }
+      });
+    }, [])
+  );
 
   const getTime = (datetimeStr: string): string => {
     return dayjs(datetimeStr).format('hh:mm A');

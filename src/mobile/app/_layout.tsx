@@ -87,7 +87,10 @@ export default function RootLayout() {
     }
 
     if (loaded) {
-      SplashScreen.hideAsync();
+      setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 3000);
+      
       setAppContext({
         ...appContext,
         appState: state
