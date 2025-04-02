@@ -165,6 +165,6 @@ Authorization: Bearer <firebase_id_token>
 - Firestore rules should be configured to allow secure access to user data.
 
 ---
-**Author:** Your Name  
+**Author:** Morgan Thornton  
 **Version:** 1.0  
 **Last Updated:** 2025-04-01
