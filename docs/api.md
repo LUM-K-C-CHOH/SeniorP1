@@ -17,143 +17,162 @@ Authorization: Bearer <firebase_id_token>
 
 ## Endpoints
 
-### User Management
-#### Register User
-**POST** `/users/register`
+### Medication
 
-**Request Body:**
-```json
-{
-  "uid": "string",
-  "email": "string",
-  "name": "string"
-}
-```
+#### Get Medication List
+**GET** `/medication/{user_id}`
+- Retrieves the list of medications for a user.
 
-**Response:**
-```json
-{
-  "message": "User registered successfully",
-  "user": {
-    "uid": "string",
-    "email": "string",
-    "name": "string"
-  }
-}
-```
-
-#### Get User Details
-**GET** `/users/{uid}`
-
-**Response:**
-```json
-{
-  "uid": "string",
-  "email": "string",
-  "name": "string"
-}
-```
-
-### Medication Management
 #### Add Medication
-**POST** `/medications/`
-
-**Request Body:**
-```json
-{
-  "uid": "string",
-  "name": "string",
-  "dosage": "string",
-  "frequency": "string"
-}
-```
-
-**Response:**
-```json
-{
-  "message": "Medication added successfully"
-}
-```
-
-#### Get Medications
-**GET** `/medications/{uid}`
-
-**Response:**
-```json
-[
+**PUT** `/medication/add`
+- Adds a new medication.
+- **Body** (JSON):
+  ```json
   {
-    "id": "string",
-    "name": "string",
-    "dosage": "string",
-    "frequency": "string"
+    "id": 1,
+    "user_id": "user123",
+    "name": "Aspirin",
+    "image": "image_url",
+    "stock": 20,
+    "start_date": "2025-04-01",
+    "end_date": "2025-04-30",
+    "stock_date": "2025-03-31",
+    "threshold": 5,
+    "push_alert": "on",
+    "email_alert": "on"
   }
-]
-```
+  ```
 
-### Appointment Management
+#### Update Medication
+**PUT** `/medication/update`
+- Updates an existing medication.
+
+#### Update Multiple Medications
+**PUT** `/medication/update/list`
+- Updates multiple medications for a user.
+
+#### Delete Medication
+**DELETE** `/medication/{user_id}/{medication_id}`
+- Deletes a medication entry.
+
+### Medication Frequency
+
+#### Get Medication Frequency List
+**GET** `/medication/frequency/{user_id}`
+- Retrieves the frequency list for medications.
+
+#### Add Medication Frequency
+**PUT** `/medication/frequency/add`
+- Adds a new frequency for a medication.
+
+#### Update Medication Frequency
+**PUT** `/medication/frequency/update`
+- Updates a medication frequency.
+
+#### Update Multiple Medication Frequencies
+**PUT** `/medication/frequency/update/list`
+- Updates multiple medication frequencies.
+
+#### Delete Medication Frequency
+**DELETE** `/medication/frequency/{user_id}/{frequency_id}`
+- Deletes a frequency entry.
+
+### Appointment
+
+#### Get Appointment List
+**GET** `/appointment/{user_id}`
+- Retrieves the list of appointments for a user.
+
 #### Add Appointment
-**POST** `/appointments/`
+**POST** `/appointment`
+- Adds a new appointment.
 
-**Request Body:**
-```json
-{
-  "uid": "string",
-  "date": "string",
-  "time": "string",
-  "doctor": "string"
-}
-```
+#### Update Appointment
+**PUT** `/appointment`
+- Updates an existing appointment.
 
-**Response:**
-```json
-{
-  "message": "Appointment added successfully"
-}
-```
+#### Update Multiple Appointments
+**PUT** `/appointment/list`
+- Updates multiple appointments.
 
-#### Get Appointments
-**GET** `/appointments/{uid}`
+#### Delete Appointment
+**DELETE** `/appointment/{user_id}/{appointment_id}`
+- Deletes an appointment entry.
 
-**Response:**
-```json
-[
+### User Settings
+
+#### Get User Settings
+**GET** `/user/setting/{user_id}`
+- Retrieves user settings.
+
+#### Update User Settings
+**PUT** `/user/setting`
+- Updates user settings.
+
+### Emergency Contact
+
+#### Get Emergency Contact List
+**GET** `/emergency/contact/{user_id}`
+- Retrieves the emergency contact list for a user.
+
+#### Update Emergency Contact
+**PUT** `/emergency/contact/update`
+- Updates an emergency contact.
+
+#### Update Multiple Emergency Contacts
+**PUT** `/emergency/contact/update/list`
+- Updates multiple emergency contacts.
+
+#### Delete Emergency Contact
+**DELETE** `/emergency/contact/{user_id}`
+- Deletes emergency contacts based on the provided list.
+- **Body** (JSON):
+  ```json
   {
-    "id": "string",
-    "date": "string",
-    "time": "string",
-    "doctor": "string"
+    "contactList": "[\"contact1\", \"contact2\"]"
   }
-]
-```
+  ```
 
-### Settings Management
-#### Update Settings
-**POST** `/settings/`
+### Notification
 
-**Request Body:**
-```json
-{
-  "uid": "string",
-  "notifications": true
-}
-```
+#### Get Notification List
+**GET** `/notification/{user_id}`
+- Retrieves the notification list for a user.
 
-**Response:**
-```json
-{
-  "message": "Settings updated successfully"
-}
-```
+#### Update Notification
+**PUT** `/notification/update`
+- Updates a notification.
 
-#### Get Settings
-**GET** `/settings/{uid}`
+#### Update Multiple Notifications
+**PUT** `/notification/update/list`
+- Updates multiple notifications.
 
-**Response:**
-```json
-{
-  "notifications": true
-}
-```
+### Emergency Alert
+
+#### Send Emergency Alert
+**POST** `/sendEmergency`
+- Sends an emergency alert.
+- **Body** (JSON):
+  ```json
+  {
+    "emergencyData": ["data1", "data2"],
+    "currentAddress": ["address1", "address2"]
+  }
+  ```
+
+### Email Notification
+
+#### Send Medication Email Alert
+**POST** `/medication/sendEmail`
+- Sends a medication reminder via email.
+- **Body** (JSON):
+  ```json
+  {
+    "user_name": "John Doe",
+    "to_email": "john@example.com",
+    "medication_name": "Aspirin"
+  }
+  ```
 
 ## Error Responses
 - `401 Unauthorized` - Invalid or missing authentication token.
@@ -165,6 +184,6 @@ Authorization: Bearer <firebase_id_token>
 - Firestore rules should be configured to allow secure access to user data.
 
 ---
-**Author:** Your Name  
+**Author:** Morgan Thornton  
 **Version:** 1.0  
 **Last Updated:** 2025-04-01
